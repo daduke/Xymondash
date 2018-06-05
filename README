@@ -1,3 +1,7 @@
 use:
 - jquery
 - jqueryui with dialog
+
+
+Ideen:
+- mehr als n tests pro host -> fasse zamm

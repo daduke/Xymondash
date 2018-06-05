@@ -36,13 +36,16 @@ body {
 }
 
 .col-sm {
-    float: left;
-    list-style-type: none;
     width: 18%;
-    min-height: 100px;
     border: 1px solid gray;
     padding: 4px;
     margin: 1px;
+    vertical-align: text-top;
+}
+
+.inv {
+    background-color: inherit;
+    border: 0px;
 }
 
 .legend {
@@ -68,6 +71,19 @@ body {
 }
 
 @media screen and (max-width:720px) {
+    table, td, tr {
+        display: block;
+    }
+    td {
+        width: 100%;
+        border: none;
+		border-bottom: 1px solid #eee;
+		position: relative;
+		padding-left: 50%;
+    }
+    td.inv {
+        display: none;
+    }
     .col-sm {
         width: 100%;
     }

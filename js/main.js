@@ -42,6 +42,7 @@ function fetchData() {
                 <span class='info'>"+host+" / </span><span class='test'>"+test+"</span>\
                 <img src='img/checkmark.png' alt='ack' class='ack' />\
             </div>");
+            $("#" + selector).removeClass("inv");
         }
     });
 }
@@ -71,14 +72,14 @@ $(document).ready(function(){
 
     dialogPopup = $( "#dialog-popup" ).dialog({
       autoOpen: false,
-      modal: true,
+      modal: false,
       close: function() {
       },
       open: function() {
           var options = $( "#dialog-popup" ).dialog( "option" );
           var ackmsg = options.ackmsg;
           ackmsg = ackmsg.replace(/\\n/ig, "<br />");
-          $("#ack-popup").append(ackmsg);
+          $("#ack-popup").html(ackmsg);
       }
     });
 
@@ -92,7 +93,7 @@ $(document).ready(function(){
             dialogForm.dialog("open");
         }
     });
-    $("img.ack").hover(function(){
+    $("img.ack").click(function(){
         if ($(this).parent().parent().attr("class").match(/\back\b/)) {
             dialogPopup.dialog("option", "ackmsg", $(this).parent().data("ackmsg"));
             dialogPopup.dialog("open");
