@@ -1,4 +1,4 @@
-let colors = ['red', 'yellow', 'purple'];
+let colors = ['red', 'yellow', 'purple', 'blue'];
 let prios = ['p1', 'p2', 'p3', 'p4', 'ack'];
 
 function createLink(host, test) {
@@ -33,23 +33,30 @@ function fetchData() {
         let test = entry.testname.trim();
         let color = entry.color.trim();
         let prioString = entry.XMH_CLASS.match(/_P(\d)_/);
-        let prio, ackmsg;
+        let prio, ackmsg, cookie;
         if (prioString) {
             prio = 'p' + prioString[1].trim();
         } else {
             prio = 'p4';
         }
-        if (entry.ackmsg) {   //TODO acklist vs ackmsg??
+        if (entry.ackmsg) {
             ackmsg = entry.ackmsg;
             prio = 'ack';
         } else {
             ackmsg = 'empty';
         }
+        if (entry.cookie) {
+            cookie = entry.cookie;
+        } else {
+            cookie = 'empty';
+        }
         if (host && test && color && prio) {
             if (!bullets[color]) bullets[color] = {};
             if (!bullets[color][prio]) bullets[color][prio] = {};
             if (!bullets[color][prio][host]) bullets[color][prio][host] = {};
-            bullets[color][prio][host][test] = ackmsg;
+            if (!bullets[color][prio][host][test]) bullets[color][prio][host][test] = {};
+            bullets[color][prio][host][test]['ackmsg'] = ackmsg;
+            bullets[color][prio][host][test]['cookie'] = cookie;
             lowestPos[host] = {};
             lowestPos[host]['x'] = 10;
             lowestPos[host]['y'] = 10;
@@ -66,7 +73,8 @@ function fetchData() {
             if (bullets[color] && bullets[color][prio]) {
                 for (let host in bullets[color][prio]) {
                     for (let test in bullets[color][prio][host]) {
-                        let ackmsg = bullets[color][prio][host][test];
+                        let ackmsg = bullets[color][prio][host][test]['ackmsg'];
+                        let cookie = bullets[color][prio][host][test]['cookie'];
                         let lowestX = lowestPos[host]['x'];
                         let lowestY = lowestPos[host]['y'];
                         let lowestPosHost = lowestX + 10*lowestY;
@@ -78,20 +86,21 @@ function fetchData() {
                             lowestPos[host]['x'] = x;
                             lowestPos[host]['y'] = y;
                         }
+                        var ackClass = (ackmsg != 'empty')?' acked':'';
                         if (hostExists[host]) {   //just add another test
-                                $('[data-host='+host+']').append(" \
-                                    <span class='test' data-test='"+test+"' data-ackmsg='"+ackmsg+"' >"+test+"</span>\
-                                    <img src='img/checkmark.png' alt='ack' class='ack' /> ");
+                            $('[data-host='+host+']').append(" \
+                                <div class='tests'><span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"+ackmsg+"' data-cookie='"+cookie+"'>"+test+"</span>\
+                                <img src='img/checkmark.png' alt='ack' class='ack' /></div> ");
                         } else {                  //we need a host entry first
                             $("#" + selector).append("<div class='msg' data-host='"+host+"' >\
-                                <span class='info'>"+host+": </span><span class='test' data-test='"+test+"' data-ackmsg='"+ackmsg+"' >"+test+"</span>\
-                                <img src='img/checkmark.png' alt='ack' class='ack' />\
+                                <span class='info'>"+host+": </span><div class='tests'><span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"+ackmsg+"'  data-cookie='"+cookie+"'>"+test+"</span>\
+                                <img src='img/checkmark.png' alt='ack' class='ack' /></div>\
                             </div>");
                             $("#" + selector).removeClass("inv");
 
                             hostExists[host] = 1;
                         }
-                    } //TODO ack noch richtig darstellen
+                    }
                 }
             }
             x++;
@@ -106,21 +115,24 @@ $(document).ready(function(){
 
     dialogForm = $( "#dialog-form" ).dialog({
       autoOpen: false,
-      height: 400,
+      height: 300,
       width: 350,
       modal: true,
       buttons: {
         "Acknowledge test": ackTest,
         Cancel: function() {
-          dialog.dialog( "close" );
+          dialogForm.dialog( "close" );
         }
       },
       close: function() {
-        form[ 0 ].reset();
-        allFields.removeClass( "ui-state-error" );
+//        form[ 0 ].reset();
+//        allFields.removeClass( "ui-state-error" );
       },
       open: function() {
           let options = $( "#dialog-form" ).dialog( "option" );
+          console.log(options);
+          let cookie = options.cookie;
+          $("#number").val(cookie);
       }
     });
 
@@ -141,29 +153,36 @@ $(document).ready(function(){
 
 
     $("span.info").click(function(){
-        $(this).innerHTML = $(this).parent().data("host")+' / ';
-        let link = createLink($(this).parent().data("host"), 'info');
+        $(this).innerHTML = $(this).parent().parent().data("host")+' / ';
+        let link = createLink($(this).parent().parent().data("host"), 'info');
         window.open(link,"_self")
     });
     $("span.test").click(function(){
-        let link = createLink($(this).parent().data("host"), $(this).data("test"));
+        let link = createLink($(this).parent().parent().data("host"), $(this).data("test"));
         window.open(link,"_self")
     });
-    $("img.ack").click(function(){
-        if (!$(this).parent().parent().attr("class").match(/\back\b/)) {
-            dialogForm.dialog("option", "host", $(this).parent().data("host"));
-            dialogForm.dialog("option", "test", $(this).parent().data("test"));
-            dialogForm.dialog("open");
-        }
+    $("div.tests").mouseenter(function(){
+        $(this).children("img.ack").css("visibility", "visible");
+    });
+    $("div.tests").mouseleave(function(){
+        $(this).children("img.ack").css("visibility", "hidden");
     });
     $("img.ack").click(function(){
-        if ($(this).parent().parent().attr("class").match(/\back\b/)) {
-            dialogPopup.dialog("option", "ackmsg", $(this).parent().data("ackmsg"));
+        if (!$(this).parent().children("span.test").attr("class").match(/\backed\b/)) {
+            dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
+            dialogForm.dialog("open");
+        } else {
+            dialogPopup.dialog("option", "ackmsg", $(this).parent().children("span.test").data("ackmsg"));
             dialogPopup.dialog("open");
         }
     });
 });
 
 function ackTest() {
+    let options="ACTION="+$("#action").val()+"&NUMBER="+$("#number").val()+"&DELAY="+$("#delay").val()+"&MESSAGE="+$("#message").val();
+    $.post("https://xymon.phys.ethz.ch/xymonjs/xymon-seccgi/acknowledge.sh", options, function( data ) {
+        alert(data);
+    }
+);
 }
 

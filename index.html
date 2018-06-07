@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/jquery-ui.css">
+    <link rel="stylesheet" href="css/main.css">
     <script type="text/javascript" src="js/jquery.js"></script>
     <script type="text/javascript" src="js/jquery-ui.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
@@ -55,6 +55,17 @@
         </td>
     </tr>
     <tr>
+        <td class="col-sm blue prio1 inv" id="blue_p1">
+        </td>
+        <td class="col-sm blue prio2 inv" id="blue_p2">
+        </td>
+        <td class="col-sm blue prio3 inv" id="blue_p3">
+        </td>
+        <td class="col-sm blue prio4 inv" id="blue_p4">
+        </td>
+        <td class="col-sm blue ack inv" id="blue_ack">
+        </td>
+    <tr>
         <td class="col-sm legend prio1 inv" id="l_p1">
             prio1
         </td>
@@ -73,16 +84,14 @@
     </table>
 
     <div id="dialog-form" title="Acknowledge test">
-        <p class="validateTips">All form fields are required.</p>
-
         <form>
         <fieldset>
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name" value="Jane Smith" class="text ui-widget-content ui-corner-all">
-        <label for="email">Email</label>
-        <input type="text" name="email" id="email" value="jane@smith.com" class="text ui-widget-content ui-corner-all">
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password" value="xxxxxxx" class="text ui-widget-content ui-corner-all">
+        <label for="duration">Duration (min)</label>
+        <input type="text" name="DELAY" id="delay" value="10" class="text ui-widget-content ui-corner-all">
+        <label for="ackmsg">Acknowledge text</label>
+        <input type="text" name="MESSAGE" id="message" value="working on it" class="text ui-widget-content ui-corner-all">
+        <input type="hidden" value="Ack" name="ACTION" id="action">
+        <input type="hidden" name="NUMBER" id="number">
 
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">

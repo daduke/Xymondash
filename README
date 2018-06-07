@@ -2,6 +2,9 @@ use:
 - jquery
 - jqueryui with dialog
 
+TODO
+- rounded
+- sort Win
 
 Ideen:
 - mehr als n tests pro host -> fasse zamm
