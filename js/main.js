@@ -195,7 +195,7 @@ function ackTest() {
     fields.forEach(function(field) {
         vals[field] = $("#"+field).val().trim();
     });
-    $.post("https://xymon.phys.ethz.ch/xymon-seccgi/acknowledge.sh", { ACTION: vals['action'], NUMBER: vals['number'], DELAY: vals['delay'], HOSTNAME: vals['hostname'], TESTNAME: vals['testname'], MESSAGE: vals['message'], PERIOD: vals['period'], Send: "Send" }, function( data ) {
+    $.post("https://xymon.phys.ethz.ch/xymon-seccgi/acknowledge.sh", { NUMBER_1: vals['number'], DELAY_1: vals['delay'], HOSTNAME_1: vals['hostname'], TESTNAME_1: vals['testname'], MESSAGE_1: vals['message'], PERIOD_1: vals['period'], Send: "Send" }, function( data ) {
         alert(data);
     }
 );
