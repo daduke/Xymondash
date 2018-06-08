@@ -15,6 +15,11 @@ function getJSON(url) {
 
     if(xmlHttp != null) {
         xmlHttp.open( "GET", url, false );
+        xmlHttp.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
+        xmlHttp.setRequestHeader('cache-control', 'max-age=0');
+        xmlHttp.setRequestHeader('expires', '0');
+        xmlHttp.setRequestHeader('expires', 'Tue, 01 Jan 1980 1:00:00 GMT');
+        xmlHttp.setRequestHeader('pragma', 'no-cache');
         xmlHttp.send( null );
         resp = xmlHttp.responseText;
     }
@@ -133,6 +138,10 @@ $(document).ready(function(){
           console.log(options);
           let cookie = options.cookie;
           $("#number").val(cookie);
+          let hostname = options.hostname;
+          $("#hostname").val(hostname);
+          let testname = options.testname;
+          $("#testname").val(testname);
       }
     });
 
@@ -170,6 +179,8 @@ $(document).ready(function(){
     $("img.ack").click(function(){
         if (!$(this).parent().children("span.test").attr("class").match(/\backed\b/)) {
             dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
+            dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
+            dialogForm.dialog("option", "testname", $(this).parent().children("span.test").data("test"));
             dialogForm.dialog("open");
         } else {
             dialogPopup.dialog("option", "ackmsg", $(this).parent().children("span.test").data("ackmsg"));
@@ -179,8 +190,12 @@ $(document).ready(function(){
 });
 
 function ackTest() {
-    let options="ACTION="+$("#action").val()+"&NUMBER="+$("#number").val()+"&DELAY="+$("#delay").val()+"&MESSAGE="+$("#message").val();
-    $.post("https://xymon.phys.ethz.ch/xymonjs/xymon-seccgi/acknowledge.sh", options, function( data ) {
+    var fields = ['action', 'number', 'delay', 'hostname', 'testname', 'message', 'period'];
+    var vals = {};
+    fields.forEach(function(field) {
+        vals[field] = $("#"+field).val().trim();
+    });
+    $.post("https://xymon.phys.ethz.ch/xymon-seccgi/acknowledge.sh", { ACTION: vals['action'], NUMBER: vals['number'], DELAY: vals['delay'], HOSTNAME: vals['hostname'], TESTNAME: vals['testname'], MESSAGE: vals['message'], PERIOD: vals['period'], Send: "Send" }, function( data ) {
         alert(data);
     }
 );
