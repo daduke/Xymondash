@@ -195,9 +195,24 @@ function ackTest() {
     fields.forEach(function(field) {
         vals[field] = $("#"+field).val().trim();
     });
+    setCookie('host', 'vcosmo');
+/*
     $.post("https://xymon.phys.ethz.ch/xymon-seccgi/acknowledge.sh", { NUMBER_1: vals['number'], DELAY_1: vals['delay'], HOSTNAME_1: vals['hostname'], TESTNAME_1: vals['testname'], MESSAGE_1: vals['message'], PERIOD_1: vals['period'], Send: "Send" }, function( data ) {
         alert(data);
     }
 );
+*/
+    $.ajax({
+        type: "POST",
+        url: "https://xymon.phys.ethz.ch/xymon-seccgi/acknowledge.sh",
+        data: { NUMBER_1: vals['number'], DELAY_1: vals['delay'], HOSTNAME_1: vals['hostname'], TESTNAME_1: vals['testname'], MESSAGE_1: vals['message'], PERIOD_1: vals['period'], Send: "Send" },
+        success: function( data ) { alert(data); },
+        xhrFields: { withCredentials: true }
+    });
 }
 
+function setCookie(key, value) {
+    var expires = new Date();
+    expires.setTime(expires.getTime() + (1 * 24 * 60 * 60 * 1000));
+    document.cookie = key + '=' + value + ';expires=' + expires.toUTCString();
+}
