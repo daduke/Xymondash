@@ -1,6 +1,8 @@
 let colors = ['red', 'yellow', 'purple', 'blue'];
 let prios = ['p1', 'p2', 'p3', 'p4', 'ack'];
 
+let dialogForm, dialogPopup;
+
 function createLink(host, test) {
     return 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh?HOST='
         +host+'&SERVICE='+test;
@@ -27,7 +29,7 @@ function getJSON(url) {
     return JSON.parse(resp);
 }
 
-function fetchData() {
+function fetchData(purge) {
     let xymonData;
     let bullets = {};
     let lowestPos = {};
@@ -71,13 +73,16 @@ function fetchData() {
             lowestPos[host]['y'] = 10;
         }
     });
-    console.log(bullets);
-    console.log(lowestPos);
 
     let x = 0;
     let y = 0;
     colors.forEach(function(color) {
         prios.forEach(function(prio) {
+            if (purge) {    //clean up table if we trigger an internal data reload
+                var sel = color + '_' + prio;
+                $('#' + sel).html('');
+                $('#' + sel).addClass("inv");
+            }
             let pos = x + 10*y;     //our 'severity position' in the prio/color matrix
             if (bullets[color] && bullets[color][prio]) {
                 for (let host in bullets[color][prio]) {
@@ -120,8 +125,6 @@ function fetchData() {
 }
 
 $(document).ready(function(){
-    let dialogForm, dialogPopup, form;
-
     dialogForm = $( "#dialog-form" ).dialog({
       autoOpen: false,
       height: 300,
@@ -134,7 +137,6 @@ $(document).ready(function(){
         }
       },
       close: function() {
-//        form[ 0 ].reset();
 //        allFields.removeClass( "ui-state-error" );
       },
       open: function() {
@@ -162,12 +164,12 @@ $(document).ready(function(){
       }
     });
 
-    fetchData();
+    fetchData(0);
 
 
     $("span.info").click(function(){
         $(this).innerHTML = $(this).parent().parent().data("host")+' / ';
-        let link = createLink($(this).parent().parent().data("host"), 'info');
+        let link = createLink($(this).parent().data("host"), 'info');
         window.open(link,"_self")
     });
     $("span.test").click(function(){
@@ -204,7 +206,11 @@ function ackTest() {
         type: "POST",
         url: "https://xymon.phys.ethz.ch/xymonjs/cgi/xymon-ack ",
         data: { number: vals['number'], min: vals['delay'], msg: vals['message'] },
-        success: function( data ) { alert(data); },
+        success: function( data ) {
+            alert(data);
+            dialogForm.dialog( "close" );
+            fetchData(1);
+        },
     });
 }
 
