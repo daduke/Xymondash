@@ -32,7 +32,11 @@ function fetchData() {
     let bullets = {};
     let lowestPos = {};
     let hostExists = {};
-    xymonData = getJSON('https://people.phys.ethz.ch/~daduke/xymon2json.json') ;
+    let params = '';
+    if ($.urlParam()) {
+        params = '?'+$.urlParam();
+    }
+    xymonData = getJSON('https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json'+params);
     xymonData.forEach(function(entry) {
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
@@ -202,4 +206,13 @@ function ackTest() {
         data: { number: vals['number'], min: vals['delay'], msg: vals['message'] },
         success: function( data ) { alert(data); },
     });
+}
+
+$.urlParam = function(){
+    let result = '';
+    if (result = window.location.href.match(/\?(.*)$/)) {
+        return result[1];
+    } else {
+        return null;
+    }
 }
