@@ -16,12 +16,14 @@ function getJSON(url) {
     xmlHttp = new XMLHttpRequest();
 
     if(xmlHttp != null) {
+        xmlHttp.withCredentials = true;
         xmlHttp.open( "GET", url, false );
         xmlHttp.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
         xmlHttp.setRequestHeader('cache-control', 'max-age=0');
         xmlHttp.setRequestHeader('expires', '0');
         xmlHttp.setRequestHeader('expires', 'Tue, 01 Jan 1980 1:00:00 GMT');
         xmlHttp.setRequestHeader('pragma', 'no-cache');
+
         xmlHttp.send( null );
         resp = xmlHttp.responseText;
     }
@@ -85,7 +87,11 @@ function fetchData(purge) {
             }
             let pos = x + 10*y;     //our 'severity position' in the prio/color matrix
             if (bullets[color] && bullets[color][prio]) {
-                for (let host in bullets[color][prio]) {
+                let hosts = bullets[color][prio];
+                let keys = Object.keys(hosts);
+                keys.sort();
+                for (i = 0; i < keys.length; i++) {
+                    host = keys[i];
                     for (let test in bullets[color][prio][host]) {
                         let ackmsg = bullets[color][prio][host][test]['ackmsg'];
                         let cookie = bullets[color][prio][host][test]['cookie'];
@@ -168,7 +174,6 @@ $(document).ready(function(){
       },
       open: function() {
           let options = $( "#dialog-form" ).dialog( "option" );
-          console.log(options);
           let cookie = options.cookie;
           $("#number").val(cookie);
           let hostname = options.hostname;
@@ -210,7 +215,7 @@ function ackTest() {
         url: "https://xymon.phys.ethz.ch/xymonjs/cgi/xymon-ack ",
         data: { number: vals['number'], min: vals['delay'], msg: vals['message'] },
         success: function( data ) {
-            alert(data);
+//            alert(data);
             dialogForm.dialog( "close" );
             fetchData(1);
         },
@@ -224,4 +229,15 @@ $.urlParam = function(){
     } else {
         return null;
     }
+}
+
+function keys(obj) {
+    var keys = [];
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key)) {
+            keys.push(key);
+        }
+    }
+
+    return keys;
 }
