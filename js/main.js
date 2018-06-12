@@ -192,6 +192,10 @@ $(document).ready(function(){
     });
 
     fetchData(0);
+
+    setInterval(function() {    //reload every 30s
+        fetchData(1);
+    }, 30000);
 });
 
 function ackTest() {
