@@ -4,8 +4,12 @@ use:
 
 TODO
 - rounded
-- sort Win
-- host link
+- ack greift nicht auf critical
+- background
+- show test html inline
+- hide acked -> JS
+- https redirect
+- display acktime
 
 Ideen:
 - mehr als n tests pro host -> fasse zamm
