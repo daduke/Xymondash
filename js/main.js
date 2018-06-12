@@ -122,6 +122,33 @@ function fetchData(purge) {
         x = 0;
         y++;
     });
+
+    $("span.info").click(function(){
+        $(this).innerHTML = $(this).parent().parent().data("host")+' / ';
+        let link = createLink($(this).parent().data("host"), 'info');
+        window.open(link,"_self")
+    });
+    $("span.test").click(function(){
+        let link = createLink($(this).parent().parent().data("host"), $(this).data("test"));
+        window.open(link,"_self")
+    });
+    $("div.tests").mouseenter(function(){
+        $(this).children("img.ack").css("visibility", "visible");
+    });
+    $("div.tests").mouseleave(function(){
+        $(this).children("img.ack").css("visibility", "hidden");
+    });
+    $("img.ack").click(function(){
+        if (!$(this).parent().children("span.test").attr("class").match(/\backed\b/)) {
+            dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
+            dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
+            dialogForm.dialog("option", "testname", $(this).parent().children("span.test").data("test"));
+            dialogForm.dialog("open");
+        } else {
+            dialogPopup.dialog("option", "ackmsg", $(this).parent().children("span.test").data("ackmsg"));
+            dialogPopup.dialog("open");
+        }
+    });
 }
 
 $(document).ready(function(){
@@ -165,34 +192,6 @@ $(document).ready(function(){
     });
 
     fetchData(0);
-
-
-    $("span.info").click(function(){
-        $(this).innerHTML = $(this).parent().parent().data("host")+' / ';
-        let link = createLink($(this).parent().data("host"), 'info');
-        window.open(link,"_self")
-    });
-    $("span.test").click(function(){
-        let link = createLink($(this).parent().parent().data("host"), $(this).data("test"));
-        window.open(link,"_self")
-    });
-    $("div.tests").mouseenter(function(){
-        $(this).children("img.ack").css("visibility", "visible");
-    });
-    $("div.tests").mouseleave(function(){
-        $(this).children("img.ack").css("visibility", "hidden");
-    });
-    $("img.ack").click(function(){
-        if (!$(this).parent().children("span.test").attr("class").match(/\backed\b/)) {
-            dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
-            dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
-            dialogForm.dialog("option", "testname", $(this).parent().children("span.test").data("test"));
-            dialogForm.dialog("open");
-        } else {
-            dialogPopup.dialog("option", "ackmsg", $(this).parent().children("span.test").data("ackmsg"));
-            dialogPopup.dialog("open");
-        }
-    });
 });
 
 function ackTest() {
