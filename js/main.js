@@ -46,7 +46,7 @@ function fetchData(purge) {
         let test = entry.testname.trim();
         let color = entry.color.trim();
         let prioString = entry.XMH_CLASS.match(/_P(\d)_/);
-        let prio, ackmsg, cookie;
+        let prio, ackmsg, acktime, cookie;
         if (prioString) {
             prio = 'p' + prioString[1].trim();
         } else {
@@ -54,9 +54,11 @@ function fetchData(purge) {
         }
         if (entry.ackmsg) {
             ackmsg = entry.ackmsg;
+            acktime = entry.acktime;
             prio = 'ack';
         } else {
             ackmsg = 'empty';
+            acktime = '';
         }
         if (entry.cookie) {
             cookie = entry.cookie;
@@ -69,6 +71,7 @@ function fetchData(purge) {
             if (!bullets[color][prio][host]) bullets[color][prio][host] = {};
             if (!bullets[color][prio][host][test]) bullets[color][prio][host][test] = {};
             bullets[color][prio][host][test]['ackmsg'] = ackmsg;
+            bullets[color][prio][host][test]['acktime'] = acktime;
             bullets[color][prio][host][test]['cookie'] = cookie;
             lowestPos[host] = {};
             lowestPos[host]['x'] = 10;
@@ -94,6 +97,7 @@ function fetchData(purge) {
                     host = keys[i];
                     for (let test in bullets[color][prio][host]) {
                         let ackmsg = bullets[color][prio][host][test]['ackmsg'];
+                        let acktime = bullets[color][prio][host][test]['acktime'];
                         let cookie = bullets[color][prio][host][test]['cookie'];
                         let lowestX = lowestPos[host]['x'];
                         let lowestY = lowestPos[host]['y'];
@@ -109,11 +113,11 @@ function fetchData(purge) {
                         var ackClass = (ackmsg != 'empty')?' acked':'';
                         if (hostExists[host]) {   //just add another test
                             $('[data-host='+host+']').append(" \
-                                <div class='tests'><span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"+ackmsg+"' data-cookie='"+cookie+"'>"+test+"</span>\
+                                <div class='tests'><span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"+ackmsg+"' data-acktime='"+acktime+"' data-cookie='"+cookie+"'>"+test+"</span>\
                                 <img src='img/checkmark.png' alt='ack' class='ack' /></div> ");
                         } else {                  //we need a host entry first
                             $("#" + selector).append("<div class='msg' data-host='"+host+"' >\
-                                <span class='info'>"+host+": </span><div class='tests'><span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"+ackmsg+"'  data-cookie='"+cookie+"'>"+test+"</span>\
+                                <span class='info'>"+host+": </span><div class='tests'><span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"+ackmsg+"' data-acktime='"+acktime+"' data-cookie='"+cookie+"'>"+test+"</span>\
                                 <img src='img/checkmark.png' alt='ack' class='ack' /></div>\
                             </div>");
                             $("#" + selector).removeClass("inv");
@@ -152,6 +156,7 @@ function fetchData(purge) {
             dialogForm.dialog("open");
         } else {
             dialogPopup.dialog("option", "ackmsg", $(this).parent().children("span.test").data("ackmsg"));
+            dialogPopup.dialog("option", "acktime", $(this).parent().children("span.test").data("acktime"));
             dialogPopup.dialog("open");
         }
     });
@@ -192,7 +197,10 @@ $(document).ready(function(){
           let options = $( "#dialog-popup" ).dialog( "option" );
           let ackmsg = options.ackmsg;
           ackmsg = ackmsg.replace(/\\n/ig, "<br />");
-          $("#ack-popup").html(ackmsg);
+          let d = new Date(options.acktime*1000);
+          let acktime = "acked until " + dateFormat(d, "HH:MM, mmmm d (dddd)");
+          $("#ackmsg-popup").html(ackmsg);
+          $("#acktime-popup").html(acktime);
       }
     });
 
