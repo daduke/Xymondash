@@ -120,19 +120,25 @@ function fetchData(purge) {
                                 <div class='tests'><span class='test"+ackClass+"' data-test='"+test
                                 +"' data-ackmsg='"+escape(ackmsg)+"' data-acktime='"+acktime+"' data-cookie='"
                                 +cookie+"' >"+test+"</span>\
-                                <i class='ack fas fa-check' /></i>\
+                                <i class='ack fas fa-check' id='"+cookie+"'></i>\
                             </div> ");
                             $('[data-cookie='+cookie+']').prop('title', msg);
+                            if (ackmsg != 'empty') {
+                                $('i#'+cookie).prop('title', ackmsg);
+                            }
                         } else {                  //we need a host entry first
                             $("#" + selector).append("<div class='msg' data-host='"+host+"' >\
                                 <span class='info'>"+host+": </span><div class='tests'> \
                                 <span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"
                                 +escape(ackmsg)+"' data-acktime='"+acktime+"' data-cookie='"+cookie
                                 +"'>"+test+"</span>\
-                                <i class='ack fas fa-check' /></i></div>\
+                                <i class='ack fas fa-check' id='"+cookie+"'></i></div>\
                             </div>");
                             $("#" + selector).removeClass("inv");
                             $('[data-cookie='+cookie+']').prop('title', msg);
+                            if (ackmsg != 'empty') {
+                                $('i#'+cookie).prop('title', ackmsg);
+                            }
 
                             hostExists[host] = 1;
                         }
@@ -180,6 +186,7 @@ $(document).ready(function(){
             return '<pre>'+$(this).prop('title').substr(0, 800).replace(/\\p/g, '  ').replace(/\\n/g, '\n').replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')+'...</pre>';
         },
         open: function(event, ui) {
+            ui.tooltip.css("max-width", "600px");
             paused = true;
         },
         close: function(event, ui) {

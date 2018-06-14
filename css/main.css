@@ -42,28 +42,6 @@ td.blue .msg {
     background-color: rgba(0,102,255,0.7);
 }
 
-/*
-td.prio1 {
-    filter: sepia(0);
-}
-
-td.prio2 {
-    filter: sepia(0.15);
-}
-
-td.prio3 {
-    filter: sepia(0.3);
-}
-
-td.prio4 {
-    filter: sepia(0.45);
-}
-
-td.ack {
-    filter: sepia(0.6);
-}
-*/
-
 td.inv {
     background-color: inherit;
     border: none;
@@ -125,6 +103,15 @@ span.acked {
     color: #777;
 }
 
+/* tooltip CSS */
+.ui-tooltip {
+    color: white;
+    background: rgba(30, 30, 30, 0.9);
+}
+
+.ui-tooltip-content {
+}
+
 /* popup form CSS */
 label, input {
     display:block;
@@ -170,5 +157,8 @@ p#acktime-popup {
     }
     .legend {
         display: none;
+    }
+    .ui-tooltip {
+        max-width: 100%;
     }
 }
