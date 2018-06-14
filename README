@@ -5,11 +5,12 @@ use:
 TODO
 - ack greift nicht auf critical
 - favicon
+- couple colors array to URL
 - ack time period
+- ack msg als tooltip
 - background
-- show test html inline
 - hide acked -> JS -> andere prios dürfen nicht da rein rutschen
 - https redirect
+- tooltip: &green -> dot
 
 Ideen:
-- mehr als n tests pro host -> fasse zamm

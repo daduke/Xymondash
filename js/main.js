@@ -1,7 +1,8 @@
 let colors = ['red', 'yellow', 'purple', 'blue'];
 let prios = ['p1', 'p2', 'p3', 'p4', 'ack'];
 
-let dialogForm, dialogPopup;
+let dialogForm, dialogPopup
+let paused = false;
 
 function createLink(host, test) {
     return 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh?HOST='
@@ -175,9 +176,17 @@ function fetchData(purge) {
 
 $(document).ready(function(){
     $( document ).tooltip({
-        content: function(callback) {
-            callback($(this).prop('title').replace(/\\n/g, '<br />'));
-            //callback($(this).prop('title', '<pre>'+ $(this).prop('title') +'</ pre>'));
+        content: function() {
+            return '<pre>'+$(this).prop('title').substr(0, 800).replace(/\\p/g, '  ').replace(/\\n/g, '\n').replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')+'...</pre>';
+        },
+        open: function(event, ui) {
+            paused = true;
+        },
+        close: function(event, ui) {
+            paused = false;
+        },
+        classes: {
+            "ui-tooltip": "ui-widget-shadow"
         }
     });        //enable tooltips
 
@@ -225,7 +234,7 @@ $(document).ready(function(){
     fetchData(0);
 
     setInterval(function() {    //reload every 30s
-        fetchData(1);
+        if (!paused) { fetchData(1) };
     }, 30000);
 });
 
