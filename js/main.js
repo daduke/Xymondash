@@ -119,7 +119,7 @@ function fetchData(purge) {
                                 <div class='tests'><span class='test"+ackClass+"' data-test='"+test
                                 +"' data-ackmsg='"+escape(ackmsg)+"' data-acktime='"+acktime+"' data-cookie='"
                                 +cookie+"' >"+test+"</span>\
-                                <img src='img/checkmark.png' alt='ack' class='ack' />\
+                                <i class='ack fas fa-check' /></i>\
                             </div> ");
                             $('[data-cookie='+cookie+']').prop('title', msg);
                         } else {                  //we need a host entry first
@@ -128,7 +128,7 @@ function fetchData(purge) {
                                 <span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"
                                 +escape(ackmsg)+"' data-acktime='"+acktime+"' data-cookie='"+cookie
                                 +"'>"+test+"</span>\
-                                <img src='img/checkmark.png' alt='ack' class='ack' /></div>\
+                                <i class='ack fas fa-check' /></i></div>\
                             </div>");
                             $("#" + selector).removeClass("inv");
                             $('[data-cookie='+cookie+']').prop('title', msg);
@@ -154,12 +154,12 @@ function fetchData(purge) {
         window.open(link,"_self")
     });
     $("div.tests").mouseenter(function(){
-        $(this).children("img.ack").css("visibility", "visible");
+        $(this).children("i.ack").css("visibility", "visible");
     });
     $("div.tests").mouseleave(function(){
-        $(this).children("img.ack").css("visibility", "hidden");
+        $(this).children("i.ack").css("visibility", "hidden");
     });
-    $("img.ack").click(function(){
+    $("i.ack").click(function(){
         if (!$(this).parent().children("span.test").prop("class").match(/\backed\b/)) {
             dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
             dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
