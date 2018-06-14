@@ -18,9 +18,15 @@ html {
 
 body {
     font-family: "Orbitron", "abelregular", "Ubuntu", "Rubik",  Sans-Serif;
-    background: linear-gradient(150deg, #00ff30 0%, black 50%);
-    color: #000;
     font-size: 0.9rem;
+    color: #000;
+    background: #000;
+    background-image: url("../img/dust_scratches.png");
+    /* background: linear-gradient(150deg, #00ff30 0%, black 50%); */
+    /* background-image: url("../img/dust_scratches.png"), linear-gradient(90deg, #00ff30 0%, black 50%); */
+    /* background-image: linear-gradient(90deg, rgba(0,255,0,0.5) 0%, rgba(0,0,0,0) 50%), url("../img/dust_scratches.png"); */
+    /* background-blend-mode: hard-light; */
+    /* background-image: linear-gradient(90deg, rgba(0,255,0,0.3) 0%, rgba(0,0,0,0) 60%), url("../img/dust_scratches.png"); */
 }
 span {
     /* mix-blend-mode: difference; */
@@ -35,11 +41,48 @@ td.yellow .msg {
 }
 
 td.purple .msg {
-    background-color: rgba(128,0,128,0.7);
+    background-color: rgba(255,0,255,0.7);
 }
 
 td.blue .msg {
-    background-color: rgba(0,102,255,0.7);
+    background-color: rgba(0,70,255,0.7);
+}
+
+#bg {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    direction: ltr;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1000;
+    background-blend-mode: soft-light;
+}
+
+.bg-red {
+    /* background-image: linear-gradient(90deg, rgba(255,0,0,0.3) 0%, rgba(0,0,0,0) 60%), url("../img/dust_scratches.png"); */
+    background-image: linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(0,0,0,0) 80%), linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(0,0,0,0) 40%), url("../img/dust_scratches.png");
+}
+
+.bg-yellow {
+    /* background-image: linear-gradient(90deg, rgba(255,255,0,0.3) 0%, rgba(0,0,0,0) 60%), url("../img/dust_scratches.png"); */
+    background-image: linear-gradient(90deg, rgba(255,255,0,1) 0%, rgba(0,0,0,0) 80%), linear-gradient(90deg, rgba(255,255,0,1) 0%, rgba(0,0,0,0) 40%), url("../img/dust_scratches.png");
+}
+
+.bg-purple {
+    /* background-image: linear-gradient(90deg, rgba(255,0,255,0.3) 0%, rgba(0,0,0,0) 60%), url("../img/dust_scratches.png"); */
+    background-image: linear-gradient(90deg, rgba(255,0,255,1) 0%, rgba(0,0,0,0) 80%), linear-gradient(90deg, rgba(255,0,255,1) 0%, rgba(0,0,0,0) 40%), url("../img/dust_scratches.png");
+}
+
+.bg-blue {
+    /* background-image: linear-gradient(90deg, rgba(0,70,255,0.3) 0%, rgba(0,0,0,0) 60%), url("../img/dust_scratches.png"); */
+    background-image: linear-gradient(90deg, rgba(0,70,255,1) 0%, rgba(0,0,0,0) 80%), linear-gradient(90deg, rgba(0,70,255,1) 0%, rgba(0,0,0,0) 40%), url("../img/dust_scratches.png");
+}
+
+.bg-green {
+    /* background-image: linear-gradient(90deg, rgba(0,255,0,0.3) 0%, rgba(0,0,0,0) 60%), url("../img/dust_scratches.png"); */
+    background-image: linear-gradient(90deg, rgba(0,255,0,1) 0%, rgba(0,0,0,0) 80%), linear-gradient(90deg, rgba(0,255,0,1) 0%, rgba(0,0,0,0) 40%), url("../img/dust_scratches.png");
 }
 
 /*
