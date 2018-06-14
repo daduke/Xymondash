@@ -3,13 +3,12 @@ use:
 - jqueryui with dialog
 
 TODO
-- rounded
 - ack greift nicht auf critical
 - favicon
 - ack time period
 - background
 - show test html inline
-- hide acked -> JS
+- hide acked -> JS -> andere prios dürfen nicht da rein rutschen
 - https redirect
 
 Ideen:

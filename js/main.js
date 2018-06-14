@@ -45,6 +45,7 @@ function fetchData(purge) {
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
         let color = entry.color.trim();
+        let msg = entry.msg.trim();
         let prioString = entry.XMH_CLASS.match(/_P(\d)_/);
         let prio, ackmsg, acktime, cookie;
         if (prioString) {
@@ -73,6 +74,7 @@ function fetchData(purge) {
             bullets[color][prio][host][test]['ackmsg'] = ackmsg;
             bullets[color][prio][host][test]['acktime'] = acktime;
             bullets[color][prio][host][test]['cookie'] = cookie;
+            bullets[color][prio][host][test]['msg'] = msg;
             lowestPos[host] = {};
             lowestPos[host]['x'] = 10;
             lowestPos[host]['y'] = 10;
@@ -98,6 +100,7 @@ function fetchData(purge) {
                     for (let test in bullets[color][prio][host]) {
                         let ackmsg = bullets[color][prio][host][test]['ackmsg'];
                         let acktime = bullets[color][prio][host][test]['acktime'];
+                        let msg = bullets[color][prio][host][test]['msg'];
                         let cookie = bullets[color][prio][host][test]['cookie'];
                         let lowestX = lowestPos[host]['x'];
                         let lowestY = lowestPos[host]['y'];
@@ -113,14 +116,22 @@ function fetchData(purge) {
                         var ackClass = (ackmsg != 'empty')?' acked':'';
                         if (hostExists[host]) {   //just add another test
                             $('[data-host='+host+']').append(" \
-                                <div class='tests'><span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"+ackmsg+"' data-acktime='"+acktime+"' data-cookie='"+cookie+"'>"+test+"</span>\
-                                <img src='img/checkmark.png' alt='ack' class='ack' /></div> ");
+                                <div class='tests'><span class='test"+ackClass+"' data-test='"+test
+                                +"' data-ackmsg='"+escape(ackmsg)+"' data-acktime='"+acktime+"' data-cookie='"
+                                +cookie+"' >"+test+"</span>\
+                                <img src='img/checkmark.png' alt='ack' class='ack' />\
+                            </div> ");
+                            $('[data-cookie='+cookie+']').prop('title', msg);
                         } else {                  //we need a host entry first
                             $("#" + selector).append("<div class='msg' data-host='"+host+"' >\
-                                <span class='info'>"+host+": </span><div class='tests'><span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"+ackmsg+"' data-acktime='"+acktime+"' data-cookie='"+cookie+"'>"+test+"</span>\
+                                <span class='info'>"+host+": </span><div class='tests'> \
+                                <span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"
+                                +escape(ackmsg)+"' data-acktime='"+acktime+"' data-cookie='"+cookie
+                                +"'>"+test+"</span>\
                                 <img src='img/checkmark.png' alt='ack' class='ack' /></div>\
                             </div>");
                             $("#" + selector).removeClass("inv");
+                            $('[data-cookie='+cookie+']').prop('title', msg);
 
                             hostExists[host] = 1;
                         }
@@ -149,13 +160,13 @@ function fetchData(purge) {
         $(this).children("img.ack").css("visibility", "hidden");
     });
     $("img.ack").click(function(){
-        if (!$(this).parent().children("span.test").attr("class").match(/\backed\b/)) {
+        if (!$(this).parent().children("span.test").prop("class").match(/\backed\b/)) {
             dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
             dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
             dialogForm.dialog("option", "testname", $(this).parent().children("span.test").data("test"));
             dialogForm.dialog("open");
         } else {
-            dialogPopup.dialog("option", "ackmsg", $(this).parent().children("span.test").data("ackmsg"));
+            dialogPopup.dialog("option", "ackmsg", unescape($(this).parent().children("span.test").data("ackmsg")));
             dialogPopup.dialog("option", "acktime", $(this).parent().children("span.test").data("acktime"));
             dialogPopup.dialog("open");
         }
@@ -163,6 +174,13 @@ function fetchData(purge) {
 }
 
 $(document).ready(function(){
+    $( document ).tooltip({
+        content: function(callback) {
+            callback($(this).prop('title').replace(/\\n/g, '<br />'));
+            //callback($(this).prop('title', '<pre>'+ $(this).prop('title') +'</ pre>'));
+        }
+    });        //enable tooltips
+
     dialogForm = $( "#dialog-form" ).dialog({
       autoOpen: false,
       height: 300,
