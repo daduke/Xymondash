@@ -1,5 +1,6 @@
 let colors = ['red', 'yellow', 'purple', 'blue'];
 let prios = ['p1', 'p2', 'p3', 'p4', 'ack'];
+let backgroundColor = "green";
 
 let dialogForm, dialogPopup
 let paused = false;
@@ -80,7 +81,12 @@ function fetchData(purge) {
             lowestPos[host]['x'] = 10;
             lowestPos[host]['y'] = 10;
         }
+        if (prio == 'p1') {
+            background(color);
+        }
     });
+
+    setBackgroundColor();
 
     let x = 0;
     let y = 0;
@@ -275,4 +281,32 @@ function keys(obj) {
     }
 
     return keys;
+}
+
+function background(color) {
+    if (backgroundColor == 'red') {
+        return;
+    } else if (backgroundColor == 'purple') {
+        if (color == 'red') {
+            backgroundColor = color;
+        }
+    } else if (backgroundColor == 'yellow') {
+        if ((color == 'red') || (color == 'purple')) {
+            backgroundColor = color;
+        }
+    } else if (backgroundColor == 'blue') {
+        if ((color == 'red') || (color == 'purple') || (color == 'yellow')) {
+            backgroundColor = color;
+        }
+    } else {
+        backgroundColor = color;
+    }
+}
+
+function setBackgroundColor() {
+    $('#bg').fadeOut(250, function() {
+        $('#bg').removeClass();
+        $('#bg').addClass('bg-' + backgroundColor);
+        $('#bg').fadeIn(250);
+    });
 }
