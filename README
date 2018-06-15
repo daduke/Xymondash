@@ -5,16 +5,18 @@ use:
 TODO
 - ack greift nicht auf critical
 - favicon
-- JSON URL configurable
-- xymon detail URL configurable
-- ack URL configurable
 - ack button on mobile?
 - rename bullets
+- acked link color?
 - phone view show prio
+- refresh button
 - couple colors array to URL
 - ack time period
-- background: setBackgroundColor
 - hide acked -> JS -> andere prios dürfen nicht da rein rutschen
 - https redirect
+- config:
+    - JSON URL configurable
+    - xymon detail URL configurable
+    - ack URL configurable
 
 Ideen:

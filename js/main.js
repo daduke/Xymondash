@@ -16,15 +16,18 @@ $(document).ready(function(){
     $(document).tooltip({                         //initialize tooltips
         items: "[tooltip]",
         content: function() {
-            let msg = $(this).attr('tooltip').replace(/\\n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
-                .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
-                .replace(/[-=]{10,}/g, '----------');
-            let lines = msg.split(/LBRK/);
-            let res = lines.slice(0, 18).join('<br />');
-            if (lines.length > 18) {
-                res += '<br />...';
+            if ($(this).is('span')
+                    || $(this).parent().children("span.test").prop("class").match(/\backed\b/)) {
+                let msg = $(this).attr('tooltip').replace(/\\n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
+                    .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
+                    .replace(/[-=]{10,}/g, '----------');
+                let lines = msg.split(/LBRK/);
+                let res = lines.slice(0, 18).join('<br />');
+                if (lines.length > 18) {
+                    res += '<br />...';
+                }
+                return res;
             }
-            return res;
         },
         open: function(event, ui) {
             paused = true;
