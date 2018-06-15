@@ -7,7 +7,7 @@
 */
 
 let colors = ['red', 'yellow', 'purple', 'blue'];   //sync w/ URL
-let prios = ['p1', 'p2', 'p3', 'p4', 'ack'];        //make ack toggable
+let prios = ['prio1', 'prio2', 'prio3', 'prio4', 'ack'];        //make ack toggable
 
 let dialogForm, dialogPopup, backgroundColor;
 let paused = false;
@@ -110,9 +110,9 @@ function processData() {
         let prioString = entry.XMH_CLASS.match(/_P(\d)_/);
         let prio, ackmsg, acktime, cookie;
         if (prioString) {
-            prio = 'p' + prioString[1].trim();
+            prio = 'prio' + prioString[1].trim();
         } else {
-            prio = 'p4';
+            prio = 'prio4';
         }
         if (entry.ackmsg) {
             ackmsg = entry.ackmsg;
@@ -140,7 +140,7 @@ function processData() {
             lowestPos[host]['x'] = 10;
             lowestPos[host]['y'] = 10;
         }
-        if (prio == 'p1') {
+        if (prio == 'prio1') {
             background(color);
         }
     });
