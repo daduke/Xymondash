@@ -8,14 +8,15 @@ TODO
 - ack button on mobile?
 - phone view show prio
 - bg color logic
-- refresh button
 - couple colors array to URL
 - ack time period
 - hide acked -> JS -> andere prios dürfen nicht da rein rutschen
 - https redirect
+- graphen + Lupe in msg
 - config:
     - JSON URL configurable
     - xymon detail URL configurable
     - ack URL configurable
+    - font
 
 Ideen:

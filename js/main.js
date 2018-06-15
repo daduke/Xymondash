@@ -80,6 +80,10 @@ $(document).ready(function(){
     setInterval(function() {    //reload every 30s
         if (!paused) { triggerUpdate() };
     }, 30000);
+
+    $("#reload").click(function(){
+        triggerUpdate();
+    });
 });
 
 function triggerUpdate() {
@@ -252,8 +256,8 @@ function getJSON(url, callback) {
 
     xhr.callback = callback;
     xhr.arguments = Array.prototype.slice.call(arguments, 2);
-    xhr.onload = xhrSuccess;
-    xhr.onerror = xhrError;
+    xhr.onload  = function() { this.callback.apply(this, this.arguments); };
+    xhr.onerror = function() { console.error(this.statusText); };
     xhr.open("GET", url, true);
     xhr.responseType = "json";
     xhr.withCredentials = true;
@@ -264,15 +268,6 @@ function getJSON(url, callback) {
     xhr.setRequestHeader('pragma', 'no-cache');
 
     xhr.send(null);
-}
-
-function xhrSuccess() {
-    this.callback.apply(this, this.arguments);
-}
-
-function xhrError() {
-    alert('e');
-    console.error(this.statusText);
 }
 
 function ackTest() {

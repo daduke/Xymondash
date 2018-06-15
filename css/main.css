@@ -177,6 +177,10 @@ h1 {
     font-size: 1.2em; margin: .6em 0;
 }
 
+#reload {
+    float: right;
+    color: white;
+}
 
 /* make it responsive */
 @media screen and (max-width:720px) {
