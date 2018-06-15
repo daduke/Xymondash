@@ -219,10 +219,10 @@ function processData() {
         window.open(link,"_self")
     });
     $("div.tests").mouseenter(function(){
-        $(this).children("i.ack").css("visibility", "visible");
+        $(this).children("i.ack").css("opacity", "1");
     });
     $("div.tests").mouseleave(function(){
-        $(this).children("i.ack").css("visibility", "hidden");
+        $(this).children("i.ack").css("opacity", "0.07");
     });
     $("i.ack").click(function(){
         if (!$(this).parent().children("span.test").prop("class").match(/\backed\b/)) {

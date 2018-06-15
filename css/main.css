@@ -91,7 +91,7 @@ td.inv {
 }
 
 i.ack {
-    visibility: hidden;
+    opacity: 0.07;
     padding: 0;
     margin: 0;
 }
@@ -143,7 +143,7 @@ span.info, span.test {
 }
 
 span.acked {
-    color: #777;
+    color: #050;
 }
 
 /* tooltip CSS */
