@@ -75,24 +75,29 @@ $(document).ready(function(){
       }
     });
 
-    processData();              //fetch data and fill matrix
+    triggerUpdate();              //fetch data and fill matrix
 
     setInterval(function() {    //reload every 30s
-        if (!paused) { processData() };
+        if (!paused) { triggerUpdate() };
     }, 30000);
 });
 
-function processData() {
+function triggerUpdate() {
     let xymonData;
-    let entries = {};
-    let lowestPos = {};
-    let hostExists = {};
     let params = '';
     if ($.urlParam()) {
         params = '?'+$.urlParam();
     }
     backgroundColor = "green";
-    xymonData = getJSON('https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json'+params);
+    getJSON('https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json'+params, processData);
+}
+
+function processData() {
+    let entries = {};
+    let lowestPos = {};
+    let hostExists = {};
+
+    xymonData = this.response;
     xymonData.forEach(function(entry) {     //loop thru data and process it into entries object
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
@@ -242,27 +247,32 @@ function createLink(host, test) {
         +host+'&SERVICE='+test;
 }
 
-function getJSON(url) {
-    let resp ;
-    let xmlHttp ;
+function getJSON(url, callback) {
+    let xhr = new XMLHttpRequest();
 
-    resp  = '' ;
-    xmlHttp = new XMLHttpRequest();
+    xhr.callback = callback;
+    xhr.arguments = Array.prototype.slice.call(arguments, 2);
+    xhr.onload = xhrSuccess;
+    xhr.onerror = xhrError;
+    xhr.open("GET", url, true);
+    xhr.responseType = "json";
+    xhr.withCredentials = true;
+    xhr.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
+    xhr.setRequestHeader('cache-control', 'max-age=0');
+    xhr.setRequestHeader('expires', '0');
+    xhr.setRequestHeader('expires', 'Tue, 01 Jan 1980 1:00:00 GMT');
+    xhr.setRequestHeader('pragma', 'no-cache');
 
-    if(xmlHttp != null) {
-        xmlHttp.withCredentials = true;
-        xmlHttp.open( "GET", url, false );
-        xmlHttp.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
-        xmlHttp.setRequestHeader('cache-control', 'max-age=0');
-        xmlHttp.setRequestHeader('expires', '0');
-        xmlHttp.setRequestHeader('expires', 'Tue, 01 Jan 1980 1:00:00 GMT');
-        xmlHttp.setRequestHeader('pragma', 'no-cache');
+    xhr.send(null);
+}
 
-        xmlHttp.send(null);
-        resp = xmlHttp.responseText;
-    }
+function xhrSuccess() {
+    this.callback.apply(this, this.arguments);
+}
 
-    return JSON.parse(resp);
+function xhrError() {
+    alert('e');
+    console.error(this.statusText);
 }
 
 function ackTest() {
@@ -278,7 +288,7 @@ function ackTest() {
         data: { number: vals['number'], min: vals['delay'], msg: vals['message'] },
         success: function( data ) {
             dialogForm.dialog( "close" );
-            processData();
+            triggerUpdate();
         },
     });
 }
