@@ -187,21 +187,19 @@
   font-weight: normal;
   font-style: normal;
 }
-*/
 @font-face {
   font-family: 'M-1m';
   src: url('../fonts/m-1m/mplus-1m-light.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
-/*
+*/
 @font-face {
   font-family: 'M-1m';
   src: url('../fonts/m-1m/mplus-1m-regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
-*/
 @font-face {
   font-family: 'M-1m';
   src: url('../fonts/m-1m/mplus-1m-medium.ttf') format('truetype');
