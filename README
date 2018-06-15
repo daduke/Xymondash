@@ -4,9 +4,11 @@ use:
 
 TODO
 - ack greift nicht auf critical
+- prio setting greift nicht (nijet versteh...)
+- grün wird nicht angezeigt?
 - favicon
 - ack button on mobile?
-- bg color logic
+- bg color logic -> daduke check if done by rda
 - form clear on enter
 - couple colors array to URL
 - ack time period
@@ -20,3 +22,6 @@ TODO
     - font
 
 Ideen:
+- host search+filter inkl. grün
+- regex exclude filter (test/host)
+- dirtyvcs exclude filter
