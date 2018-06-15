@@ -1,5 +1,4 @@
 html {
-    height: 100%;
     /* Adjust font size */
     font-size: 100%;
     -webkit-text-size-adjust: 100%;
@@ -22,6 +21,7 @@ body {
     color: #000;
     background: #000;
     background-image: url("../img/dust_scratches.png");
+    background-attachment: fixed;
 }
 span {
     /* mix-blend-mode: difference; */
@@ -64,6 +64,7 @@ td.blue .msg {
     position: absolute;
     z-index: -1000;
     background-blend-mode: soft-light;
+    background-attachment: fixed;
 }
 
 .bg-red {
@@ -154,7 +155,26 @@ span.info, span.test {
 }
 
 span.acked {
-    color: #050;
+}
+
+i.ack {
+    opacity: 0.07;
+}
+
+i.ack:hover {
+    opacity: 1;
+}
+
+i.ack.acked {
+    opacity: 0.5;
+    color: #fff;
+    text-shadow: 0px 0px 0.04rem rgba(255, 255, 255, 0.6);
+}
+
+i.ack.acked:hover {
+    opacity: 1;
+    color: #fff;
+    text-shadow: 0px 0px 0.04rem rgba(255, 255, 255, 0.6);
 }
 
 /* tooltip CSS */

@@ -187,7 +187,7 @@ function processData() {
                                 <span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"
                                 +escape(ackmsg)+"' data-cookie='"+cookie
                                 +"'>"+test+"</span>\
-                                <i class='ack fas fa-check' id='"+cookie+"'></i></div>\
+                                <i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i></div>\
                             </div>");
                             $("#" + selector).removeClass("inv");
                             $('[data-cookie='+cookie+']').attr('tooltip', msg);
@@ -201,7 +201,7 @@ function processData() {
                                 <div class='tests'><span class='test"+ackClass+"' data-test='"+test
                                 +"' data-ackmsg='"+escape(ackmsg)+"' data-cookie='"
                                 +cookie+"' >"+test+"</span>\
-                                <i class='ack fas fa-check' id='"+cookie+"'></i>\
+                                <i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>\
                             </div> ");
                             $('[data-cookie='+cookie+']').attr('tooltip', msg);
                             if (ackmsg != 'empty') {
@@ -227,12 +227,12 @@ function processData() {
         let link = createLink($(this).parent().parent().data("host"), $(this).data("test"));
         window.open(link,"_self")
     });
-    $("div.tests").mouseenter(function(){
+    /* $("div.tests").mouseenter(function(){
         $(this).children("i.ack").css("opacity", "1");
     });
     $("div.tests").mouseleave(function(){
         $(this).children("i.ack").css("opacity", "0.07");
-    });
+    }); */
     $("i.ack").click(function(){
         if (!$(this).parent().children("span.test").prop("class").match(/\backed\b/)) {
             dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
@@ -329,6 +329,7 @@ function background(color) {
 }
 
 function setBackgroundColor() {
+    $('#bg').css('height', $(document).height() + 'px')
     if (!$('#bg').hasClass('bg-' + backgroundColor)) {
         $('#bg').fadeOut(250, function() {
             $('#bg').removeClass();
