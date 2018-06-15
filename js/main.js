@@ -1,39 +1,84 @@
-let colors = ['red', 'yellow', 'purple', 'blue'];
-let prios = ['p1', 'p2', 'p3', 'p4', 'ack'];
-let backgroundColor = "green";
+/* xymondash - get a concise view of a crowded xymon instance
+   (c) 2018 ISG D-PHYS, ETHZ
+       Claude Becker    - backend code
+       Sven Mäder       - Visual FX
+       Christian Herzog - Javascript logic
 
-let dialogForm, dialogPopup
+*/
+
+let colors = ['red', 'yellow', 'purple', 'blue'];   //sync w/ URL
+let prios = ['p1', 'p2', 'p3', 'p4', 'ack'];        //make ack toggable
+
+let dialogForm, dialogPopup, backgroundColor;
 let paused = false;
 
-function createLink(host, test) {
-    return 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh?HOST='
-        +host+'&SERVICE='+test;
-}
+$(document).ready(function(){
+    $(document).tooltip({                         //initialize tooltips
+        items: "[tooltip]",
+        content: function() {
+            let msg = $(this).attr('tooltip').replace(/\\+n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
+                .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>');
+            let lines = msg.split(/LBRK/);
+            let res = lines.slice(0, 18).join('<br />');
+            if (lines.length > 18) {
+                res += '<br />...';
+            }
+            return res;
+        },
+        open: function(event, ui) {
+            paused = true;
+        },
+        close: function(event, ui) {
+            paused = false;
+        },
+        position: { my: "center top", at: "left bottom", collision: "flipfit" },
+        classes: {
+           "ui-tooltip": "ui-widget-shadow"
+        }
+    });
 
-function getJSON(url) {
-    let resp ;
-    let xmlHttp ;
+    dialogForm = $( "#dialog-form" ).dialog({       //acknowledge form template
+      autoOpen: false,
+      height: 300,
+      width: 350,
+      modal: true,
+      buttons: {
+        "Acknowledge test": ackTest,
+        Cancel: function() {
+          dialogForm.dialog( "close" );
+        }
+      },
+      open: function() {
+          let options = $( "#dialog-form" ).dialog( "option" );
+          let cookie = options.cookie;
+          $("#number").val(cookie);
+          let hostname = options.hostname;
+          $("#hostname").val(hostname);
+          let testname = options.testname;
+          $("#testname").val(testname);
+      }
+    });
 
-    resp  = '' ;
-    xmlHttp = new XMLHttpRequest();
+    dialogPopup = $( "#dialog-popup" ).dialog({     //acknowledge msg popup
+      autoOpen: false,
+      modal: false,
+      close: function() {
+      },
+      open: function() {
+          let options = $( "#dialog-popup" ).dialog( "option" );
+          let ackmsg = options.ackmsg;
+          $("#ackmsg-popup").html(ackmsg);
+      }
+    });
 
-    if(xmlHttp != null) {
-        xmlHttp.withCredentials = true;
-        xmlHttp.open( "GET", url, false );
-        xmlHttp.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
-        xmlHttp.setRequestHeader('cache-control', 'max-age=0');
-        xmlHttp.setRequestHeader('expires', '0');
-        xmlHttp.setRequestHeader('expires', 'Tue, 01 Jan 1980 1:00:00 GMT');
-        xmlHttp.setRequestHeader('pragma', 'no-cache');
+    processData();              //fetch data and fill matrix
 
-        xmlHttp.send( null );
-        resp = xmlHttp.responseText;
-    }
+    setInterval(function() {    //reload every 30s
+        if (!paused) { processData() };
+    }, 30000);
+});
 
-    return JSON.parse(resp);
-}
-
-function fetchData(purge) {
+function processData() {
     let xymonData;
     let bullets = {};
     let lowestPos = {};
@@ -42,8 +87,9 @@ function fetchData(purge) {
     if ($.urlParam()) {
         params = '?'+$.urlParam();
     }
+    backgroundColor = "green";
     xymonData = getJSON('https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json'+params);
-    xymonData.forEach(function(entry) {
+    xymonData.forEach(function(entry) {     //loop thru data and process it into bullets object
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
         let color = entry.color.trim();
@@ -86,18 +132,15 @@ function fetchData(purge) {
         }
     });
 
-    setBackgroundColor();
 
     let x = 0;
     let y = 0;
-    colors.forEach(function(color) {
+    colors.forEach(function(color) {        //build up matrix and display bullets data
         prios.forEach(function(prio) {
-            if (purge) {    //clean up table if we trigger an internal data reload
-                var sel = color + '_' + prio;
-                $('#' + sel).html('');
-                $('#' + sel).addClass("inv");
-            }
-            let pos = x + 10*y;     //our 'severity position' in the prio/color matrix
+            var sel = color + '_' + prio;   //clean up old stuff
+            $('#' + sel).html('');
+            $('#' + sel).addClass("inv");
+            let pos = x + 10*y;             //our 'severity position' in the prio/color matrix
             if (bullets[color] && bullets[color][prio]) {
                 let hosts = bullets[color][prio];
                 let keys = Object.keys(hosts);
@@ -121,29 +164,33 @@ function fetchData(purge) {
                             lowestPos[host]['y'] = y;
                         }
                         var ackClass = (ackmsg != 'empty')?' acked':'';
+                        ackmsg = ackmsg.replace(/\\n/ig, "<br />");
+                        let d = new Date(acktime*1000);
+                        acktime = "acked until " + dateFormat(d, "HH:MM, mmmm d (dddd)");
+                        ackmsg = '<b>'+ackmsg+'</b><br /><br />'+acktime;
                         if (hostExists[host]) {   //just add another test
                             $('[data-host='+host+']').append(" \
                                 <div class='tests'><span class='test"+ackClass+"' data-test='"+test
-                                +"' data-ackmsg='"+escape(ackmsg)+"' data-acktime='"+acktime+"' data-cookie='"
+                                +"' data-ackmsg='"+escape(ackmsg)+"' data-cookie='"
                                 +cookie+"' >"+test+"</span>\
                                 <i class='ack fas fa-check' id='"+cookie+"'></i>\
                             </div> ");
-                            $('[data-cookie='+cookie+']').prop('title', msg);
+                            $('[data-cookie='+cookie+']').attr('tooltip', msg);
                             if (ackmsg != 'empty') {
-                                $('i#'+cookie).prop('title', ackmsg);
+                                $('i#'+cookie).attr('tooltip', ackmsg);
                             }
                         } else {                  //we need a host entry first
                             $("#" + selector).append("<div class='msg' data-host='"+host+"' >\
                                 <span class='info'>"+host+": </span><div class='tests'> \
                                 <span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"
-                                +escape(ackmsg)+"' data-acktime='"+acktime+"' data-cookie='"+cookie
+                                +escape(ackmsg)+"' data-cookie='"+cookie
                                 +"'>"+test+"</span>\
                                 <i class='ack fas fa-check' id='"+cookie+"'></i></div>\
                             </div>");
                             $("#" + selector).removeClass("inv");
-                            $('[data-cookie='+cookie+']').prop('title', msg);
+                            $('[data-cookie='+cookie+']').attr('tooltip', msg);
                             if (ackmsg != 'empty') {
-                                $('i#'+cookie).prop('title', ackmsg);
+                                $('i#'+cookie).attr('tooltip', ackmsg);
                             }
 
                             hostExists[host] = 1;
@@ -156,6 +203,7 @@ function fetchData(purge) {
         x = 0;
         y++;
     });
+    setBackgroundColor();
 
     $("span.info").click(function(){
         $(this).innerHTML = $(this).parent().parent().data("host")+' / ';
@@ -180,76 +228,38 @@ function fetchData(purge) {
             dialogForm.dialog("open");
         } else {
             dialogPopup.dialog("option", "ackmsg", unescape($(this).parent().children("span.test").data("ackmsg")));
-            dialogPopup.dialog("option", "acktime", $(this).parent().children("span.test").data("acktime"));
             dialogPopup.dialog("open");
         }
     });
 }
 
-$(document).ready(function(){
-    $( document ).tooltip({
-        content: function() {
-            return '<pre>'+$(this).prop('title').substr(0, 800).replace(/\\p/g, '  ').replace(/\\n/g, '\n').replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')+'...</pre>';
-        },
-        open: function(event, ui) {
-            ui.tooltip.css("max-width", "600px");
-            paused = true;
-        },
-        close: function(event, ui) {
-            paused = false;
-        },
-        classes: {
-            "ui-tooltip": "ui-widget-shadow"
-        }
-    });        //enable tooltips
+function createLink(host, test) {
+    return 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh?HOST='
+        +host+'&SERVICE='+test;
+}
 
-    dialogForm = $( "#dialog-form" ).dialog({
-      autoOpen: false,
-      height: 300,
-      width: 350,
-      modal: true,
-      buttons: {
-        "Acknowledge test": ackTest,
-        Cancel: function() {
-          dialogForm.dialog( "close" );
-        }
-      },
-      close: function() {
-//        allFields.removeClass( "ui-state-error" );
-      },
-      open: function() {
-          let options = $( "#dialog-form" ).dialog( "option" );
-          let cookie = options.cookie;
-          $("#number").val(cookie);
-          let hostname = options.hostname;
-          $("#hostname").val(hostname);
-          let testname = options.testname;
-          $("#testname").val(testname);
-      }
-    });
+function getJSON(url) {
+    let resp ;
+    let xmlHttp ;
 
-    dialogPopup = $( "#dialog-popup" ).dialog({
-      autoOpen: false,
-      modal: false,
-      close: function() {
-      },
-      open: function() {
-          let options = $( "#dialog-popup" ).dialog( "option" );
-          let ackmsg = options.ackmsg;
-          ackmsg = ackmsg.replace(/\\n/ig, "<br />");
-          let d = new Date(options.acktime*1000);
-          let acktime = "acked until " + dateFormat(d, "HH:MM, mmmm d (dddd)");
-          $("#ackmsg-popup").html(ackmsg);
-          $("#acktime-popup").html(acktime);
-      }
-    });
+    resp  = '' ;
+    xmlHttp = new XMLHttpRequest();
 
-    fetchData(0);
+    if(xmlHttp != null) {
+        xmlHttp.withCredentials = true;
+        xmlHttp.open( "GET", url, false );
+        xmlHttp.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
+        xmlHttp.setRequestHeader('cache-control', 'max-age=0');
+        xmlHttp.setRequestHeader('expires', '0');
+        xmlHttp.setRequestHeader('expires', 'Tue, 01 Jan 1980 1:00:00 GMT');
+        xmlHttp.setRequestHeader('pragma', 'no-cache');
 
-    setInterval(function() {    //reload every 30s
-        if (!paused) { fetchData(1) };
-    }, 30000);
-});
+        xmlHttp.send(null);
+        resp = xmlHttp.responseText;
+    }
+
+    return JSON.parse(resp);
+}
 
 function ackTest() {
     var fields = ['number', 'delay', 'message'];
@@ -263,9 +273,8 @@ function ackTest() {
         url: "https://xymon.phys.ethz.ch/xymonjs/cgi/xymon-ack ",
         data: { number: vals['number'], min: vals['delay'], msg: vals['message'] },
         success: function( data ) {
-//            alert(data);
             dialogForm.dialog( "close" );
-            fetchData(1);
+            processData();
         },
     });
 }
@@ -306,7 +315,7 @@ function background(color) {
             backgroundColor = color;
         }
     } else {
-        backgroundColor = color;
+            backgroundColor = color;
     }
 }
 

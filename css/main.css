@@ -115,7 +115,7 @@ div.tests {
     color: #fff;
 }
 
-.container {
+#container {
     padding: 0;
 }
 
@@ -150,9 +150,14 @@ span.acked {
 .ui-tooltip {
     color: white;
     background: rgba(30, 30, 30, 0.9);
+    max-width: 500px;
+    margin-right: 8px;
+    margin-left: 8px;
 }
 
 .ui-tooltip-content {
+    font-family: "M-1m";
+    white-space: pre-line;
 }
 
 /* popup form CSS */
@@ -172,15 +177,8 @@ h1 {
     font-size: 1.2em; margin: .6em 0;
 }
 
-p#ackmsg-popup {
-    font-weight: bold;
-}
 
-p#acktime-popup {
-    font-style: italic;
-}
-
-
+/* make it responsive */
 @media screen and (max-width:720px) {
     table, td, tr {
         display: block;
