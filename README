@@ -4,11 +4,7 @@ use:
 
 TODO
 - ack greift nicht auf critical
-- tooltip line break
-- tooltip right edge scrollbar
-- tooltip count lines, not chars
 - favicon
-- tooltip: title rename?
 - JSON URL configurable
 - xymon detail URL configurable
 - ack URL configurable
@@ -17,10 +13,8 @@ TODO
 - phone view show prio
 - couple colors array to URL
 - ack time period
-- ack msg als tooltip
 - background: setBackgroundColor
 - hide acked -> JS -> andere prios dürfen nicht da rein rutschen
 - https redirect
-- tooltip: &green -> dot
 
 Ideen:

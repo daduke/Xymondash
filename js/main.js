@@ -16,8 +16,9 @@ $(document).ready(function(){
     $(document).tooltip({                         //initialize tooltips
         items: "[tooltip]",
         content: function() {
-            let msg = $(this).attr('tooltip').replace(/\\+n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
-                .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>');
+            let msg = $(this).attr('tooltip').replace(/\\n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
+                .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
+                .replace(/[-=]{10,}/g, '----------');
             let lines = msg.split(/LBRK/);
             let res = lines.slice(0, 18).join('<br />');
             if (lines.length > 18) {
@@ -320,9 +321,11 @@ function background(color) {
 }
 
 function setBackgroundColor() {
-    $('#bg').fadeOut(250, function() {
-        $('#bg').removeClass();
-        $('#bg').addClass('bg-' + backgroundColor);
-        $('#bg').fadeIn(250);
-    });
+    if (!$('#bg').hasClass('bg-' + backgroundColor)) {
+        $('#bg').fadeOut(250, function() {
+            $('#bg').removeClass();
+            $('#bg').addClass('bg-' + backgroundColor);
+            $('#bg').fadeIn(250);
+        });
+    }
 }
