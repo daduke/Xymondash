@@ -151,7 +151,7 @@ function processData() {
     colors.forEach(function(color) {        //build up matrix and display entries data
         prios.forEach(function(prio) {
             var sel = color + '_' + prio;   //clean up old stuff
-            $('#' + sel).html('');
+            $('#' + sel).html('<div class="ptag">'+prio+'</div>');
             $('#' + sel).addClass("inv");
             let pos = x + 10*y;             //our 'severity position' in the prio/color matrix
             if (entries[color] && entries[color][prio]) {
@@ -181,18 +181,7 @@ function processData() {
                         let d = new Date(acktime*1000);
                         acktime = "acked until " + dateFormat(d, "HH:MM, mmmm d (dddd)");
                         ackmsg = '<b>'+ackmsg+'</b><br /><br />'+acktime;
-                        if (hostExists[host]) {   //just add another test
-                            $('[data-host='+host+']').append(" \
-                                <div class='tests'><span class='test"+ackClass+"' data-test='"+test
-                                +"' data-ackmsg='"+escape(ackmsg)+"' data-cookie='"
-                                +cookie+"' >"+test+"</span>\
-                                <i class='ack fas fa-check' id='"+cookie+"'></i>\
-                            </div> ");
-                            $('[data-cookie='+cookie+']').attr('tooltip', msg);
-                            if (ackmsg != 'empty') {
-                                $('i#'+cookie).attr('tooltip', ackmsg);
-                            }
-                        } else {                  //we need a host entry first
+                        if (!hostExists[host]) {   //we need a host entry first
                             $("#" + selector).append("<div class='msg' data-host='"+host+"' >\
                                 <span class='info'>"+host+": </span><div class='tests'> \
                                 <span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"
@@ -207,6 +196,17 @@ function processData() {
                             }
 
                             hostExists[host] = 1;
+                        } else {                  //just add another test
+                            $('[data-host='+host+']').append(" \
+                                <div class='tests'><span class='test"+ackClass+"' data-test='"+test
+                                +"' data-ackmsg='"+escape(ackmsg)+"' data-cookie='"
+                                +cookie+"' >"+test+"</span>\
+                                <i class='ack fas fa-check' id='"+cookie+"'></i>\
+                            </div> ");
+                            $('[data-cookie='+cookie+']').attr('tooltip', msg);
+                            if (ackmsg != 'empty') {
+                                $('i#'+cookie).attr('tooltip', ackmsg);
+                            }
                         }
                     }
                 }
