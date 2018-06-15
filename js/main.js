@@ -80,9 +80,9 @@ $(document).ready(function(){
 
     triggerUpdate();              //fetch data and fill matrix
 
-    /* setInterval(function() {    //reload every 30s
+    setInterval(function() {    //reload every 30s
         if (!paused) { triggerUpdate() };
-    }, 30000); */
+    }, 30000);
 
     $("#reload").click(function(){
         triggerUpdate();

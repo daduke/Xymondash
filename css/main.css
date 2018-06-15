@@ -282,17 +282,15 @@ h1.text-white {
 
 /* make it responsive */
 @media screen and (max-width:720px) {
-    table, td, tr {
+    #content table, #content td, #content tr {
         display: block;
     }
-    td {
+    #content td {
         width: 100%;
         border: none;
-        border-bottom: 1px solid #eee;
         position: relative;
-        padding-left: 50%;
     }
-    td.inv {
+    #content td.inv {
         display: none;
     }
     .col-sm {
