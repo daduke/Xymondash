@@ -18,7 +18,25 @@
     <title>ISG D-PHYS xymon dashboard</title>
   </head>
   <body>
-    <div id="reload">reload!</div>
+    <div id="container-buttons">
+      <button id="reload" class="btn btn-main">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+      <button id="open-settings" href="#" class="btn btn-main toggle-settings">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    <div id="panel-settings" class="panels">
+      <div id="container-settings-header">
+        <button id="close-settings" class="btn btn-main toggle-settings">
+          <i class="fas fa-times"></i>
+        </button>
+        <h1 class="text-white">Dashboard Settings</h1>
+      </div>
+      <div id="container-settings">
+      </div>
+    </div>
+
     <h1 class="text-white">ISG D-PHYS xymon dashboard</h1>
 
     <table id="container">

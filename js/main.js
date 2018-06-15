@@ -6,8 +6,9 @@
 
 */
 
-let colors = ['red', 'yellow', 'purple', 'blue'];   //sync w/ URL
+let colors = ['red', 'yellow', 'purple', 'blue', 'green'];      //sync w/ URL
 let prios = ['prio1', 'prio2', 'prio3', 'prio4', 'ack'];        //make ack toggable
+let bgPrios = [];                                               //priorities affecting background color
 
 let dialogForm, dialogPopup, backgroundColor;
 let paused = false;
@@ -75,14 +76,32 @@ $(document).ready(function(){
       }
     });
 
+    populateSettings();           //fill settings panel dynamically
+
     triggerUpdate();              //fetch data and fill matrix
 
-    setInterval(function() {    //reload every 30s
+    /* setInterval(function() {    //reload every 30s
         if (!paused) { triggerUpdate() };
-    }, 30000);
+    }, 30000); */
 
     $("#reload").click(function(){
         triggerUpdate();
+    });
+
+    // Open settings panel
+    $("#open-settings").click(function (e) {
+      e.preventDefault();
+      $("#panel-settings").toggleClass("active");
+      $('#container-buttons').hide();
+      $("#close-settings").show();
+    });
+
+    // Close settings panel
+    $("#close-settings").click(function (e) {
+      e.preventDefault();
+      $("#panel-settings").toggleClass("active");
+      $(this).hide();
+      $("#container-buttons").show();
     });
 });
 
@@ -91,8 +110,21 @@ function triggerUpdate() {
     let params = '';
     if ($.urlParam()) {
         params = '?'+$.urlParam();
+    } else {
+        $('input[name="colors"]:checked').each(function(index) {
+            params += (index == 0) ? '?color=' : ',';
+            params += $(this).attr('id');
+        });
     }
+    prios = [];
+    $('input[name="priorities"]:checked').each(function(index) {
+        prios.push($(this).attr('id'));
+    });
     backgroundColor = "green";
+    bgPrios = [];
+    $('input[name="background"]:checked').each(function(index) {
+        bgPrios.push($(this).attr('id').replace('bg-', ''));
+    });
     getJSON('https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json'+params, processData);
 }
 
@@ -140,9 +172,7 @@ function processData() {
             lowestPos[host]['x'] = 10;
             lowestPos[host]['y'] = 10;
         }
-        if (prio == 'prio1') {
-            background(color);
-        }
+        background(color, prio);
     });
 
 
@@ -308,23 +338,25 @@ function keys(obj) {
     return keys;
 }
 
-function background(color) {
-    if (backgroundColor == 'red') {
-        return;
-    } else if (backgroundColor == 'purple') {
-        if (color == 'red') {
-            backgroundColor = color;
-        }
-    } else if (backgroundColor == 'yellow') {
-        if ((color == 'red') || (color == 'purple')) {
-            backgroundColor = color;
-        }
-    } else if (backgroundColor == 'blue') {
-        if ((color == 'red') || (color == 'purple') || (color == 'yellow')) {
-            backgroundColor = color;
-        }
-    } else {
-            backgroundColor = color;
+function background(color, prio) {
+    if (bgPrios.includes(prio)) {
+       if (backgroundColor == 'red') {
+           return;
+       } else if (backgroundColor == 'purple') {
+           if (color == 'red') {
+               backgroundColor = color;
+           }
+       } else if (backgroundColor == 'yellow') {
+           if ((color == 'red') || (color == 'purple')) {
+               backgroundColor = color;
+           }
+       } else if (backgroundColor == 'blue') {
+           if ((color == 'red') || (color == 'purple') || (color == 'yellow')) {
+               backgroundColor = color;
+           }
+       } else {
+               backgroundColor = color;
+       }
     }
 }
 
@@ -337,4 +369,34 @@ function setBackgroundColor() {
             $('#bg').fadeIn(250);
         });
     }
+}
+
+function getSettings(elements, name) {
+    settings = '<div class="setting-group"><h2 class="text-white">' + name + '</h2><table>';
+    for (let i in elements) {
+        settings += '<tr><td class="text-white">' + elements[i] + '</td>';
+        settings += '<td class="text-white"><input type="checkbox" name="' + name + '" id="' + elements[i] + '" /></td></tr>';
+    }
+    settings += '</table></div>';
+    return settings;
+}
+
+function populateSettings() {
+    $('#container-settings').append(getSettings(colors, 'colors'));
+    $('#container-settings').append(getSettings(prios, 'priorities'));
+    let bgPrioElements = [];
+    for (let i in prios) {
+        bgPrioElements.push('bg-' + prios[i]);
+    }
+    $('#container-settings').append(getSettings(bgPrioElements, 'background'));
+    configureSettings();
+}
+
+function configureSettings() {
+    $('input[name="priorities"]').each(function(index) {
+        $(this).prop('checked', true);
+    });
+    $('#bg-prio1').prop('checked', true);
+    $('#bg-prio2').prop('checked', true);
+    $('#bg-prio3').prop('checked', true);
 }

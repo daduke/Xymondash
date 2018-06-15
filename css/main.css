@@ -23,6 +23,7 @@ body {
     background-image: url("../img/dust_scratches.png");
     background-attachment: fixed;
 }
+
 span {
     /* mix-blend-mode: difference; */
 }
@@ -108,16 +109,6 @@ div.tests {
     border: none;
     padding: 2px;
     vertical-align: text-top;
-}
-
-.text-white {
-    color: #fff;
-    text-shadow: 0px 0px 0.04rem rgba(255, 255, 255, 0.6);
-}
-
-h1.text-white {
-    font-weight: normal;
-    text-shadow: 0px 0px 0.1rem rgba(255, 255, 255, 0.9);
 }
 
 .legend {
@@ -207,12 +198,86 @@ fieldset {
 }
 
 h1 {
-    font-size: 1.2em; margin: .6em 0;
+    font-size: 1.2em;
+    margin: .6em;
+    display: inline-block;
 }
 
-#reload {
+.text-white {
+    color: #fff;
+    text-shadow: 0px 0px 0.04rem rgba(255, 255, 255, 0.6);
+}
+
+h1.text-white {
+    font-weight: normal;
+    text-shadow: 0px 0px 0.1rem rgba(255, 255, 255, 0.9);
+}
+
+.setting-group {
+	margin-top: 2em;
+}
+
+.setting-group h2 {
+    font-size: 0.8rem;
+    font-weight: normal;
+}
+
+.setting-group table {
+    margin-left: 1.0em;
+}
+
+.setting-group td {
+    min-width: 100px;
+}
+
+#container-buttons {
     float: right;
-    color: white;
+    display: inline-block;
+}
+
+#container-settings-header {
+    margin-top: 8px;
+    margin-right: 8px;
+}
+
+#close-settings {
+    float: right;
+}
+
+#container-settings {
+    margin: .6em;
+}
+
+#panel-settings {
+    position: fixed;
+    width: 360px;
+    margin-right: -360px;
+    top: 0;
+    right: 0;
+    height: 100%;
+    overflow-y: auto;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+#panel-settings.active {
+    right: 360px;
+    overflow-x: hidden;
+}
+
+.btn {
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 4px 6px;
+    border: none;
+    border-radius: 3px;
+    background: none;
+    box-shadow: 1px 1px 2px -1px rgba(255, 255, 255, 0.06) inset, 4px 4px 8px -4px rgba(255, 255, 255, 0.03) inset, 1px 1px 4px rgba(0,0,0,0.4);
+}
+
+.btn:hover {
+    box-shadow: 1px 1px 2px -1px rgba(255, 255, 255, 0.1) inset, 4px 4px 8px -4px rgba(255, 255, 255, 0.12) inset, 1px 1px 4px rgba(0,0,0,0.4);
 }
 
 /* make it responsive */
