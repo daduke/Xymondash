@@ -84,7 +84,7 @@ $(document).ready(function(){
 
 function processData() {
     let xymonData;
-    let bullets = {};
+    let entries = {};
     let lowestPos = {};
     let hostExists = {};
     let params = '';
@@ -93,7 +93,7 @@ function processData() {
     }
     backgroundColor = "green";
     xymonData = getJSON('https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json'+params);
-    xymonData.forEach(function(entry) {     //loop thru data and process it into bullets object
+    xymonData.forEach(function(entry) {     //loop thru data and process it into entries object
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
         let color = entry.color.trim();
@@ -119,14 +119,14 @@ function processData() {
             cookie = 'empty';
         }
         if (host && test && color && prio) {
-            if (!bullets[color]) bullets[color] = {};
-            if (!bullets[color][prio]) bullets[color][prio] = {};
-            if (!bullets[color][prio][host]) bullets[color][prio][host] = {};
-            if (!bullets[color][prio][host][test]) bullets[color][prio][host][test] = {};
-            bullets[color][prio][host][test]['ackmsg'] = ackmsg;
-            bullets[color][prio][host][test]['acktime'] = acktime;
-            bullets[color][prio][host][test]['cookie'] = cookie;
-            bullets[color][prio][host][test]['msg'] = msg;
+            if (!entries[color]) entries[color] = {};
+            if (!entries[color][prio]) entries[color][prio] = {};
+            if (!entries[color][prio][host]) entries[color][prio][host] = {};
+            if (!entries[color][prio][host][test]) entries[color][prio][host][test] = {};
+            entries[color][prio][host][test]['ackmsg'] = ackmsg;
+            entries[color][prio][host][test]['acktime'] = acktime;
+            entries[color][prio][host][test]['cookie'] = cookie;
+            entries[color][prio][host][test]['msg'] = msg;
             lowestPos[host] = {};
             lowestPos[host]['x'] = 10;
             lowestPos[host]['y'] = 10;
@@ -139,23 +139,23 @@ function processData() {
 
     let x = 0;
     let y = 0;
-    colors.forEach(function(color) {        //build up matrix and display bullets data
+    colors.forEach(function(color) {        //build up matrix and display entries data
         prios.forEach(function(prio) {
             var sel = color + '_' + prio;   //clean up old stuff
             $('#' + sel).html('');
             $('#' + sel).addClass("inv");
             let pos = x + 10*y;             //our 'severity position' in the prio/color matrix
-            if (bullets[color] && bullets[color][prio]) {
-                let hosts = bullets[color][prio];
+            if (entries[color] && entries[color][prio]) {
+                let hosts = entries[color][prio];
                 let keys = Object.keys(hosts);
                 keys.sort();
                 for (i = 0; i < keys.length; i++) {
                     host = keys[i];
-                    for (let test in bullets[color][prio][host]) {
-                        let ackmsg = bullets[color][prio][host][test]['ackmsg'];
-                        let acktime = bullets[color][prio][host][test]['acktime'];
-                        let msg = bullets[color][prio][host][test]['msg'];
-                        let cookie = bullets[color][prio][host][test]['cookie'];
+                    for (let test in entries[color][prio][host]) {
+                        let ackmsg = entries[color][prio][host][test]['ackmsg'];
+                        let acktime = entries[color][prio][host][test]['acktime'];
+                        let msg = entries[color][prio][host][test]['msg'];
+                        let cookie = entries[color][prio][host][test]['cookie'];
                         let lowestX = lowestPos[host]['x'];
                         let lowestY = lowestPos[host]['y'];
                         let lowestPosHost = lowestX + 10*lowestY;
