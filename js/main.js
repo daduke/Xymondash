@@ -1,7 +1,7 @@
 /* xymondash - get a concise view of a crowded xymon instance
-   (c) 2018 ISG D-PHYS, ETHZ
+   (c) 2018 ISG D-PHYS, ETH Zurich
        Claude Becker    - backend code
-       Sven Mäder       - Visual FX
+       Sven Mäder       - Visual FX and Javascript logic
        Christian Herzog - Javascript logic
 
 */
