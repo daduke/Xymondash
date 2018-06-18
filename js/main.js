@@ -78,6 +78,7 @@ $(document).ready(function(){
         }
     });
 
+    populateSettings();
     triggerUpdate();              //fetch data and fill matrix
 
     setInterval(function() {    //reload every 30s
@@ -362,10 +363,12 @@ function setBackgroundColor() {
 
 function createSettings(availableElements, activeElements, name) {
     settings = '<div class="setting-group"><h2 class="text-white">' + name + '</h2><table>';
-    for (let i in availableElements) {
-        settings += '<tr><td class="text-white">' + availableElements[i] + '</td>';
-        settings += '<td class="text-white"><input type="checkbox" name="' + name + '" id="' + availableElements[i] + '" /></td></tr>';
-    }
+    availableElements.forEach(function(element) {
+        let checked = (activeElements.includes(element))?'checked="checked" ':'';
+        settings += '<tr><td class="text-white">' + element + '</td>';
+        settings += '<td class="text-white"><input type="checkbox" name="' + name + '" id="'
+            + element + '" ' + checked + '/></td></tr>';
+    });
     settings += '</table></div>';
     return settings;
 }
@@ -375,7 +378,7 @@ function populateSettings() {
     $('#settings-container').append(createSettings(availableColors, activeColors, 'colors'));
     $('#settings-container').append(createSettings(availablePrios, activePrios, 'priorities'));
     let bgPrioElements = [];
-    for (let i in activePrios) {
+    for (let i in activePrios) {    //TODO
         bgPrioElements.push('bg-' + activePrios[i]);
     }
     $('#settings-container').append(createSettings(bgPrioElements, [], 'background'));
