@@ -10,7 +10,7 @@ let availableColors = ['red', 'yellow', 'purple', 'blue', 'green'];
 let activeColors = ['red', 'yellow'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'prio4', 'ack'];
 let activePrios = ['prio1', 'prio2'];
-let bgPrios = [];
+let activeBgPrios = ['prio1', 'prio2'];
 
 let dialogForm, dialogPopup, backgroundColor;
 let paused = false;
@@ -112,7 +112,7 @@ function triggerUpdate() {
     let params = '';
     activeColors = [];
     activePrios = [];
-    bgPrios = [];
+    activeBgPrios = [];
 
     $('input[name="colors"]:checked').each(function(index) {
         params += (index == 0) ? '?color=' : ',';
@@ -123,7 +123,7 @@ function triggerUpdate() {
         activePrios.push($(this).attr('id'));
     });
     $('input[name="background"]:checked').each(function(index) {
-        bgPrios.push($(this).attr('id').replace('bg-', ''));
+        activeBgPrios.push($(this).attr('id'));
     });
     backgroundColor = "green";
     getJSON('https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json'+params, processData);
@@ -329,7 +329,7 @@ function keys(obj) {
 }
 
 function background(color, prio) {
-    if (bgPrios.includes(prio)) {
+    if (activeBgPrios.includes(prio)) {
        if (backgroundColor == 'red') {
            return;
        } else if (backgroundColor == 'purple') {
@@ -377,9 +377,5 @@ function populateSettings() {
     $('#settings-container').html('');
     $('#settings-container').append(createSettings(availableColors, activeColors, 'colors'));
     $('#settings-container').append(createSettings(availablePrios, activePrios, 'priorities'));
-    let bgPrioElements = [];
-    for (let i in activePrios) {    //TODO
-        bgPrioElements.push('bg-' + activePrios[i]);
-    }
-    $('#settings-container').append(createSettings(bgPrioElements, [], 'background'));
+    $('#settings-container').append(createSettings(availablePrios, activeBgPrios, 'background'));
 }

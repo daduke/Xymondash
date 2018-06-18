@@ -22,6 +22,7 @@ TODO
   * ack greift nicht auf critical
   * Abhängigkeiten color, prio bei config? nur "tiefste" Farbe?
   * config: set checked from active
+  * prio4 -> "other"?
   * weiss? dialup?
   * host ack button?
   * ack until ok? blue?
