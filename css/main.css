@@ -44,6 +44,10 @@ td.blue .msg {
     background-color: rgba(140,140,255,0.7);
 }
 
+td.green .msg {
+    background-color: rgba(0,255,0,0.7);
+}
+
 .ptag {
     float: right;
     display: none;

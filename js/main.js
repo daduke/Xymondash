@@ -6,9 +6,11 @@
 
 */
 
-let colors = ['red', 'yellow', 'purple', 'blue', 'green'];      //sync w/ URL
-let prios = ['prio1', 'prio2', 'prio3', 'prio4', 'ack'];        //make ack toggable
-let bgPrios = [];                                               //priorities affecting background color
+let availableColors = ['red', 'yellow', 'purple', 'blue', 'green'];
+let activeColors = ['red', 'yellow'];
+let availablePrios = ['prio1', 'prio2', 'prio3', 'prio4', 'ack'];
+let activePrios = ['prio1', 'prio2'];
+let bgPrios = [];
 
 let dialogForm, dialogPopup, backgroundColor;
 let paused = false;
@@ -18,7 +20,7 @@ $(document).ready(function(){
         items: "[tooltip]",
         content: function() {
             if ($(this).is('span')
-                    || $(this).parent().children("span.test").prop("class").match(/\backed\b/)) {
+                || $(this).parent().children("span.test").prop("class").match(/\backed\b/)) {
                 let msg = $(this).attr('tooltip').replace(/\\n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
                     .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
                     .replace(/[-=]{10,}/g, '----------');
@@ -38,42 +40,42 @@ $(document).ready(function(){
         },
         position: { my: "center top", at: "left bottom", collision: "flipfit" },
         classes: {
-           "ui-tooltip": "ui-widget-shadow"
+            "ui-tooltip": "ui-widget-shadow"
         }
     });
 
     dialogForm = $( "#dialog-form" ).dialog({       //acknowledge form template
-      autoOpen: false,
-      height: 300,
-      width: 350,
-      modal: true,
-      buttons: {
-        "Acknowledge test": ackTest,
-        Cancel: function() {
-          dialogForm.dialog( "close" );
+        autoOpen: false,
+        height: 300,
+        width: 350,
+        modal: true,
+        buttons: {
+            "Acknowledge test": ackTest,
+            Cancel: function() {
+                dialogForm.dialog( "close" );
+            }
+        },
+        open: function() {
+            let options = $( "#dialog-form" ).dialog( "option" );
+            let cookie = options.cookie;
+            $("#number").val(cookie);
+            let hostname = options.hostname;
+            $("#hostname").val(hostname);
+            let testname = options.testname;
+            $("#testname").val(testname);
         }
-      },
-      open: function() {
-          let options = $( "#dialog-form" ).dialog( "option" );
-          let cookie = options.cookie;
-          $("#number").val(cookie);
-          let hostname = options.hostname;
-          $("#hostname").val(hostname);
-          let testname = options.testname;
-          $("#testname").val(testname);
-      }
     });
 
     dialogPopup = $( "#dialog-popup" ).dialog({     //acknowledge msg popup
-      autoOpen: false,
-      modal: false,
-      close: function() {
-      },
-      open: function() {
-          let options = $( "#dialog-popup" ).dialog( "option" );
-          let ackmsg = options.ackmsg;
-          $("#ackmsg-popup").html(ackmsg);
-      }
+        autoOpen: false,
+        modal: false,
+        close: function() {
+        },
+        open: function() {
+            let options = $( "#dialog-popup" ).dialog( "option" );
+            let ackmsg = options.ackmsg;
+            $("#ackmsg-popup").html(ackmsg);
+        }
     });
 
     populateSettings();           //fill settings panel dynamically
@@ -90,41 +92,40 @@ $(document).ready(function(){
 
     // Open settings panel
     $("#open-settings").click(function (e) {
-      e.preventDefault();
-      $("#panel-settings").toggleClass("active");
-      $('#container-buttons').hide();
-      $("#close-settings").show();
+        e.preventDefault();
+        $("#panel-settings").toggleClass("active");
+        $('#container-buttons').hide();
+        $("#close-settings").show();
     });
 
     // Close settings panel
     $("#close-settings").click(function (e) {
-      e.preventDefault();
-      $("#panel-settings").toggleClass("active");
-      $(this).hide();
-      $("#container-buttons").show();
+        e.preventDefault();
+        $("#panel-settings").toggleClass("active");
+        $(this).hide();
+        $("#container-buttons").show();
+        triggerUpdate();
     });
 });
 
 function triggerUpdate() {
-    let xymonData;
     let params = '';
-    if ($.urlParam()) {
-        params = '?'+$.urlParam();
-    } else {
-        $('input[name="colors"]:checked').each(function(index) {
-            params += (index == 0) ? '?color=' : ',';
-            params += $(this).attr('id');
-        });
-    }
-    prios = [];
-    $('input[name="priorities"]:checked').each(function(index) {
-        prios.push($(this).attr('id'));
-    });
-    backgroundColor = "green";
+    activeColors = [];
+    activePrios = [];
     bgPrios = [];
+
+    $('input[name="colors"]:checked').each(function(index) {
+        params += (index == 0) ? '?color=' : ',';
+        params += $(this).attr('id');
+        activeColors.push($(this).attr('id'));
+    });
+    $('input[name="priorities"]:checked').each(function(index) {
+        activePrios.push($(this).attr('id'));
+    });
     $('input[name="background"]:checked').each(function(index) {
         bgPrios.push($(this).attr('id').replace('bg-', ''));
     });
+    backgroundColor = "green";
     getJSON('https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json'+params, processData);
 }
 
@@ -133,7 +134,7 @@ function processData() {
     let lowestPos = {};
     let hostExists = {};
 
-    xymonData = this.response;
+    let xymonData = this.response;
     xymonData.forEach(function(entry) {     //loop thru data and process it into entries object
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
@@ -175,14 +176,18 @@ function processData() {
         background(color, prio);
     });
 
+    availableColors.forEach(function(color) {        //clean up old stuff
+        availablePrios.forEach(function(prio) {
+            var sel = color + '_' + prio;
+            $('#' + sel).html('<div class="ptag">'+prio+'</div>');
+            $('#' + sel).addClass("inv");
+        });
+    });
 
     let x = 0;
     let y = 0;
-    colors.forEach(function(color) {        //build up matrix and display entries data
-        prios.forEach(function(prio) {
-            var sel = color + '_' + prio;   //clean up old stuff
-            $('#' + sel).html('<div class="ptag">'+prio+'</div>');
-            $('#' + sel).addClass("inv");
+    activeColors.forEach(function(color) {        //build up matrix and display entries data
+        activePrios.forEach(function(prio) {
             let pos = x + 10*y;             //our 'severity position' in the prio/color matrix
             if (entries[color] && entries[color][prio]) {
                 let hosts = entries[color][prio];
@@ -200,7 +205,7 @@ function processData() {
                         let lowestPosHost = lowestX + 10*lowestY;
                         let selector;
                         if (lowestPosHost < pos) {    //if we have a higher prio/color entry already
-                            selector = colors[lowestY] + '_' + prios[lowestX];
+                            selector = activeColors[lowestY] + '_' + activePrios[lowestX];
                         } else {
                             selector = color + '_' + prio;
                             lowestPos[host]['x'] = x;
@@ -318,15 +323,6 @@ function ackTest() {
     });
 }
 
-$.urlParam = function(){
-    let result = '';
-    if (result = window.location.href.match(/\?(.*)$/)) {
-        return result[1];
-    } else {
-        return null;
-    }
-}
-
 function keys(obj) {
     var keys = [];
     for(var key in obj) {
@@ -371,7 +367,7 @@ function setBackgroundColor() {
     }
 }
 
-function getSettings(elements, name) {
+function createSettings(elements, name) {
     settings = '<div class="setting-group"><h2 class="text-white">' + name + '</h2><table>';
     for (let i in elements) {
         settings += '<tr><td class="text-white">' + elements[i] + '</td>';
@@ -382,21 +378,11 @@ function getSettings(elements, name) {
 }
 
 function populateSettings() {
-    $('#container-settings').append(getSettings(colors, 'colors'));
-    $('#container-settings').append(getSettings(prios, 'priorities'));
+    $('#container-settings').append(createSettings(availableColors, 'colors'));
+    $('#container-settings').append(createSettings(availablePrios, 'priorities'));
     let bgPrioElements = [];
-    for (let i in prios) {
-        bgPrioElements.push('bg-' + prios[i]);
+    for (let i in activePrios) {
+        bgPrioElements.push('bg-' + activePrios[i]);
     }
-    $('#container-settings').append(getSettings(bgPrioElements, 'background'));
-    configureSettings();
-}
-
-function configureSettings() {
-    $('input[name="priorities"]').each(function(index) {
-        $(this).prop('checked', true);
-    });
-    $('#bg-prio1').prop('checked', true);
-    $('#bg-prio2').prop('checked', true);
-    $('#bg-prio3').prop('checked', true);
+    $('#container-settings').append(createSettings(bgPrioElements, 'background'));
 }

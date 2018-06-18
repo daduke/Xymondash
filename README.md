@@ -20,8 +20,7 @@ use:
 
 TODO
   * ack greift nicht auf critical
-  * prio setting greift nicht (nijet versteh...)
-  * grün wird nicht angezeigt?
+  * Abhängigkeiten color, prio bei config?
   * favicon
   * ack button on mobile?
   * bg color logic -> daduke check if done by rda
@@ -36,6 +35,7 @@ TODO
     * xymon detail URL configurable
     * ack URL configurable
     * font
+    * reload interval
 
 Ideen:
   * host search+filter inkl. grün
