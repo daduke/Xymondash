@@ -78,8 +78,6 @@ $(document).ready(function(){
         }
     });
 
-    populateSettings();           //fill settings panel dynamically
-
     triggerUpdate();              //fetch data and fill matrix
 
     setInterval(function() {    //reload every 30s
@@ -92,8 +90,9 @@ $(document).ready(function(){
 
     // Open settings panel
     $("#open-settings").click(function (e) {
+        populateSettings();           //fill settings panel dynamically
         e.preventDefault();
-        $("#panel-settings").toggleClass("active");
+        $("#settings-panel").toggleClass("active");
         $('#container-buttons').hide();
         $("#close-settings").show();
     });
@@ -101,7 +100,7 @@ $(document).ready(function(){
     // Close settings panel
     $("#close-settings").click(function (e) {
         e.preventDefault();
-        $("#panel-settings").toggleClass("active");
+        $("#settings-panel").toggleClass("active");
         $(this).hide();
         $("#container-buttons").show();
         triggerUpdate();
@@ -262,12 +261,6 @@ function processData() {
         let link = createLink($(this).parent().parent().data("host"), $(this).data("test"));
         window.open(link,"_self")
     });
-    /* $("div.tests").mouseenter(function(){
-        $(this).children("i.ack").css("opacity", "1");
-    });
-    $("div.tests").mouseleave(function(){
-        $(this).children("i.ack").css("opacity", "0.07");
-    }); */
     $("i.ack").click(function(){
         if (!$(this).parent().children("span.test").prop("class").match(/\backed\b/)) {
             dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
@@ -367,22 +360,23 @@ function setBackgroundColor() {
     }
 }
 
-function createSettings(elements, name) {
+function createSettings(availableElements, activeElements, name) {
     settings = '<div class="setting-group"><h2 class="text-white">' + name + '</h2><table>';
-    for (let i in elements) {
-        settings += '<tr><td class="text-white">' + elements[i] + '</td>';
-        settings += '<td class="text-white"><input type="checkbox" name="' + name + '" id="' + elements[i] + '" /></td></tr>';
+    for (let i in availableElements) {
+        settings += '<tr><td class="text-white">' + availableElements[i] + '</td>';
+        settings += '<td class="text-white"><input type="checkbox" name="' + name + '" id="' + availableElements[i] + '" /></td></tr>';
     }
     settings += '</table></div>';
     return settings;
 }
 
 function populateSettings() {
-    $('#container-settings').append(createSettings(availableColors, 'colors'));
-    $('#container-settings').append(createSettings(availablePrios, 'priorities'));
+    $('#settings-container').html('');
+    $('#settings-container').append(createSettings(availableColors, activeColors, 'colors'));
+    $('#settings-container').append(createSettings(availablePrios, activePrios, 'priorities'));
     let bgPrioElements = [];
     for (let i in activePrios) {
         bgPrioElements.push('bg-' + activePrios[i]);
     }
-    $('#container-settings').append(createSettings(bgPrioElements, 'background'));
+    $('#settings-container').append(createSettings(bgPrioElements, [], 'background'));
 }

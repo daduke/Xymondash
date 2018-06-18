@@ -239,7 +239,7 @@ h1.text-white {
     display: inline-block;
 }
 
-#container-settings-header {
+#settings-container-header {
     margin-top: 8px;
     margin-right: 8px;
 }
@@ -248,11 +248,11 @@ h1.text-white {
     float: right;
 }
 
-#container-settings {
+#settings-container {
     margin: .6em;
 }
 
-#panel-settings {
+#settings-panel {
     position: fixed;
     width: 360px;
     margin-right: -360px;
@@ -264,7 +264,7 @@ h1.text-white {
     background: rgba(0, 0, 0, 0.8);
 }
 
-#panel-settings.active {
+#settings-panel.active {
     right: 360px;
     overflow-x: hidden;
 }

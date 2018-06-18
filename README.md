@@ -20,7 +20,12 @@ use:
 
 TODO
   * ack greift nicht auf critical
-  * Abhängigkeiten color, prio bei config?
+  * Abhängigkeiten color, prio bei config? nur "tiefste" Farbe?
+  * config: set checked from active
+  * weiss? dialup?
+  * host ack button?
+  * ack until ok? blue?
+  * nicht benutzte Spalten ausblenden
   * favicon
   * ack button on mobile?
   * bg color logic -> daduke check if done by rda
