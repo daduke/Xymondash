@@ -17,6 +17,9 @@ internal:
 use:
   * jquery
   * jqueryui with dialog
+  * fontawesome
+  * https://github.com/js-cookie/js-cookie
+  * dateFormat.js
 
 TODO
   * ack greift nicht auf critical

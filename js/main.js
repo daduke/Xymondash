@@ -12,6 +12,10 @@ let availablePrios = ['prio1', 'prio2', 'prio3', 'prio4', 'ack'];
 let activePrios = ['prio1', 'prio2'];
 let activeBgPrios = ['prio1', 'prio2'];
 
+if (Cookies.get('xymondashsettings')) {
+    [activeColors, activePrios, activeBgPrios] = Cookies.getJSON('xymondashsettings');
+}
+
 let dialogForm, dialogPopup, backgroundColor;
 let paused = false;
 
@@ -105,6 +109,7 @@ $(document).ready(function(){
         $(this).hide();
         $("#container-buttons").show();
         triggerUpdate();
+        writeCookie();
     });
 });
 
@@ -378,4 +383,8 @@ function populateSettings() {
     $('#settings-container').append(createSettings(availableColors, activeColors, 'colors'));
     $('#settings-container').append(createSettings(availablePrios, activePrios, 'priorities'));
     $('#settings-container').append(createSettings(availablePrios, activeBgPrios, 'background'));
+}
+
+function writeCookie() {
+    Cookies.set('xymondashsettings', [activeColors, activePrios, activeBgPrios]);
 }
