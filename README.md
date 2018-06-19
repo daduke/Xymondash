@@ -31,6 +31,7 @@ TODO
   * nicht benutzte Spalten ausblenden
   * ack button on mobile?
   * graphen + Lupe in msg
+  * mark all as seen -> gray
   * config:
     * JSON URL configurable
     * xymon detail URL configurable
