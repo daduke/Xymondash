@@ -48,7 +48,7 @@ $(document).ready(function(){
         }
     });
 
-    dialogForm = $( "#dialog-form" ).dialog({       //acknowledge form template
+    dialogForm = $("#dialog-form").dialog({       //acknowledge form template
         autoOpen: false,
         height: 300,
         width: 350,
@@ -70,7 +70,7 @@ $(document).ready(function(){
         }
     });
 
-    dialogPopup = $( "#dialog-popup" ).dialog({     //acknowledge msg popup
+    dialogPopup = $("#dialog-popup").dialog({     //acknowledge msg popup
         autoOpen: false,
         modal: false,
         close: function() {
@@ -82,12 +82,7 @@ $(document).ready(function(){
         }
     });
 
-    populateSettings();
-    triggerUpdate();              //fetch data and fill matrix
-
-    setInterval(function() {    //reload every 30s
-        if (!paused) { triggerUpdate() };
-    }, 30000);
+    $("#period").selectmenu();
 
     $("#reload").click(function(){
         triggerUpdate();
@@ -111,6 +106,17 @@ $(document).ready(function(){
         triggerUpdate();
         writeCookie();
     });
+
+    $("input#message").click(function (e) {
+        $(this).val('');
+    });
+
+    setInterval(function() {    //reload every 30s
+        if (!paused) { triggerUpdate() };
+    }, 30000);
+
+    populateSettings();
+    triggerUpdate();              //fetch data and fill matrix
 });
 
 function triggerUpdate() {
@@ -145,13 +151,9 @@ function processData() {
         let test = entry.testname.trim();
         let color = entry.color.trim();
         let msg = entry.msg.trim();
-        let prioString = entry.XMH_CLASS.match(/_P(\d)_/);
-        let prio, ackmsg, acktime, cookie;
-        if (prioString) {
-            prio = 'prio' + prioString[1].trim();
-        } else {
-            prio = 'prio4';
-        }
+        let prioVal = (entry.critscore)?entry.critscore.trim():4;
+        let ackmsg, acktime, cookie;
+        let prio = 'prio' + prioVal;
         if (entry.ackmsg) {
             ackmsg = entry.ackmsg;
             acktime = entry.acktime;
@@ -305,11 +307,16 @@ function getJSON(url, callback) {
 }
 
 function ackTest() {
-    var fields = ['number', 'delay', 'message'];
+    var fields = ['number', 'delay', 'period', 'message'];
     var vals = {};
     fields.forEach(function(field) {
         vals[field] = $("#"+field).val().trim();
     });
+    if (vals['period'] == 'hours') {
+        vals['delay'] *= 60;
+    } else if (vals['period'] == 'days') {
+        vals['delay'] *= 60*24;
+    }
 
     $.ajax({
         type: "POST",

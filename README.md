@@ -16,7 +16,7 @@ internal:
 
 use:
   * jquery
-  * jqueryui with dialog
+  * jqueryui Dark Hive with dialog + selectmenu + tooltip
   * fontawesome
   * https://github.com/js-cookie/js-cookie
   * dateFormat.js
@@ -24,7 +24,6 @@ use:
 TODO
   * ack greift nicht auf critical
   * Abhängigkeiten color, prio bei config? nur "tiefste" Farbe?
-  * config: set checked from active
   * prio4 -> "other"?
   * weiss? dialup?
   * host ack button?
@@ -32,11 +31,7 @@ TODO
   * nicht benutzte Spalten ausblenden
   * favicon
   * ack button on mobile?
-  * bg color logic -> daduke check if done by rda
   * form clear on enter
-  * couple colors array to URL
-  * ack time period
-  * hide acked -> JS -> andere prios dürfen nicht da rein rutschen
   * https redirect
   * graphen + Lupe in msg
   * config:
