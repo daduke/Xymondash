@@ -260,6 +260,22 @@ function processData() {
     });
     setBackgroundColor();
 
+    availablePrios.concat('ack').forEach(function(prio) {
+        let allEmpty = true;
+        availableColors.forEach(function(color) {
+            let selector = color + '_' + prio;
+            if (!$("#" + selector).hasClass("inv")) {
+                allEmpty = false;
+            }
+        });
+        if (allEmpty) {
+            activeColors.concat('l').forEach(function(color) {
+                let selector = color + '_' + prio;
+                $("#" + selector).addClass("remove");
+            });
+        }
+    });
+
     $("span.info").click(function(){
         $(this).innerHTML = $(this).parent().parent().data("host")+' / ';
         let link = createLink($(this).parent().data("host"), 'info');
