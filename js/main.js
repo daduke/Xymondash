@@ -302,7 +302,14 @@ function processData() {
         });
     }
     let width = (100/numCols) - 2;
-    $('.col-sm').css('width', width + '%')
+    const mq = window.matchMedia( "(max-width: 720px)" );
+    if (mq.matches) {
+        $('.col-sm').css('width', '100%');
+        $('.col-sm').css('max-width', '100%');
+    } else {
+        $('.col-sm').css('width', width + '%');
+        $('.col-sm').css('max-width', '48%');
+    }
 
     $("span.info").click(function(){
         $(this).innerHTML = $(this).parent().parent().data("host")+' / ';
@@ -435,6 +442,11 @@ function populateSettings() {
     $('#settings-container-pick').append(createSettings(availableColors, config['activeColors'], 'colors'));
     $('#settings-container-pick').append(createSettings(availablePrios, config['activePrios'], 'priorities'));
     $('#settings-container-pick').append(createSettings(availablePrios, config['activeBgPrios'], 'background'));
+    ['hideCols'].forEach(function(checkbox) {
+        if (config[checkbox]) {
+            $("input#"+checkbox).prop("checked", true);
+        }
+    });
 }
 
 function writeCookie() {

@@ -114,7 +114,6 @@ div.tests {
 
 .col-sm {
     width: 18%;
-    max-width: 50%;
     border: none;
     padding: 2px;
     vertical-align: text-top;
@@ -312,26 +311,27 @@ h1.text-white {
 
 /* make it responsive */
 @media screen and (max-width:720px) {
-    #content table, #content td, #content tr {
+    table#container td {
         display: block;
     }
-    #content td {
-        width: 100%;
-        border: none;
-        position: relative;
-    }
-    #content td.inv {
+
+    table#container td.inv {
         display: none;
     }
-    .col-sm {
+
+    td.col-sm {
         width: 100%;
+        max-width: 100%;
     }
+
     .legend {
         display: none;
     }
+
     .ui-tooltip {
         max-width: 100%;
     }
+
     .ptag {
         display: block;
     }
