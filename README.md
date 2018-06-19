@@ -28,7 +28,7 @@ TODO
   * weiss? dialup?
   * host ack button?
   * ack until ok? blue?
-  * nicht benutzte Spalten ausblenden
+  * nicht benutzte Spalten ausblenden -> adapt width
   * ack button on mobile?
   * graphen + Lupe in msg
   * config:
@@ -37,6 +37,8 @@ TODO
     * ack URL configurable
     * font
     * reload interval
+    * .remove
+    * cookie livetime
 
 Ideen:
   * host search+filter inkl. grün
