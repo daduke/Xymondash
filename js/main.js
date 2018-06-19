@@ -7,13 +7,16 @@
 */
 
 let availableColors = ['red', 'yellow', 'purple', 'blue', 'green'];
-let activeColors = ['red', 'yellow'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'prio4', 'ack'];
-let activePrios = ['prio1', 'prio2'];
-let activeBgPrios = ['prio1', 'prio2'];
+let config = {};
 
 if (Cookies.get('xymondashsettings')) {
-    [activeColors, activePrios, activeBgPrios] = Cookies.getJSON('xymondashsettings');
+    config = Cookies.getJSON('xymondashsettings');
+} else {
+    config['activeColors'] = ['red', 'yellow'];
+    config['activePrios'] = ['prio1', 'prio2'];
+    config['activeBgPrios'] = ['prio1', 'prio2'];
+    config['hideCols'] = false;
 }
 
 let dialogForm, dialogPopup, backgroundColor;
@@ -103,8 +106,28 @@ $(document).ready(function(){
         $("#settings-panel").toggleClass("active");
         $(this).hide();
         $("#container-buttons").show();
-        triggerUpdate();
+
+        config['activeColors'] = [];
+        config['activePrios'] = [];
+        config['activeBgPrios'] = [];
+        config['hideCols'] = false;
+
+        //update config settings
+        $('input[name="colors"]:checked').each(function(index) {
+            config['activeColors'].push($(this).attr('id'));
+        });
+        $('input[name="priorities"]:checked').each(function(index) {
+            config['activePrios'].push($(this).attr('id'));
+        });
+        $('input[name="background"]:checked').each(function(index) {
+            config['activeBgPrios'].push($(this).attr('id'));
+        });
+        $('input[name="hideCols"]:checked').each(function(index) {
+            config['hideCols'] = true;
+        });
+
         writeCookie();
+        triggerUpdate();
     });
 
     $("input#message").click(function (e) {
@@ -125,16 +148,10 @@ function triggerUpdate() {
     activePrios = [];
     activeBgPrios = [];
 
-    $('input[name="colors"]:checked').each(function(index) {
-        params += (index == 0) ? '?color=' : ',';
-        params += $(this).attr('id');
-        activeColors.push($(this).attr('id'));
-    });
-    $('input[name="priorities"]:checked').each(function(index) {
-        activePrios.push($(this).attr('id'));
-    });
-    $('input[name="background"]:checked').each(function(index) {
-        activeBgPrios.push($(this).attr('id'));
+    let i = 0;
+    config['activeColors'].forEach(function(color) {
+        params += (i++ == 0) ? '?color=' : ',';
+        params += color;
     });
     backgroundColor = "green";
     getJSON('https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json'+params, processData);
@@ -187,13 +204,18 @@ function processData() {
             var sel = color + '_' + prio;
             $('#' + sel).html('<div class="ptag">'+prio+'</div>');
             $('#' + sel).addClass("inv");
+            $("#" + sel).removeClass("remove");
         });
+    });
+    availablePrios.forEach(function(prio) {
+        var sel = 'l_' + prio;
+        $("#" + sel).removeClass("remove");
     });
 
     let x = 0;
     let y = 0;
-    activeColors.forEach(function(color) {        //build up matrix and display entries data
-        activePrios.forEach(function(prio) {
+    config['activeColors'].forEach(function(color) {        //build up matrix and display entries data
+        config['activePrios'].forEach(function(prio) {
             let pos = x + 10*y;             //our 'severity position' in the prio/color matrix
             if (entries[color] && entries[color][prio]) {
                 let hosts = entries[color][prio];
@@ -211,7 +233,7 @@ function processData() {
                         let lowestPosHost = lowestX + 10*lowestY;
                         let selector;
                         if (lowestPosHost < pos) {    //if we have a higher prio/color entry already
-                            selector = activeColors[lowestY] + '_' + activePrios[lowestX];
+                            selector = config['activeColors'][lowestY] + '_' + config['activePrios'][lowestX];
                         } else {
                             selector = color + '_' + prio;
                             lowestPos[host]['x'] = x;
@@ -259,6 +281,24 @@ function processData() {
         y++;
     });
     setBackgroundColor();
+
+    if (config['hideCols']) {
+        availablePrios.concat('ack').forEach(function(prio) {
+            let allEmpty = true;
+            availableColors.forEach(function(color) {
+                let selector = color + '_' + prio;
+                if (!$("#" + selector).hasClass("inv")) {
+                    allEmpty = false;
+                }
+            });
+            if (allEmpty) {
+                config['activeColors'].concat('l').forEach(function(color) {
+                    let selector = color + '_' + prio;
+                    $("#" + selector).addClass("remove");
+                });
+            }
+        });
+    }
 
     $("span.info").click(function(){
         $(this).innerHTML = $(this).parent().parent().data("host")+' / ';
@@ -341,7 +381,7 @@ function keys(obj) {
 }
 
 function background(color, prio) {
-    if (activeBgPrios.includes(prio)) {
+    if (config['activeBgPrios'].includes(prio)) {
        if (backgroundColor == 'red') {
            return;
        } else if (backgroundColor == 'purple') {
@@ -387,14 +427,14 @@ function createSettings(availableElements, activeElements, name) {
 }
 
 function populateSettings() {
-    $('#settings-container').html('');
-    $('#settings-container').append(createSettings(availableColors, activeColors, 'colors'));
-    $('#settings-container').append(createSettings(availablePrios, activePrios, 'priorities'));
-    $('#settings-container').append(createSettings(availablePrios, activeBgPrios, 'background'));
+    $('#settings-container-pick').html('');
+    $('#settings-container-pick').append(createSettings(availableColors, config['activeColors'], 'colors'));
+    $('#settings-container-pick').append(createSettings(availablePrios, config['activePrios'], 'priorities'));
+    $('#settings-container-pick').append(createSettings(availablePrios, config['activeBgPrios'], 'background'));
 }
 
 function writeCookie() {
-    Cookies.set('xymondashsettings', [activeColors, activePrios, activeBgPrios]);
+    Cookies.set('xymondashsettings', config);
 }
 
 const changeFavicon = link => {
