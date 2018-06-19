@@ -180,7 +180,6 @@ function processData() {
             lowestPos[host]['x'] = 10;
             lowestPos[host]['y'] = 10;
         }
-        background(color, prio);
     });
 
     availableColors.forEach(function(color) {        //clean up old stuff
@@ -252,6 +251,7 @@ function processData() {
                         }
                     }
                 }
+                background(color, prio);    //TODO bg color only for displayed prios or all?
             }
             x++;
         });
@@ -371,6 +371,7 @@ function setBackgroundColor() {
             $('#bg').fadeIn(250);
         });
     }
+    changeFavicon("img/" + backgroundColor + ".ico");
 }
 
 function createSettings(availableElements, activeElements, name) {
@@ -394,4 +395,19 @@ function populateSettings() {
 
 function writeCookie() {
     Cookies.set('xymondashsettings', [activeColors, activePrios, activeBgPrios]);
+}
+
+const changeFavicon = link => {
+    let $favicon = document.querySelector('link[rel="icon"]')
+    // If a <link rel="icon"> element already exists,
+    // change its href to the given link.
+    if ($favicon !== null) {
+        $favicon.href = link
+        // Otherwise, create a new element and append it to <head>.
+    } else {
+        $favicon = document.createElement("link")
+        $favicon.rel = "icon"
+        $favicon.href = link
+        document.head.appendChild($favicon)
+    }
 }

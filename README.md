@@ -29,10 +29,7 @@ TODO
   * host ack button?
   * ack until ok? blue?
   * nicht benutzte Spalten ausblenden
-  * favicon
   * ack button on mobile?
-  * form clear on enter
-  * https redirect
   * graphen + Lupe in msg
   * config:
     * JSON URL configurable
