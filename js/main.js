@@ -282,8 +282,9 @@ function processData() {
     });
     setBackgroundColor();
 
+    let numCols = availablePrios.length;
     if (config['hideCols']) {
-        availablePrios.concat('ack').forEach(function(prio) {
+        availablePrios.forEach(function(prio) {
             let allEmpty = true;
             availableColors.forEach(function(color) {
                 let selector = color + '_' + prio;
@@ -296,9 +297,12 @@ function processData() {
                     let selector = color + '_' + prio;
                     $("#" + selector).addClass("remove");
                 });
+                numCols--;
             }
         });
     }
+    let width = (100/numCols) - 2;
+    $('.col-sm').css('width', width + '%')
 
     $("span.info").click(function(){
         $(this).innerHTML = $(this).parent().parent().data("host")+' / ';

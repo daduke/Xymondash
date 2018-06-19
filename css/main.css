@@ -114,6 +114,7 @@ div.tests {
 
 .col-sm {
     width: 18%;
+    max-width: 50%;
     border: none;
     padding: 2px;
     vertical-align: text-top;
@@ -286,6 +287,7 @@ h1.text-white {
     overflow-y: auto;
     z-index: 10;
     background: rgba(0, 0, 0, 0.8);
+    transition: all 0.4s cubic-bezier(.72,0,.2,1);
 }
 
 #settings-panel.active {
