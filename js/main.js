@@ -6,6 +6,10 @@
 
 */
 
+const XYMONURL     = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh';
+const XYMONACKURL  = 'https://xymon.phys.ethz.ch/xymonjs/cgi/xymon-ack';
+const XYMONJSONURL = 'https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json';
+
 let availableColors = ['red', 'yellow', 'purple', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
 let config = {};
@@ -154,7 +158,7 @@ function triggerUpdate() {
         params += color;
     });
     backgroundColor = "green";
-    getJSON('https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json'+params, processData);
+    getJSON(XYMONJSONURL + params, processData);
 }
 
 function processData() {
@@ -346,8 +350,7 @@ function processData() {
 }
 
 function createLink(host, test) {
-    return 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh?HOST='
-        +host+'&SERVICE='+test;
+    return XYMONURL + '?HOST=' +host+'&SERVICE='+test;
 }
 
 function getJSON(url, callback) {
@@ -386,7 +389,7 @@ function ackTest() {
 
     $.ajax({
         type: "POST",
-        url: "https://xymon.phys.ethz.ch/xymonjs/cgi/xymon-ack ",
+        url: XYMONACKURL,
         data: { number: vals['number'], min: vals['delay'], msg: vals['message'] },
         success: function( data ) {
             dialogForm.dialog( "close" );
