@@ -21,6 +21,7 @@ if (Cookies.get('xymondashsettings')) {
     config['activePrios'] = ['prio1', 'prio2'];
     config['activeBgPrios'] = ['prio1', 'prio2'];
     config['hideCols'] = false;
+    config['notifications'] = false;
 }
 
 let dialogForm, backgroundColor;
@@ -104,6 +105,7 @@ $(document).ready(function(){
         config['activePrios'] = [];
         config['activeBgPrios'] = [];
         config['hideCols'] = false;
+        config['notifications'] = false;
 
         //update config settings
         $('input[name="colors"]:checked').each(function(index) {
@@ -118,6 +120,9 @@ $(document).ready(function(){
         $('input[name="hideCols"]:checked').each(function(index) {
             config['hideCols'] = true;
         });
+        $('input[name="notifications"]:checked').each(function(index) {
+            config['notifications'] = true;
+        });
         let font = $('select#font').val();
         config['font'] = font;
         $("#page").css("font-family", font);
@@ -125,6 +130,24 @@ $(document).ready(function(){
         writeCookie();
         triggerUpdate();
     });
+
+    if (config['notifications']) {
+        if (!window.Notification) {
+            alert("Sorry, notifications not supported in this browser!");
+        } else {
+            if (Notification.permission === 'default') {
+                Notification.requestPermission(function(p) {
+                    if (p === 'denied')
+                        alert('You have denied Xymondash notification.');
+                    else {
+                        notify = new Notification('xymondash', {
+                            body: 'You have accepted Xymondash notifications.'
+                        });
+                    }
+                });
+            }
+        }
+    }
 
     $("input#message").click(function (e) {
         $(this).val('');
@@ -426,8 +449,12 @@ function setBackgroundColor() {
             $('#bg').addClass('bg-' + backgroundColor);
             $('#bg').fadeIn(250);
         });
+        let icon = "img/" + backgroundColor + ".ico";
+        changeFavicon(icon);
+        if (config['notifications']) {
+            showNotification('Xymon overall status changed to ' + backgroundColor, icon);
+        }
     }
-    changeFavicon("img/" + backgroundColor + ".ico");
 }
 
 function createSettings(availableElements, activeElements, name) {
@@ -460,7 +487,7 @@ function populateSettings() {
     $('#settings-container-pick').append('</div');
     $("#font").selectmenu();
 
-    ['hideCols'].forEach(function(checkbox) {
+    ['hideCols', 'notifications'].forEach(function(checkbox) {
         if (config[checkbox]) {
             $("input#"+checkbox).prop("checked", true);
         }
@@ -481,4 +508,11 @@ const changeFavicon = link => {
         $favicon.href = link
         document.head.appendChild($favicon)
     }
+}
+
+function showNotification(msg, icon) {
+    notify = new Notification('New Notifications!', {
+        body: msg,
+        icon: icon
+    });
 }

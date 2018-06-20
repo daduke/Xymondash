@@ -29,7 +29,6 @@ TODO
   * graphen + Lupe in msg
   * mark all as seen -> gray
   * fade tests
-  * desktop notifications
 
 Ideen:
   * host search+filter inkl. grün
