@@ -7,7 +7,7 @@
 */
 
 let availableColors = ['red', 'yellow', 'purple', 'blue', 'green'];
-let availablePrios = ['prio1', 'prio2', 'prio3', 'prio4', 'ack'];
+let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
 let config = {};
 
 if (Cookies.get('xymondashsettings')) {
@@ -168,9 +168,11 @@ function processData() {
         let test = entry.testname.trim();
         let color = entry.color.trim();
         let msg = entry.msg.trim();
-        let prioVal = (entry.critscore)?entry.critscore.trim():4;
+        let prio = 'other';
+        if (entry.critscore) {
+            prio = 'prio' + entry.critscore;
+        }
         let ackmsg, acktime, cookie;
-        let prio = 'prio' + prioVal;
         if (entry.ackmsg) {
             ackmsg = entry.ackmsg;
             acktime = entry.acktime;

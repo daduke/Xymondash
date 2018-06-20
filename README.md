@@ -24,7 +24,6 @@ use:
 TODO
   * unack?
   * ack greift nicht auf critical
-  * prio4 -> "other"?
   * weiss? dialup?
   * host ack button?
   * ack until ok? blue?
