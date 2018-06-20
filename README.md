@@ -35,7 +35,6 @@ TODO
     * JSON URL configurable
     * xymon detail URL configurable
     * ack URL configurable
-    * font
     * reload interval
 
 Ideen:

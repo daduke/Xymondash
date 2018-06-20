@@ -205,7 +205,7 @@ div#flash {
 
 .ui-tooltip-content {
     font-family: "M-1m";
-    font-size: 85%;
+    font-size: 80%;
     white-space: pre-line;
 }
 
@@ -289,7 +289,7 @@ h1.text-white {
     float: right;
 }
 
-#settings-container-pick {
+#settings-container-pick, #settings-container-rest {
     margin: .6em;
 }
 
@@ -302,7 +302,7 @@ h1.text-white {
     height: 100%;
     overflow-y: auto;
     z-index: 10;
-    background: rgba(50, 50, 50, 0.8);
+    background: rgba(40, 40, 40, 0.8);
     transition: all 0.4s cubic-bezier(.72,0,.2,1);
 }
 
