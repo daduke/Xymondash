@@ -23,7 +23,7 @@ if (Cookies.get('xymondashsettings')) {
     config['hideCols'] = false;
 }
 
-let dialogForm, dialogPopup, backgroundColor;
+let dialogForm, backgroundColor;
 let paused = false;
 
 $(document).ready(function(){
@@ -74,18 +74,6 @@ $(document).ready(function(){
             $("#hostname").val(hostname);
             let testname = options.testname;
             $("#testname").val(testname);
-        }
-    });
-
-    dialogPopup = $("#dialog-popup").dialog({     //acknowledge msg popup
-        autoOpen: false,
-        modal: false,
-        close: function() {
-        },
-        open: function() {
-            let options = $( "#dialog-popup" ).dialog( "option" );
-            let ackmsg = options.ackmsg;
-            $("#ackmsg-popup").html(ackmsg);
         }
     });
 
@@ -346,9 +334,6 @@ function processData() {
             dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
             dialogForm.dialog("option", "testname", $(this).parent().children("span.test").data("test"));
             dialogForm.dialog("open");
-        } else {
-            dialogPopup.dialog("option", "ackmsg", unescape($(this).parent().children("span.test").data("ackmsg")));
-            dialogPopup.dialog("open");
         }
     });
 }
@@ -469,7 +454,6 @@ function populateSettings() {
     $("body").css("font-family").replace(/\"/g, '').split(',').forEach(function(font) {
         font = font.trim();
         let sel = (font == activeFont)?' selected':'';
-        console.log(font, activeFont);
         fontSel += '<option value="' + font + '"' + sel + '>' + font + '</option>';
     });
     fontSel += '</select>';
