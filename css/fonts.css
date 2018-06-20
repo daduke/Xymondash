@@ -1,153 +1,75 @@
 @font-face {
   font-family: 'Ubuntu';
-  src: url('../fonts/ubuntu/Ubuntu-R.ttf') format('truetype');
+  src: url('../webfonts/ubuntu/Ubuntu-R.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'Ubuntu';
-  src: url('../fonts/ubuntu/Ubuntu-RI.ttf') format('truetype');
+  src: url('../webfonts/ubuntu/Ubuntu-RI.ttf') format('truetype');
   font-weight: normal;
   font-style: italic;
 }
-/*
 @font-face {
   font-family: 'Ubuntu';
-  src: url('../fonts/ubuntu/Ubuntu-M.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Ubuntu';
-  src: url('../fonts/ubuntu/Ubuntu-MI.ttf') format('truetype');
-  font-weight: normal;
-  font-style: italic;
-}
-*/
-@font-face {
-  font-family: 'Ubuntu';
-  src: url('../fonts/ubuntu/Ubuntu-B.ttf') format('truetype');
+  src: url('../webfonts/ubuntu/Ubuntu-B.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: 'Ubuntu';
-  src: url('../fonts/ubuntu/Ubuntu-BI.ttf') format('truetype');
+  src: url('../webfonts/ubuntu/Ubuntu-BI.ttf') format('truetype');
   font-weight: bold;
   font-style: italic;
 }
-@font-face {
-  font-family: 'DINPro';
-  src: url('../fonts/dinpro/DINPro.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'DINPro';
-  src: url('../fonts/dinpro/DINPro-Italic.otf') format('opentype');
-  font-weight: normal;
-  font-style: italic;
-}
-/*
-@font-face {
-  font-family: 'DINPro';
-  src: url('../fonts/dinpro/DINPro-Medium.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'DINPro';
-  src: url('../fonts/dinpro/DINPro-MediumItalic.otf') format('opentype');
-  font-weight: normal;
-  font-style: italic;
-}
-*/
-@font-face {
-  font-family: 'DINPro';
-  src: url('../fonts/dinpro/DINPro-Bold.otf') format('opentype');
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'DINPro';
-  src: url('../fonts/dinpro/DINPro-BoldItalic.otf') format('opentype');
-  font-weight: bold;
-  font-style: italic;
-}
-
-
 @font-face {
   font-family: 'Rubik';
-  src: url('../fonts/rubik/Rubik-Regular.ttf') format('truetype');
+  src: url('../webfonts/rubik/Rubik-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'Rubik';
-  src: url('../fonts/rubik/Rubik-Italic.ttf') format('truetype');
+  src: url('../webfonts/rubik/Rubik-Italic.ttf') format('truetype');
   font-weight: normal;
   font-style: italic;
 }
 @font-face {
   font-family: 'Rubik';
-  src: url('../fonts/rubik/Rubik-Medium.ttf') format('truetype');
+  src: url('../webfonts/rubik/Rubik-Medium.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: 'Rubik';
-  src: url('../fonts/rubik/Rubik-MediumItalic.ttf') format('truetype');
+  src: url('../webfonts/rubik/Rubik-MediumItalic.ttf') format('truetype');
   font-weight: bold;
   font-style: italic;
 }
-/*
-@font-face {
-  font-family: 'Rubik';
-  src: url('../fonts/rubik/Rubik-Bold.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Rubik';
-  src: url('../fonts/rubik/Rubik-BoldItalic.ttf') format('truetype');
-  font-weight: bold;
-  font-style: italic;
-}
-*/
-
 @font-face {
   font-family: 'OpenSans';
-  src: url('../fonts/open-sans/OpenSans-Regular.ttf') format('truetype');
+  src: url('../webfonts/open-sans/OpenSans-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'OpenSans';
-  src: url('../fonts/open-sans/OpenSans-Italic.ttf') format('truetype');
+  src: url('../webfonts/open-sans/OpenSans-Italic.ttf') format('truetype');
   font-weight: normal;
   font-style: italic;
 }
 @font-face {
   font-family: 'OpenSans';
-  src: url('../fonts/open-sans/OpenSans-Bold.ttf') format('truetype');
+  src: url('../webfonts/open-sans/OpenSans-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
 @font-face {
   font-family: 'OpenSans';
-  src: url('../fonts/open-sans/OpenSans-BoldItalic.ttf') format('truetype');
+  src: url('../webfonts/open-sans/OpenSans-BoldItalic.ttf') format('truetype');
   font-weight: bold;
   font-style: italic;
 }
-
-@font-face {
-  font-family: 'WhiteRabbit';
-  src: url('../fonts/white-rabbit/whitrabt.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-
 @font-face {
   font-family: 'abelregular';
   src: url('../webfonts/abel/abel-regular-webfont.eot');
@@ -179,38 +101,15 @@
   font-weight: normal;
   font-style: normal;
 }
-
-/*
 @font-face {
   font-family: 'M-1m';
-  src: url('../fonts/m-1m/mplus-1m-thin.ttf') format('truetype');
+  src: url('../webfonts/m-1m/mplus-1m-regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'M-1m';
-  src: url('../fonts/m-1m/mplus-1m-light.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-*/
-@font-face {
-  font-family: 'M-1m';
-  src: url('../fonts/m-1m/mplus-1m-regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'M-1m';
-  src: url('../fonts/m-1m/mplus-1m-medium.ttf') format('truetype');
+  src: url('../webfonts/m-1m/mplus-1m-medium.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
-/*
-@font-face {
-  font-family: 'M-1m';
-  src: url('../fonts/m-1m/mplus-1m-bold.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-}
-*/

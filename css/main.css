@@ -1,22 +1,17 @@
 html {
-    /* Adjust font size */
     font-size: 100%;
     -webkit-text-size-adjust: 100%;
-    /* Font varient */
     font-variant-ligatures: none;
     -webkit-font-variant-ligatures: none;
-    /* Smoothing */
     text-rendering: optimizeLegibility;
     -moz-osx-font-smoothing: grayscale;
     font-smoothing: antialiased;
     -webkit-font-smoothing: antialiased;
-    /* text-shadow: rgba(0, 0, 0, .01) 0 0 1px; */
-    /* text glow incl. smoothing */
     text-shadow: 0px 0px 0.04rem rgba(0, 0, 0, 0.25);
 }
 
 body {
-    font-family: "Orbitron", "abelregular", "Ubuntu", "Rubik",  Sans-Serif;
+    font-family: "Orbitron", "OpenSans", "abelregular", "Ubuntu", "Rubik",  Sans-Serif;
     font-size: 0.8rem;
     color: #000;
     background: #000;

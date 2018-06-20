@@ -29,11 +29,7 @@ TODO
   * graphen + Lupe in msg
   * mark all as seen -> gray
   * fade tests
-  * config:
-    * JSON URL configurable
-    * xymon detail URL configurable
-    * ack URL configurable
-    * reload interval
+  * desktop notifications
 
 Ideen:
   * host search+filter inkl. grün
