@@ -1,6 +1,6 @@
-/*! jQuery UI - v1.12.1 - 2018-06-19
+/*! jQuery UI - v1.12.1 - 2018-06-20
 * http://jqueryui.com
-* Includes: widget.js, position.js, data.js, disable-selection.js, focusable.js, form-reset-mixin.js, keycode.js, labels.js, scroll-parent.js, tabbable.js, unique-id.js, widgets/draggable.js, widgets/resizable.js, widgets/button.js, widgets/checkboxradio.js, widgets/controlgroup.js, widgets/dialog.js, widgets/menu.js, widgets/mouse.js, widgets/selectmenu.js, widgets/tooltip.js, effect.js, effects/effect-fade.js, effects/effect-slide.js
+* Includes: widget.js, position.js, data.js, disable-selection.js, focusable.js, form-reset-mixin.js, keycode.js, labels.js, scroll-parent.js, tabbable.js, unique-id.js, widgets/draggable.js, widgets/resizable.js, widgets/button.js, widgets/checkboxradio.js, widgets/controlgroup.js, widgets/dialog.js, widgets/menu.js, widgets/mouse.js, widgets/selectmenu.js, widgets/tooltip.js, effect.js, effects/effect-blind.js, effects/effect-bounce.js, effects/effect-clip.js, effects/effect-drop.js, effects/effect-explode.js, effects/effect-fade.js, effects/effect-fold.js, effects/effect-highlight.js, effects/effect-puff.js, effects/effect-pulsate.js, effects/effect-scale.js, effects/effect-shake.js, effects/effect-size.js, effects/effect-slide.js, effects/effect-transfer.js
 * Copyright jQuery Foundation and other contributors; Licensed MIT */
 
 (function( factory ) {
@@ -9631,6 +9631,361 @@ var effect = $.effects;
 
 
 /*!
+ * jQuery UI Effects Blind 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Blind Effect
+//>>group: Effects
+//>>description: Blinds the element.
+//>>docs: http://api.jqueryui.com/blind-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectBlind = $.effects.define( "blind", "hide", function( options, done ) {
+	var map = {
+			up: [ "bottom", "top" ],
+			vertical: [ "bottom", "top" ],
+			down: [ "top", "bottom" ],
+			left: [ "right", "left" ],
+			horizontal: [ "right", "left" ],
+			right: [ "left", "right" ]
+		},
+		element = $( this ),
+		direction = options.direction || "up",
+		start = element.cssClip(),
+		animate = { clip: $.extend( {}, start ) },
+		placeholder = $.effects.createPlaceholder( element );
+
+	animate.clip[ map[ direction ][ 0 ] ] = animate.clip[ map[ direction ][ 1 ] ];
+
+	if ( options.mode === "show" ) {
+		element.cssClip( animate.clip );
+		if ( placeholder ) {
+			placeholder.css( $.effects.clipToBox( animate ) );
+		}
+
+		animate.clip = start;
+	}
+
+	if ( placeholder ) {
+		placeholder.animate( $.effects.clipToBox( animate ), options.duration, options.easing );
+	}
+
+	element.animate( animate, {
+		queue: false,
+		duration: options.duration,
+		easing: options.easing,
+		complete: done
+	} );
+} );
+
+
+/*!
+ * jQuery UI Effects Bounce 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Bounce Effect
+//>>group: Effects
+//>>description: Bounces an element horizontally or vertically n times.
+//>>docs: http://api.jqueryui.com/bounce-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectBounce = $.effects.define( "bounce", function( options, done ) {
+	var upAnim, downAnim, refValue,
+		element = $( this ),
+
+		// Defaults:
+		mode = options.mode,
+		hide = mode === "hide",
+		show = mode === "show",
+		direction = options.direction || "up",
+		distance = options.distance,
+		times = options.times || 5,
+
+		// Number of internal animations
+		anims = times * 2 + ( show || hide ? 1 : 0 ),
+		speed = options.duration / anims,
+		easing = options.easing,
+
+		// Utility:
+		ref = ( direction === "up" || direction === "down" ) ? "top" : "left",
+		motion = ( direction === "up" || direction === "left" ),
+		i = 0,
+
+		queuelen = element.queue().length;
+
+	$.effects.createPlaceholder( element );
+
+	refValue = element.css( ref );
+
+	// Default distance for the BIGGEST bounce is the outer Distance / 3
+	if ( !distance ) {
+		distance = element[ ref === "top" ? "outerHeight" : "outerWidth" ]() / 3;
+	}
+
+	if ( show ) {
+		downAnim = { opacity: 1 };
+		downAnim[ ref ] = refValue;
+
+		// If we are showing, force opacity 0 and set the initial position
+		// then do the "first" animation
+		element
+			.css( "opacity", 0 )
+			.css( ref, motion ? -distance * 2 : distance * 2 )
+			.animate( downAnim, speed, easing );
+	}
+
+	// Start at the smallest distance if we are hiding
+	if ( hide ) {
+		distance = distance / Math.pow( 2, times - 1 );
+	}
+
+	downAnim = {};
+	downAnim[ ref ] = refValue;
+
+	// Bounces up/down/left/right then back to 0 -- times * 2 animations happen here
+	for ( ; i < times; i++ ) {
+		upAnim = {};
+		upAnim[ ref ] = ( motion ? "-=" : "+=" ) + distance;
+
+		element
+			.animate( upAnim, speed, easing )
+			.animate( downAnim, speed, easing );
+
+		distance = hide ? distance * 2 : distance / 2;
+	}
+
+	// Last Bounce when Hiding
+	if ( hide ) {
+		upAnim = { opacity: 0 };
+		upAnim[ ref ] = ( motion ? "-=" : "+=" ) + distance;
+
+		element.animate( upAnim, speed, easing );
+	}
+
+	element.queue( done );
+
+	$.effects.unshift( element, queuelen, anims + 1 );
+} );
+
+
+/*!
+ * jQuery UI Effects Clip 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Clip Effect
+//>>group: Effects
+//>>description: Clips the element on and off like an old TV.
+//>>docs: http://api.jqueryui.com/clip-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectClip = $.effects.define( "clip", "hide", function( options, done ) {
+	var start,
+		animate = {},
+		element = $( this ),
+		direction = options.direction || "vertical",
+		both = direction === "both",
+		horizontal = both || direction === "horizontal",
+		vertical = both || direction === "vertical";
+
+	start = element.cssClip();
+	animate.clip = {
+		top: vertical ? ( start.bottom - start.top ) / 2 : start.top,
+		right: horizontal ? ( start.right - start.left ) / 2 : start.right,
+		bottom: vertical ? ( start.bottom - start.top ) / 2 : start.bottom,
+		left: horizontal ? ( start.right - start.left ) / 2 : start.left
+	};
+
+	$.effects.createPlaceholder( element );
+
+	if ( options.mode === "show" ) {
+		element.cssClip( animate.clip );
+		animate.clip = start;
+	}
+
+	element.animate( animate, {
+		queue: false,
+		duration: options.duration,
+		easing: options.easing,
+		complete: done
+	} );
+
+} );
+
+
+/*!
+ * jQuery UI Effects Drop 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Drop Effect
+//>>group: Effects
+//>>description: Moves an element in one direction and hides it at the same time.
+//>>docs: http://api.jqueryui.com/drop-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectDrop = $.effects.define( "drop", "hide", function( options, done ) {
+
+	var distance,
+		element = $( this ),
+		mode = options.mode,
+		show = mode === "show",
+		direction = options.direction || "left",
+		ref = ( direction === "up" || direction === "down" ) ? "top" : "left",
+		motion = ( direction === "up" || direction === "left" ) ? "-=" : "+=",
+		oppositeMotion = ( motion === "+=" ) ? "-=" : "+=",
+		animation = {
+			opacity: 0
+		};
+
+	$.effects.createPlaceholder( element );
+
+	distance = options.distance ||
+		element[ ref === "top" ? "outerHeight" : "outerWidth" ]( true ) / 2;
+
+	animation[ ref ] = motion + distance;
+
+	if ( show ) {
+		element.css( animation );
+
+		animation[ ref ] = oppositeMotion + distance;
+		animation.opacity = 1;
+	}
+
+	// Animate
+	element.animate( animation, {
+		queue: false,
+		duration: options.duration,
+		easing: options.easing,
+		complete: done
+	} );
+} );
+
+
+/*!
+ * jQuery UI Effects Explode 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Explode Effect
+//>>group: Effects
+// jscs:disable maximumLineLength
+//>>description: Explodes an element in all directions into n pieces. Implodes an element to its original wholeness.
+// jscs:enable maximumLineLength
+//>>docs: http://api.jqueryui.com/explode-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectExplode = $.effects.define( "explode", "hide", function( options, done ) {
+
+	var i, j, left, top, mx, my,
+		rows = options.pieces ? Math.round( Math.sqrt( options.pieces ) ) : 3,
+		cells = rows,
+		element = $( this ),
+		mode = options.mode,
+		show = mode === "show",
+
+		// Show and then visibility:hidden the element before calculating offset
+		offset = element.show().css( "visibility", "hidden" ).offset(),
+
+		// Width and height of a piece
+		width = Math.ceil( element.outerWidth() / cells ),
+		height = Math.ceil( element.outerHeight() / rows ),
+		pieces = [];
+
+	// Children animate complete:
+	function childComplete() {
+		pieces.push( this );
+		if ( pieces.length === rows * cells ) {
+			animComplete();
+		}
+	}
+
+	// Clone the element for each row and cell.
+	for ( i = 0; i < rows; i++ ) { // ===>
+		top = offset.top + i * height;
+		my = i - ( rows - 1 ) / 2;
+
+		for ( j = 0; j < cells; j++ ) { // |||
+			left = offset.left + j * width;
+			mx = j - ( cells - 1 ) / 2;
+
+			// Create a clone of the now hidden main element that will be absolute positioned
+			// within a wrapper div off the -left and -top equal to size of our pieces
+			element
+				.clone()
+				.appendTo( "body" )
+				.wrap( "<div></div>" )
+				.css( {
+					position: "absolute",
+					visibility: "visible",
+					left: -j * width,
+					top: -i * height
+				} )
+
+				// Select the wrapper - make it overflow: hidden and absolute positioned based on
+				// where the original was located +left and +top equal to the size of pieces
+				.parent()
+					.addClass( "ui-effects-explode" )
+					.css( {
+						position: "absolute",
+						overflow: "hidden",
+						width: width,
+						height: height,
+						left: left + ( show ? mx * width : 0 ),
+						top: top + ( show ? my * height : 0 ),
+						opacity: show ? 0 : 1
+					} )
+					.animate( {
+						left: left + ( show ? 0 : mx * width ),
+						top: top + ( show ? 0 : my * height ),
+						opacity: show ? 1 : 0
+					}, options.duration || 500, options.easing, childComplete );
+		}
+	}
+
+	function animComplete() {
+		element.css( {
+			visibility: "visible"
+		} );
+		$( pieces ).remove();
+		done();
+	}
+} );
+
+
+/*!
  * jQuery UI Effects Fade 1.12.1
  * http://jqueryui.com
  *
@@ -9660,6 +10015,479 @@ var effectsEffectFade = $.effects.define( "fade", "toggle", function( options, d
 			easing: options.easing,
 			complete: done
 		} );
+} );
+
+
+/*!
+ * jQuery UI Effects Fold 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Fold Effect
+//>>group: Effects
+//>>description: Folds an element first horizontally and then vertically.
+//>>docs: http://api.jqueryui.com/fold-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectFold = $.effects.define( "fold", "hide", function( options, done ) {
+
+	// Create element
+	var element = $( this ),
+		mode = options.mode,
+		show = mode === "show",
+		hide = mode === "hide",
+		size = options.size || 15,
+		percent = /([0-9]+)%/.exec( size ),
+		horizFirst = !!options.horizFirst,
+		ref = horizFirst ? [ "right", "bottom" ] : [ "bottom", "right" ],
+		duration = options.duration / 2,
+
+		placeholder = $.effects.createPlaceholder( element ),
+
+		start = element.cssClip(),
+		animation1 = { clip: $.extend( {}, start ) },
+		animation2 = { clip: $.extend( {}, start ) },
+
+		distance = [ start[ ref[ 0 ] ], start[ ref[ 1 ] ] ],
+
+		queuelen = element.queue().length;
+
+	if ( percent ) {
+		size = parseInt( percent[ 1 ], 10 ) / 100 * distance[ hide ? 0 : 1 ];
+	}
+	animation1.clip[ ref[ 0 ] ] = size;
+	animation2.clip[ ref[ 0 ] ] = size;
+	animation2.clip[ ref[ 1 ] ] = 0;
+
+	if ( show ) {
+		element.cssClip( animation2.clip );
+		if ( placeholder ) {
+			placeholder.css( $.effects.clipToBox( animation2 ) );
+		}
+
+		animation2.clip = start;
+	}
+
+	// Animate
+	element
+		.queue( function( next ) {
+			if ( placeholder ) {
+				placeholder
+					.animate( $.effects.clipToBox( animation1 ), duration, options.easing )
+					.animate( $.effects.clipToBox( animation2 ), duration, options.easing );
+			}
+
+			next();
+		} )
+		.animate( animation1, duration, options.easing )
+		.animate( animation2, duration, options.easing )
+		.queue( done );
+
+	$.effects.unshift( element, queuelen, 4 );
+} );
+
+
+/*!
+ * jQuery UI Effects Highlight 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Highlight Effect
+//>>group: Effects
+//>>description: Highlights the background of an element in a defined color for a custom duration.
+//>>docs: http://api.jqueryui.com/highlight-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectHighlight = $.effects.define( "highlight", "show", function( options, done ) {
+	var element = $( this ),
+		animation = {
+			backgroundColor: element.css( "backgroundColor" )
+		};
+
+	if ( options.mode === "hide" ) {
+		animation.opacity = 0;
+	}
+
+	$.effects.saveStyle( element );
+
+	element
+		.css( {
+			backgroundImage: "none",
+			backgroundColor: options.color || "#ffff99"
+		} )
+		.animate( animation, {
+			queue: false,
+			duration: options.duration,
+			easing: options.easing,
+			complete: done
+		} );
+} );
+
+
+/*!
+ * jQuery UI Effects Size 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Size Effect
+//>>group: Effects
+//>>description: Resize an element to a specified width and height.
+//>>docs: http://api.jqueryui.com/size-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectSize = $.effects.define( "size", function( options, done ) {
+
+	// Create element
+	var baseline, factor, temp,
+		element = $( this ),
+
+		// Copy for children
+		cProps = [ "fontSize" ],
+		vProps = [ "borderTopWidth", "borderBottomWidth", "paddingTop", "paddingBottom" ],
+		hProps = [ "borderLeftWidth", "borderRightWidth", "paddingLeft", "paddingRight" ],
+
+		// Set options
+		mode = options.mode,
+		restore = mode !== "effect",
+		scale = options.scale || "both",
+		origin = options.origin || [ "middle", "center" ],
+		position = element.css( "position" ),
+		pos = element.position(),
+		original = $.effects.scaledDimensions( element ),
+		from = options.from || original,
+		to = options.to || $.effects.scaledDimensions( element, 0 );
+
+	$.effects.createPlaceholder( element );
+
+	if ( mode === "show" ) {
+		temp = from;
+		from = to;
+		to = temp;
+	}
+
+	// Set scaling factor
+	factor = {
+		from: {
+			y: from.height / original.height,
+			x: from.width / original.width
+		},
+		to: {
+			y: to.height / original.height,
+			x: to.width / original.width
+		}
+	};
+
+	// Scale the css box
+	if ( scale === "box" || scale === "both" ) {
+
+		// Vertical props scaling
+		if ( factor.from.y !== factor.to.y ) {
+			from = $.effects.setTransition( element, vProps, factor.from.y, from );
+			to = $.effects.setTransition( element, vProps, factor.to.y, to );
+		}
+
+		// Horizontal props scaling
+		if ( factor.from.x !== factor.to.x ) {
+			from = $.effects.setTransition( element, hProps, factor.from.x, from );
+			to = $.effects.setTransition( element, hProps, factor.to.x, to );
+		}
+	}
+
+	// Scale the content
+	if ( scale === "content" || scale === "both" ) {
+
+		// Vertical props scaling
+		if ( factor.from.y !== factor.to.y ) {
+			from = $.effects.setTransition( element, cProps, factor.from.y, from );
+			to = $.effects.setTransition( element, cProps, factor.to.y, to );
+		}
+	}
+
+	// Adjust the position properties based on the provided origin points
+	if ( origin ) {
+		baseline = $.effects.getBaseline( origin, original );
+		from.top = ( original.outerHeight - from.outerHeight ) * baseline.y + pos.top;
+		from.left = ( original.outerWidth - from.outerWidth ) * baseline.x + pos.left;
+		to.top = ( original.outerHeight - to.outerHeight ) * baseline.y + pos.top;
+		to.left = ( original.outerWidth - to.outerWidth ) * baseline.x + pos.left;
+	}
+	element.css( from );
+
+	// Animate the children if desired
+	if ( scale === "content" || scale === "both" ) {
+
+		vProps = vProps.concat( [ "marginTop", "marginBottom" ] ).concat( cProps );
+		hProps = hProps.concat( [ "marginLeft", "marginRight" ] );
+
+		// Only animate children with width attributes specified
+		// TODO: is this right? should we include anything with css width specified as well
+		element.find( "*[width]" ).each( function() {
+			var child = $( this ),
+				childOriginal = $.effects.scaledDimensions( child ),
+				childFrom = {
+					height: childOriginal.height * factor.from.y,
+					width: childOriginal.width * factor.from.x,
+					outerHeight: childOriginal.outerHeight * factor.from.y,
+					outerWidth: childOriginal.outerWidth * factor.from.x
+				},
+				childTo = {
+					height: childOriginal.height * factor.to.y,
+					width: childOriginal.width * factor.to.x,
+					outerHeight: childOriginal.height * factor.to.y,
+					outerWidth: childOriginal.width * factor.to.x
+				};
+
+			// Vertical props scaling
+			if ( factor.from.y !== factor.to.y ) {
+				childFrom = $.effects.setTransition( child, vProps, factor.from.y, childFrom );
+				childTo = $.effects.setTransition( child, vProps, factor.to.y, childTo );
+			}
+
+			// Horizontal props scaling
+			if ( factor.from.x !== factor.to.x ) {
+				childFrom = $.effects.setTransition( child, hProps, factor.from.x, childFrom );
+				childTo = $.effects.setTransition( child, hProps, factor.to.x, childTo );
+			}
+
+			if ( restore ) {
+				$.effects.saveStyle( child );
+			}
+
+			// Animate children
+			child.css( childFrom );
+			child.animate( childTo, options.duration, options.easing, function() {
+
+				// Restore children
+				if ( restore ) {
+					$.effects.restoreStyle( child );
+				}
+			} );
+		} );
+	}
+
+	// Animate
+	element.animate( to, {
+		queue: false,
+		duration: options.duration,
+		easing: options.easing,
+		complete: function() {
+
+			var offset = element.offset();
+
+			if ( to.opacity === 0 ) {
+				element.css( "opacity", from.opacity );
+			}
+
+			if ( !restore ) {
+				element
+					.css( "position", position === "static" ? "relative" : position )
+					.offset( offset );
+
+				// Need to save style here so that automatic style restoration
+				// doesn't restore to the original styles from before the animation.
+				$.effects.saveStyle( element );
+			}
+
+			done();
+		}
+	} );
+
+} );
+
+
+/*!
+ * jQuery UI Effects Scale 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Scale Effect
+//>>group: Effects
+//>>description: Grows or shrinks an element and its content.
+//>>docs: http://api.jqueryui.com/scale-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectScale = $.effects.define( "scale", function( options, done ) {
+
+	// Create element
+	var el = $( this ),
+		mode = options.mode,
+		percent = parseInt( options.percent, 10 ) ||
+			( parseInt( options.percent, 10 ) === 0 ? 0 : ( mode !== "effect" ? 0 : 100 ) ),
+
+		newOptions = $.extend( true, {
+			from: $.effects.scaledDimensions( el ),
+			to: $.effects.scaledDimensions( el, percent, options.direction || "both" ),
+			origin: options.origin || [ "middle", "center" ]
+		}, options );
+
+	// Fade option to support puff
+	if ( options.fade ) {
+		newOptions.from.opacity = 1;
+		newOptions.to.opacity = 0;
+	}
+
+	$.effects.effect.size.call( this, newOptions, done );
+} );
+
+
+/*!
+ * jQuery UI Effects Puff 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Puff Effect
+//>>group: Effects
+//>>description: Creates a puff effect by scaling the element up and hiding it at the same time.
+//>>docs: http://api.jqueryui.com/puff-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectPuff = $.effects.define( "puff", "hide", function( options, done ) {
+	var newOptions = $.extend( true, {}, options, {
+		fade: true,
+		percent: parseInt( options.percent, 10 ) || 150
+	} );
+
+	$.effects.effect.scale.call( this, newOptions, done );
+} );
+
+
+/*!
+ * jQuery UI Effects Pulsate 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Pulsate Effect
+//>>group: Effects
+//>>description: Pulsates an element n times by changing the opacity to zero and back.
+//>>docs: http://api.jqueryui.com/pulsate-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectPulsate = $.effects.define( "pulsate", "show", function( options, done ) {
+	var element = $( this ),
+		mode = options.mode,
+		show = mode === "show",
+		hide = mode === "hide",
+		showhide = show || hide,
+
+		// Showing or hiding leaves off the "last" animation
+		anims = ( ( options.times || 5 ) * 2 ) + ( showhide ? 1 : 0 ),
+		duration = options.duration / anims,
+		animateTo = 0,
+		i = 1,
+		queuelen = element.queue().length;
+
+	if ( show || !element.is( ":visible" ) ) {
+		element.css( "opacity", 0 ).show();
+		animateTo = 1;
+	}
+
+	// Anims - 1 opacity "toggles"
+	for ( ; i < anims; i++ ) {
+		element.animate( { opacity: animateTo }, duration, options.easing );
+		animateTo = 1 - animateTo;
+	}
+
+	element.animate( { opacity: animateTo }, duration, options.easing );
+
+	element.queue( done );
+
+	$.effects.unshift( element, queuelen, anims + 1 );
+} );
+
+
+/*!
+ * jQuery UI Effects Shake 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Shake Effect
+//>>group: Effects
+//>>description: Shakes an element horizontally or vertically n times.
+//>>docs: http://api.jqueryui.com/shake-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effectsEffectShake = $.effects.define( "shake", function( options, done ) {
+
+	var i = 1,
+		element = $( this ),
+		direction = options.direction || "left",
+		distance = options.distance || 20,
+		times = options.times || 3,
+		anims = times * 2 + 1,
+		speed = Math.round( options.duration / anims ),
+		ref = ( direction === "up" || direction === "down" ) ? "top" : "left",
+		positiveMotion = ( direction === "up" || direction === "left" ),
+		animation = {},
+		animation1 = {},
+		animation2 = {},
+
+		queuelen = element.queue().length;
+
+	$.effects.createPlaceholder( element );
+
+	// Animation
+	animation[ ref ] = ( positiveMotion ? "-=" : "+=" ) + distance;
+	animation1[ ref ] = ( positiveMotion ? "+=" : "-=" ) + distance * 2;
+	animation2[ ref ] = ( positiveMotion ? "-=" : "+=" ) + distance * 2;
+
+	// Animate
+	element.animate( animation, speed, options.easing );
+
+	// Shakes
+	for ( ; i < times; i++ ) {
+		element
+			.animate( animation1, speed, options.easing )
+			.animate( animation2, speed, options.easing );
+	}
+
+	element
+		.animate( animation1, speed, options.easing )
+		.animate( animation, speed / 2, options.easing )
+		.queue( done );
+
+	$.effects.unshift( element, queuelen, anims + 1 );
 } );
 
 
@@ -9723,6 +10551,32 @@ var effectsEffectSlide = $.effects.define( "slide", "show", function( options, d
 		complete: done
 	} );
 } );
+
+
+/*!
+ * jQuery UI Effects Transfer 1.12.1
+ * http://jqueryui.com
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ */
+
+//>>label: Transfer Effect
+//>>group: Effects
+//>>description: Displays a transfer effect from one element to another.
+//>>docs: http://api.jqueryui.com/transfer-effect/
+//>>demos: http://jqueryui.com/effect/
+
+
+
+var effect;
+if ( $.uiBackCompat !== false ) {
+	effect = $.effects.define( "transfer", function( options, done ) {
+		$( this ).transfer( options, done );
+	} );
+}
+var effectsEffectTransfer = effect;
 
 
 

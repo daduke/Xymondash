@@ -176,6 +176,22 @@ i.ack.acked:hover {
     text-shadow: 0px 0px 0.04rem rgba(255, 255, 255, 0.6);
 }
 
+div#flash {
+    display: none;
+    background: #f00;
+    position:fixed;
+    padding: 8px;
+    top: 20%;
+    left: 50%;
+    width:20em;
+    height:4em;
+    text-align: center;
+    margin-left: -10em; /*set to a negative number 1/2 of your width*/
+    margin-top: -2em; /*set to a negative number 1/2 of your height*/
+    border-radius: 8px;
+    box-shadow: 0px 5px 2px -5px rgba(255, 255, 255, 0.5) inset, 0px 10px 20px -5px rgba(255, 255, 255, 0.1) inset, 0 0px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 1px rgba(0, 0, 0, 0.12), 0 1px 10px 0 rgba(0, 0, 0, 0.3);
+}
+
 /* tooltip CSS */
 .ui-tooltip {
     color: white;

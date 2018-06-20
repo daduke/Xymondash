@@ -16,14 +16,14 @@ internal:
 
 use:
   * jquery
-  * jqueryui Dark Hive with dialog + selectmenu + tooltip
+  * jqueryui Dark Hive with dialog + selectmenu + tooltip + all effects
   * fontawesome
   * https://github.com/js-cookie/js-cookie
   * dateFormat.js
 
 TODO
+  * unack?
   * ack greift nicht auf critical
-  * Abhängigkeiten color, prio bei config? nur "tiefste" Farbe?
   * prio4 -> "other"?
   * weiss? dialup?
   * host ack button?
@@ -31,13 +31,13 @@ TODO
   * ack button on mobile?
   * graphen + Lupe in msg
   * mark all as seen -> gray
+  * fade tests
   * config:
     * JSON URL configurable
     * xymon detail URL configurable
     * ack URL configurable
     * font
     * reload interval
-    * cookie livetime
 
 Ideen:
   * host search+filter inkl. grün

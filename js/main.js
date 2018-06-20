@@ -214,6 +214,7 @@ function processData() {
 
     let x = 0;
     let y = 0;
+    let numEntries = 0;
     config['activeColors'].forEach(function(color) {        //build up matrix and display entries data
         config['activePrios'].forEach(function(prio) {
             let pos = x + 10*y;             //our 'severity position' in the prio/color matrix
@@ -271,6 +272,15 @@ function processData() {
                                 $('i#'+cookie).attr('tooltip', ackmsg);
                             }
                         }
+                        if (numEntries++ > 200) {
+                            $('#flash').html('your settings yield too many tests! Please choose fewer colors or prios.');
+                            $("table#container").fadeTo("slow", 0.3, function() {
+                                $("#flash").show("blind", 500).delay(5000).hide("blind", 500, function() {
+                                    $("table#container").fadeTo("slow", 1.0);
+                                });
+                            });
+                            throw new Error("too many results");
+                        }
                     }
                 }
                 background(color, prio);    //TODO bg color only for displayed prios or all?
@@ -308,7 +318,7 @@ function processData() {
         $('.col-sm').css('max-width', '100%');
     } else {
         $('.col-sm').css('width', width + '%');
-        $('.col-sm').css('max-width', '48%');
+        $('.col-sm').css('max-width', '31%');
     }
 
     $("span.info").click(function(){
@@ -344,7 +354,10 @@ function getJSON(url, callback) {
     xhr.callback = callback;
     xhr.arguments = Array.prototype.slice.call(arguments, 2);
     xhr.onload  = function() { this.callback.apply(this, this.arguments); };
-    xhr.onerror = function() { console.error(this.statusText); };
+    xhr.onerror = function() {
+        $('#flash').html('could not load JSON file!');
+        $("#flash").show("blind", 500).delay(2000).hide("blind", 500);
+    };
     xhr.open("GET", url, true);
     xhr.responseType = "json";
     xhr.withCredentials = true;
@@ -450,16 +463,13 @@ function populateSettings() {
 }
 
 function writeCookie() {
-    Cookies.set('xymondashsettings', config);
+    Cookies.set('xymondashsettings', config, { expires: 365 });
 }
 
 const changeFavicon = link => {
     let $favicon = document.querySelector('link[rel="icon"]')
-    // If a <link rel="icon"> element already exists,
-    // change its href to the given link.
     if ($favicon !== null) {
         $favicon.href = link
-        // Otherwise, create a new element and append it to <head>.
     } else {
         $favicon = document.createElement("link")
         $favicon.rel = "icon"
