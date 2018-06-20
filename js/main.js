@@ -3,7 +3,6 @@
        Claude Becker    - backend code
        Sven Mäder       - Visual FX and Javascript logic
        Christian Herzog - Javascript logic
-
 */
 
 const XYMONURL     = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh';
@@ -27,12 +26,13 @@ if (Cookies.get('xymondashsettings')) {
 let dialogForm, backgroundColor;
 let paused = false;
 
-$(document).ready(function(){
+$(document).ready(function() {
     $(document).tooltip({                         //initialize tooltips
         items: "[tooltip]",
         content: function() {
             if ($(this).is('span') ||
                 ($(this).is('i') && $(this).parent().children("span.test").prop("class").match(/\backed\b/))) {
+                //this cleans up the message text in order to make it readable in the tooltip
                 let msg = $(this).attr('tooltip').replace(/\\n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
                     .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
                     .replace(/[-=]{10,}/g, '----------');
@@ -46,7 +46,7 @@ $(document).ready(function(){
                 return $(this).attr('tooltip');
             }
         },
-        open: function(event, ui) {
+        open: function(event, ui) {     //no refresh while tooltip is open
             paused = true;
         },
         close: function(event, ui) {
@@ -77,6 +77,10 @@ $(document).ready(function(){
             $("#hostname").val(hostname);
             let testname = options.testname;
             $("#testname").val(testname);
+            paused = true;      //no refresh while ack dialog is open
+        },
+        close: function() {
+            paused = false;
         }
     });
 
@@ -87,18 +91,19 @@ $(document).ready(function(){
         triggerUpdate();
     });
 
-    // Open settings panel
+    //open settings panel
     $("#open-settings").click(function (e) {
         populateSettings();           //fill settings panel dynamically
-        e.preventDefault();
+        e.preventDefault(); //TODO?
         $("#settings-panel").toggleClass("active");
         $('#container-buttons').hide();
         $("#close-settings").show();
+        paused = true;      //no refresh while settings panel is open
     });
 
-    // Close settings panel
+    //close settings panel
     $("#close-settings").click(function (e) {
-        e.preventDefault();
+        e.preventDefault(); //TODO?
         $("#settings-panel").toggleClass("active");
         $(this).hide();
         $("#container-buttons").show();
@@ -129,7 +134,8 @@ $(document).ready(function(){
         config['font'] = font;
         $("#page").css("font-family", font);
 
-        writeCookie();
+        Cookies.set('xymondashsettings', config, { expires: 365 });
+        paused = false;
         triggerUpdate();
     });
 
@@ -139,12 +145,12 @@ $(document).ready(function(){
 
     if (config['notifications']) {
         if (!window.Notification) {
-            alert("Sorry, notifications not supported in this browser!");
+            alert("Sorry, notifications are not supported in this browser!");
         } else {
             if (Notification.permission === 'default') {
                 Notification.requestPermission(function(p) {
                     if (p === 'denied')
-                        alert('You have denied Xymondash notification.');
+                        alert('You have denied Xymondash notifications.');
                     else {
                         notify = new Notification('xymondash', {
                             body: 'You have accepted Xymondash notifications.'
@@ -164,31 +170,29 @@ $(document).ready(function(){
     }, 30000);
 
     populateSettings();
-    triggerUpdate();              //fetch data and fill matrix
+    triggerUpdate();
 });
 
-function triggerUpdate() {
+function triggerUpdate() {              //fetch data and fill matrix
     let params = '';
-    activeColors = [];
-    activePrios = [];
-    activeBgPrios = [];
 
     let i = 0;
     config['activeColors'].forEach(function(color) {
-        params += (i++ == 0) ? '?color=' : ',';
+        params += (i++ == 0)?'?color=':',';
         params += color;
     });
-    backgroundColor = "green";
+    backgroundColor = "green";  //TODO needed?
     getJSON(XYMONJSONURL + params, processData);
 }
 
-function processData() {
+function processData() {    //callback when JSON data is ready
     let entries = {};
     let lowestPos = {};
     let hostExists = {};
 
     let xymonData = this.response;
     xymonData.forEach(function(entry) {     //loop thru data and process it into entries object
+        let ackmsg, acktime, cookie;
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
         let color = entry.color.trim();
@@ -197,7 +201,6 @@ function processData() {
         if (entry.critscore) {
             prio = 'prio' + entry.critscore;
         }
-        let ackmsg, acktime, cookie;
         if (entry.ackmsg) {
             ackmsg = entry.ackmsg;
             acktime = entry.acktime;
@@ -226,7 +229,7 @@ function processData() {
         }
     });
 
-    availableColors.forEach(function(color) {        //clean up old stuff
+    availableColors.forEach(function(color) {        //clean out DOM    TODO change when fading
         availablePrios.forEach(function(prio) {
             var sel = color + '_' + prio;
             $('#' + sel).html('<div class="ptag">'+prio+'</div>');
@@ -244,11 +247,11 @@ function processData() {
     let numEntries = 0;
     config['activeColors'].forEach(function(color) {        //build up matrix and display entries data
         config['activePrios'].forEach(function(prio) {
-            let pos = x + 10*y;             //our 'severity position' in the prio/color matrix
+            let pos = x + 10*y;             //this test's 'severity position' in the prio/color matrix
             if (entries[color] && entries[color][prio]) {
                 let hosts = entries[color][prio];
                 let keys = Object.keys(hosts);
-                keys.sort();
+                keys.sort();    //sort by hostname
                 for (i = 0; i < keys.length; i++) {
                     host = keys[i];
                     for (let test in entries[color][prio][host]) {
@@ -272,14 +275,19 @@ function processData() {
                         let d = new Date(acktime*1000);
                         acktime = "acked until " + dateFormat(d, "HH:MM, mmmm d (dddd)");
                         ackmsg = '<b>'+ackmsg+'</b><br /><br />'+acktime;
-                        if (!hostExists[host]) {   //we need a host entry first
-                            $("#" + selector).append("<div class='msg' data-host='"+host+"' >\
-                                <span class='info'>"+host+": </span><div class='tests'> \
-                                <span class='test"+ackClass+"' data-test='"+test+"' data-ackmsg='"
-                                +escape(ackmsg)+"' data-cookie='"+cookie
-                                +"'>"+test+"</span>\
-                                <i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i></div>\
-                            </div>");
+                        if (!hostExists[host]) {   //new host -> we need a host entry first
+                            //TODO  multiline string
+/*                            $("#" + selector).append(" \
+                                <div class='msg' data-host='"+host+"'> \
+                                    <span class='info'>"+host+": </span> \
+                                    <div class='tests'> \
+                                        <span class='test"+ackClass+"' data-test='"+test
+                                            +"' data-ackmsg='" +escape(ackmsg)+"' data-cookie='"+cookie+"'>"+test+" \
+                                        </span> \
+                                        <i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>
+                                    </div> \
+                                </div>");
+*/
                             $("#" + selector).removeClass("inv");
                             $('[data-cookie='+cookie+']').attr('tooltip', msg);
                             if (ackmsg != 'empty') {
@@ -287,30 +295,28 @@ function processData() {
                             }
 
                             hostExists[host] = 1;
-                        } else {                  //just add another test
+                        } else {                  //host seen before -> just add another test
+/*
                             $('[data-host='+host+']').append(" \
-                                <div class='tests'><span class='test"+ackClass+"' data-test='"+test
-                                +"' data-ackmsg='"+escape(ackmsg)+"' data-cookie='"
-                                +cookie+"' >"+test+"</span>\
-                                <i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>\
-                            </div> ");
+                                <div class='tests'>
+                                    <span class='test"+ackClass+"' data-test='"+test
+                                        +"' data-ackmsg='"+escape(ackmsg)+"' data-cookie='"+cookie+"' >"+test+" \
+                                    </span>
+                                    <i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i> \
+                                </div>");
+*/
                             $('[data-cookie='+cookie+']').attr('tooltip', msg);
                             if (ackmsg != 'empty') {
                                 $('i#'+cookie).attr('tooltip', ackmsg);
                             }
                         }
                         if (numEntries++ > 200) {
-                            $('#flash').html('your settings yield too many tests! Please choose fewer colors or prios.');
-                            $("table#container").fadeTo("slow", 0.3, function() {
-                                $("#flash").show("blind", 500).delay(5000).hide("blind", 500, function() {
-                                    $("table#container").fadeTo("slow", 1.0);
-                                });
-                            });
+                            showFlash('Your settings yield too many tests! Please choose fewer colors or prios.');
                             throw new Error("too many results");
                         }
                     }
                 }
-                background(color, prio);    //TODO bg color only for displayed prios or all?
+                background(color, prio);
             }
             x++;
         });
@@ -319,6 +325,7 @@ function processData() {
     });
     setBackgroundColor();
 
+    //let's find all empty columns and hide them
     let numCols = availablePrios.length;
     if (config['hideCols']) {
         availablePrios.forEach(function(prio) {
@@ -339,11 +346,11 @@ function processData() {
         });
     }
     let width = (100/numCols) - 2;
-    const mq = window.matchMedia( "(max-width: 720px)" );
-    if (mq.matches) {
+    const mq = window.matchMedia("(max-width: 720px)");
+    if (mq.matches) {   //mobile view
         $('.col-sm').css('width', '100%');
         $('.col-sm').css('max-width', '100%');
-    } else {
+    } else {            //fullscreen view
         $('.col-sm').css('width', width + '%');
         $('.col-sm').css('max-width', '31%');
     }
@@ -375,10 +382,7 @@ function getJSON(url, callback) {
     xhr.callback = callback;
     xhr.arguments = Array.prototype.slice.call(arguments, 2);
     xhr.onload  = function() { this.callback.apply(this, this.arguments); };
-    xhr.onerror = function() {
-        $('#flash').html('could not load JSON file!');
-        $("#flash").show("blind", 500).delay(2000).hide("blind", 500);
-    };
+    xhr.onerror = function() { showFlash('could not load JSON file!'); };
     xhr.open("GET", url, true);
     xhr.responseType = "json";
     xhr.withCredentials = true;
@@ -448,8 +452,8 @@ function background(color, prio) {
 }
 
 function setBackgroundColor() {
-    $('#bg').css('height', $(document).height() + 'px')
-    if (!$('#bg').hasClass('bg-' + backgroundColor)) {
+    $('#bg').css('height', $(document).height() + 'px');
+    if (!$('#bg').hasClass('bg-' + backgroundColor)) {  //only update if color changed
         $('#bg').fadeOut(250, function() {
             $('#bg').removeClass();
             $('#bg').addClass('bg-' + backgroundColor);
@@ -500,10 +504,7 @@ function populateSettings() {
     });
 }
 
-function writeCookie() {
-    Cookies.set('xymondashsettings', config, { expires: 365 });
-}
-
+//TODO rewrite as function?
 const changeFavicon = link => {
     let $favicon = document.querySelector('link[rel="icon"]')
     if ($favicon !== null) {
@@ -520,5 +521,14 @@ function showNotification(msg, icon) {
     notify = new Notification('Xymon status change', {
         body: msg,
         icon: icon
+    });
+}
+
+function showFlash(msg) {
+    $('#flash').html(msg);
+    $("table#container").fadeTo("slow", 0.3, function() {
+        $("#flash").show("blind", 500).delay(5000).hide("blind", 500, function() {
+            $("table#container").fadeTo("slow", 1.0);
+        });
     });
 }
