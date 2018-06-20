@@ -21,6 +21,7 @@ if (Cookies.get('xymondashsettings')) {
     config['activeBgPrios'] = ['prio1', 'prio2'];
     config['hideCols'] = false;
     config['notifications'] = false;
+    config['testState'] = {};
 }
 
 let dialogForm, backgroundColor;
@@ -136,6 +137,14 @@ $(document).ready(function() {
 
         Cookies.set('xymondashsettings', config, { expires: 365 });
         paused = false;
+        triggerUpdate();
+    });
+
+    //mark all currently visible tests as 'seen'
+    $("#markSeen").click(function (e) {
+        $('span.test').each(function(index) {
+            config['testState'][$(this).data['cookie']] = 'seen';
+        });
         triggerUpdate();
     });
 
@@ -276,18 +285,16 @@ function processData() {    //callback when JSON data is ready
                         acktime = "acked until " + dateFormat(d, "HH:MM, mmmm d (dddd)");
                         ackmsg = '<b>'+ackmsg+'</b><br /><br />'+acktime;
                         if (!hostExists[host]) {   //new host -> we need a host entry first
-                            //TODO  multiline string
-/*                            $("#" + selector).append(" \
-                                <div class='msg' data-host='"+host+"'> \
-                                    <span class='info'>"+host+": </span> \
-                                    <div class='tests'> \
-                                        <span class='test"+ackClass+"' data-test='"+test
-                                            +"' data-ackmsg='" +escape(ackmsg)+"' data-cookie='"+cookie+"'>"+test+" \
-                                        </span> \
-                                        <i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>
-                                    </div> \
-                                </div>");
-*/
+                            $("#" + selector).append(
+                                "<div class='msg' data-host='"+host+"'>"+       //TODO rewrite with div()?
+                                    "<span class='info'>"+host+": </span>"+
+                                    "<div class='tests'>"+
+                                        "<span class='test"+ackClass+"' data-test='"+test+
+                                            "' data-ackmsg='" +escape(ackmsg)+"' data-cookie='"+cookie+"'>"+test+
+                                        "</span>"+
+                                        "<i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>"+
+                                    "</div>"+
+                                "</div>");
                             $("#" + selector).removeClass("inv");
                             $('[data-cookie='+cookie+']').attr('tooltip', msg);
                             if (ackmsg != 'empty') {
@@ -296,15 +303,13 @@ function processData() {    //callback when JSON data is ready
 
                             hostExists[host] = 1;
                         } else {                  //host seen before -> just add another test
-/*
-                            $('[data-host='+host+']').append(" \
-                                <div class='tests'>
-                                    <span class='test"+ackClass+"' data-test='"+test
-                                        +"' data-ackmsg='"+escape(ackmsg)+"' data-cookie='"+cookie+"' >"+test+" \
-                                    </span>
-                                    <i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i> \
-                                </div>");
-*/
+                            $('[data-host='+host+']').append(
+                                "<div class='tests'>"+
+                                    "<span class='test"+ackClass+"' data-test='"+test+
+                                        "' data-ackmsg='"+escape(ackmsg)+"' data-cookie='"+cookie+"' >"+test+
+                                    "</span>"+
+                                    "<i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>"+
+                                "</div>");
                             $('[data-cookie='+cookie+']').attr('tooltip', msg);
                             if (ackmsg != 'empty') {
                                 $('i#'+cookie).attr('tooltip', ackmsg);
