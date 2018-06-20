@@ -329,12 +329,10 @@ function processData() {
         window.open(link,"_self")
     });
     $("i.ack").click(function(){
-        if (!$(this).parent().children("span.test").prop("class").match(/\backed\b/)) {
-            dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
-            dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
-            dialogForm.dialog("option", "testname", $(this).parent().children("span.test").data("test"));
-            dialogForm.dialog("open");
-        }
+        dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
+        dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
+        dialogForm.dialog("option", "testname", $(this).parent().children("span.test").data("test"));
+        dialogForm.dialog("open");
     });
 }
 

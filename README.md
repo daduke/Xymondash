@@ -22,7 +22,6 @@ use:
   * dateFormat.js
 
 TODO
-  * unack?
   * ack greift nicht auf critical
   * weiss? dialup?
   * host ack button?
