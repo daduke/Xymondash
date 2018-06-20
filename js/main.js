@@ -509,8 +509,7 @@ function populateSettings() {
     });
 }
 
-//TODO rewrite as function?
-const changeFavicon = link => {
+function changeFavicon(link) {
     let $favicon = document.querySelector('link[rel="icon"]')
     if ($favicon !== null) {
         $favicon.href = link
