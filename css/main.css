@@ -205,6 +205,7 @@ div#flash {
 
 .ui-tooltip-content {
     font-family: "M-1m";
+    font-size: 85%;
     white-space: pre-line;
 }
 

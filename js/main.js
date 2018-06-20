@@ -90,6 +90,7 @@ $(document).ready(function(){
     });
 
     $("#period").selectmenu();
+    $("#page").css("font-family", config['font']);
 
     $("#reload").click(function(){
         triggerUpdate();
@@ -129,6 +130,9 @@ $(document).ready(function(){
         $('input[name="hideCols"]:checked').each(function(index) {
             config['hideCols'] = true;
         });
+        let font = $('select#font').val();
+        config['font'] = font;
+        $("#page").css("font-family", font);
 
         writeCookie();
         triggerUpdate();
@@ -460,6 +464,20 @@ function populateSettings() {
     $('#settings-container-pick').append(createSettings(availableColors, config['activeColors'], 'colors'));
     $('#settings-container-pick').append(createSettings(availablePrios, config['activePrios'], 'priorities'));
     $('#settings-container-pick').append(createSettings(availablePrios, config['activeBgPrios'], 'background'));
+    let activeFont = config['font'];
+    let fontSel = '<select name="FONT" id="font">';
+    $("body").css("font-family").replace(/\"/g, '').split(',').forEach(function(font) {
+        font = font.trim();
+        let sel = (font == activeFont)?' selected':'';
+        console.log(font, activeFont);
+        fontSel += '<option value="' + font + '"' + sel + '>' + font + '</option>';
+    });
+    fontSel += '</select>';
+    $('#settings-container-pick').append('<div class="setting-group"><h2 class="text-white">Font</h2>');
+    $('#settings-container-pick').append(fontSel);
+    $('#settings-container-pick').append('</div');
+    $("#font").selectmenu();
+
     ['hideCols'].forEach(function(checkbox) {
         if (config[checkbox]) {
             $("input#"+checkbox).prop("checked", true);
