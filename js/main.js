@@ -31,8 +31,8 @@ $(document).ready(function(){
     $(document).tooltip({                         //initialize tooltips
         items: "[tooltip]",
         content: function() {
-            if ($(this).is('span')
-                || $(this).parent().children("span.test").prop("class").match(/\backed\b/)) {
+            if ($(this).is('span') ||
+                ($(this).is('i') && $(this).parent().children("span.test").prop("class").match(/\backed\b/))) {
                 let msg = $(this).attr('tooltip').replace(/\\n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
                     .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
                     .replace(/[-=]{10,}/g, '----------');
@@ -42,6 +42,8 @@ $(document).ready(function(){
                     res += '<br />...';
                 }
                 return res;
+            } else if ($(this).is('button')) {
+                return $(this).attr('tooltip');
             }
         },
         open: function(event, ui) {
@@ -130,6 +132,10 @@ $(document).ready(function(){
         writeCookie();
         triggerUpdate();
     });
+
+    $('button#markSeen').attr('tooltip', 'mark all as seen');
+    $('button#reload').attr('tooltip', 'reload data');
+    $('button#open-settings').attr('tooltip', 'open settings');
 
     if (config['notifications']) {
         if (!window.Notification) {
@@ -511,7 +517,7 @@ const changeFavicon = link => {
 }
 
 function showNotification(msg, icon) {
-    notify = new Notification('New Notifications!', {
+    notify = new Notification('Xymon status change', {
         body: msg,
         icon: icon
     });
