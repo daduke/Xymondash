@@ -21,7 +21,6 @@ if (Cookies.get('xymondashsettings')) {
     config['activeBgPrios'] = ['prio1', 'prio2'];
     config['hideCols'] = false;
     config['notifications'] = false;
-    config['testState'] = {};
 }
 
 let dialogForm, backgroundColor;
@@ -143,7 +142,8 @@ $(document).ready(function() {
     //mark all currently visible tests as 'seen'
     $("#markSeen").click(function (e) {
         $('span.test').each(function(index) {
-            config['testState'][$(this).data['cookie']] = 'seen';
+            if (!config['testState']) config['testState'] = {};
+            config['testState'][$(this).data('cookie')] = 'seen';
         });
         triggerUpdate();
     });
