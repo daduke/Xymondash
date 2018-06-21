@@ -24,7 +24,7 @@ span {
 }
 
 td.red .msg {
-    background-color: rgba(255,0,0,0.7);
+    background-color: rgba(255,0,30,0.7);
 }
 
 td.yellow .msg {
@@ -36,7 +36,7 @@ td.purple .msg {
 }
 
 td.blue .msg {
-    background-color: rgba(140,140,255,0.7);
+    background-color: rgba(0,135,255,0.7);
 }
 
 td.green .msg {
