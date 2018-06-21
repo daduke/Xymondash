@@ -24,7 +24,7 @@ span {
 }
 
 td.red .msg {
-    background-color: rgba(255,0,50,0.7);
+    background-color: rgba(255,0,30,0.7);
 }
 
 td.yellow .msg {
