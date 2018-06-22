@@ -27,7 +27,6 @@ TODO
   * host ack button?
   * ack until ok? blue?
   * graphen + Lupe in msg
-  * mark all as seen -> gray
   * fade tests
 
 Ideen:

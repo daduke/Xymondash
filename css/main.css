@@ -134,7 +134,7 @@ div.tests {
 }
 
 .seen {
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
 .msg > div > .ack {
@@ -149,11 +149,9 @@ span.info, span.test {
     cursor: pointer;
 }
 
-span.acked {
-}
-
 i.ack {
     opacity: 0.07;
+    margin-left: 2px;
 }
 
 i.ack:hover {
