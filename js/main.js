@@ -186,7 +186,13 @@ $(document).ready(function() {
 function triggerUpdate() {              //fetch data and fill matrix
     let params = '';
 
-    if ($.urlParam()) {                 //manual URL params override color checkboxes   TODO: set activeColors to manual values
+    if ($.urlParam()) {                 //manual URL color params override color checkboxes
+        $.urlParam().split('&').forEach(function(param) {
+            let [key, val] = param.split('=');
+            if (key == 'color') {
+                config['activeColors'] = val.split(',');
+            }
+        });
         params = '?'+$.urlParam();
     } else {
         let i = 0;
