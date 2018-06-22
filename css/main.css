@@ -133,7 +133,8 @@ div.tests {
     line-height: 1;
 }
 
-.msg:last-child {
+.seen {
+    opacity: 0.6;
 }
 
 .msg > div > .ack {

@@ -12,9 +12,11 @@ const XYMONJSONURL = 'https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json';
 let availableColors = ['red', 'yellow', 'purple', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
 let config = {};
+if (!config['testState']) config['testState'] = {};
 
 if (Cookies.get('xymondashsettings')) {
     config = Cookies.getJSON('xymondashsettings');
+    if (!config['testState']) config['testState'] = {};
 } else {
     config['activeColors'] = ['red', 'yellow'];
     config['activePrios'] = ['prio1', 'prio2'];
@@ -142,7 +144,6 @@ $(document).ready(function() {
     //mark all currently visible tests as 'seen'
     $("#markSeen").click(function (e) {
         $('span.test').each(function(index) {
-            if (!config['testState']) config['testState'] = {};
             config['testState'][$(this).data('cookie')] = 'seen';
         });
         triggerUpdate();
@@ -185,11 +186,16 @@ $(document).ready(function() {
 function triggerUpdate() {              //fetch data and fill matrix
     let params = '';
 
-    let i = 0;
-    config['activeColors'].forEach(function(color) {
-        params += (i++ == 0)?'?color=':',';
-        params += color;
-    });
+    if ($.urlParam()) {                 //manual URL params override color checkboxes   TODO: set activeColors to manual values
+        params = '?'+$.urlParam();
+    } else {
+        let i = 0;
+        config['activeColors'].forEach(function(color) {
+            params += (i++ == 0)?'?color=':',';
+            params += color;
+        });
+    }
+
     backgroundColor = "green";  //TODO needed?
     getJSON(XYMONJSONURL + params, processData);
 }
@@ -200,7 +206,7 @@ function processData() {    //callback when JSON data is ready
     let hostExists = {};
 
     let xymonData = this.response;
-    xymonData.forEach(function(entry) {     //loop thru data and process it into entries object
+    xymonData.forEach(function(entry) {     //loop thru data and process all tests into entries object
         let ackmsg, acktime, cookie;
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
@@ -240,14 +246,14 @@ function processData() {    //callback when JSON data is ready
 
     availableColors.forEach(function(color) {        //clean out DOM    TODO change when fading
         availablePrios.forEach(function(prio) {
-            var sel = color + '_' + prio;
+            let sel = color + '_' + prio;
             $('#' + sel).html('<div class="ptag">'+prio+'</div>');
             $('#' + sel).addClass("inv");
             $("#" + sel).removeClass("remove");
         });
     });
     availablePrios.forEach(function(prio) {
-        var sel = 'l_' + prio;
+        let sel = 'l_' + prio;
         $("#" + sel).removeClass("remove");
     });
 
@@ -263,6 +269,7 @@ function processData() {    //callback when JSON data is ready
                 keys.sort();    //sort by hostname
                 for (i = 0; i < keys.length; i++) {
                     host = keys[i];
+                    let allSeen = true;
                     for (let test in entries[color][prio][host]) {
                         let ackmsg = entries[color][prio][host][test]['ackmsg'];
                         let acktime = entries[color][prio][host][test]['acktime'];
@@ -272,6 +279,9 @@ function processData() {    //callback when JSON data is ready
                         let lowestY = lowestPos[host]['y'];
                         let lowestPosHost = lowestX + 10*lowestY;
                         let selector;
+                        if (config['testState'][cookie] != 'seen') {
+                            allSeen = false;
+                        }
                         if (lowestPosHost < pos) {    //if we have a higher prio/color entry already
                             selector = config['activeColors'][lowestY] + '_' + config['activePrios'][lowestX];
                         } else {
@@ -279,7 +289,7 @@ function processData() {    //callback when JSON data is ready
                             lowestPos[host]['x'] = x;
                             lowestPos[host]['y'] = y;
                         }
-                        var ackClass = (ackmsg != 'empty')?' acked':'';
+                        let ackClass = (ackmsg != 'empty')?' acked':'';
                         ackmsg = ackmsg.replace(/\\n/ig, "<br />");
                         let d = new Date(acktime*1000);
                         acktime = "acked until " + dateFormat(d, "HH:MM, mmmm d (dddd)");
@@ -302,7 +312,7 @@ function processData() {    //callback when JSON data is ready
                             }
 
                             hostExists[host] = 1;
-                        } else {                  //host seen before -> just add another test
+                        } else {                  //host already exists -> just add another test
                             $('[data-host='+host+']').append(
                                 "<div class='tests'>"+
                                     "<span class='test"+ackClass+"' data-test='"+test+
@@ -319,6 +329,12 @@ function processData() {    //callback when JSON data is ready
                             showFlash('Your settings yield too many tests! Please choose fewer colors or prios.');
                             throw new Error("too many results");
                         }
+                        if (!config['testState'][cookie] == 'seen') {
+                            config['testState'][cookie] = 'known';
+                        }
+                    }
+                    if (allSeen) {
+                        $('[data-host='+host+']').addClass("seen");
                     }
                 }
                 background(color, prio);
@@ -329,6 +345,7 @@ function processData() {    //callback when JSON data is ready
         y++;
     });
     setBackgroundColor();
+    Cookies.set('xymondashsettings', config, { expires: 365 }); //write config so that test states are persistent
 
     //let's find all empty columns and hide them
     let numCols = availablePrios.length;
@@ -401,8 +418,8 @@ function getJSON(url, callback) {
 }
 
 function ackTest() {
-    var fields = ['number', 'delay', 'period', 'message'];
-    var vals = {};
+    let fields = ['number', 'delay', 'period', 'message'];
+    let vals = {};
     fields.forEach(function(field) {
         vals[field] = $("#"+field).val().trim();
     });
@@ -424,8 +441,8 @@ function ackTest() {
 }
 
 function keys(obj) {
-    var keys = [];
-    for(var key in obj) {
+    let keys = [];
+    for(let key in obj) {
         if(obj.hasOwnProperty(key)) {
             keys.push(key);
         }
@@ -535,4 +552,13 @@ function showFlash(msg) {
             $("table#container").fadeTo("slow", 1.0);
         });
     });
+}
+
+$.urlParam = function(){
+    let result = '';
+    if (result = window.location.href.match(/\?(.*)$/)) {
+        return result[1];
+    } else {
+        return null;
+    }
 }
