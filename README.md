@@ -24,9 +24,8 @@ use:
 TODO
   * ack greift nicht auf critical
   * weiss? dialup?
-  * host ack button?
   * ack until ok? blue?
-  * fade tests
+  * host ack button?
   * bg scroll
 
 Ideen:
