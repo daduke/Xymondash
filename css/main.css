@@ -17,10 +17,6 @@ body {
     background: #000;
 }
 
-span {
-    /* mix-blend-mode: difference; */
-}
-
 td.red .msg {
     background-color: rgba(255,0,30,0.7);
 }
@@ -131,7 +127,7 @@ div.tests {
 }
 
 .seen {
-    filter: grayscale(80%);
+    filter: brightness(60%);
 }
 
 .msg > div > .ack {
