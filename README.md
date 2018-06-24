@@ -26,7 +26,6 @@ TODO
   * weiss? dialup?
   * ack until ok? blue?
   * host ack button?
-  * bg scroll
 
 Ideen:
   * host search+filter inkl. grün

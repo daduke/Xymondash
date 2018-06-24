@@ -15,8 +15,6 @@ body {
     font-size: 0.8rem;
     color: #000;
     background: #000;
-    background-image: url("../img/dust_scratches.png");
-    background-attachment: fixed;
 }
 
 span {
@@ -64,7 +62,6 @@ td.green .msg {
     position: absolute;
     z-index: -1000;
     background-blend-mode: soft-light;
-    background-attachment: fixed;
 }
 
 .bg-red {
