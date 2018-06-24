@@ -335,9 +335,6 @@ function processData() {    //callback when JSON data is ready
                             showFlash('Your settings yield too many tests! Please choose fewer colors or prios.');
                             throw new Error("too many results");
                         }
-                        /*if (!config['testState'][cookie] == 'seen') {
-                            config['testState'][cookie] = 'known';
-                        }*/
                     }
                     if (allSeen) {
                         $('[data-host='+host+']').addClass("seen");
@@ -351,6 +348,13 @@ function processData() {    //callback when JSON data is ready
         y++;
     });
     setBackgroundColor();
+
+    //delete gone tests from testState
+    $.each(config['testState'], function(cookie, value) {
+        if ($('[data-cookie="'+cookie+'"]').length == 0) {
+            delete config['testState'][cookie];
+        }
+    });
     Cookies.set('xymondashsettings', config, { expires: 365 }); //write config so that test states are persistent
 
     //let's find all empty columns and hide them
