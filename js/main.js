@@ -37,7 +37,7 @@ $(document).ready(function() {
                 //this cleans up the message text in order to make it readable in the tooltip
                 let msg = $(this).attr('tooltip').replace(/\\n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
                     .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
-                    .replace(/[-=]{10,}/g, '----------');
+                    .replace(/[-=]{10,}/g, '----------').replace(/<table summary.+?<\/table>/g, '');
                 let lines = msg.split(/LBRK/);
                 let res = lines.slice(0, 18).join('<br />');
                 if (lines.length > 18) {
