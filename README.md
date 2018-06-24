@@ -28,7 +28,6 @@ TODO
   * ack until ok? blue?
   * fade tests
   * bg scroll
-  * delete seen
 
 Ideen:
   * host search+filter inkl. grün
