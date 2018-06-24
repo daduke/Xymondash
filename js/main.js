@@ -1,8 +1,8 @@
 /* xymondash - get a concise view of a crowded xymon instance
    (c) 2018 ISG D-PHYS, ETH Zurich
        Claude Becker    - backend code
-       Sven Mäder       - Visual FX and Javascript logic
-       Christian Herzog - Javascript logic
+       Sven Mäder       - Visual FX and JS logic
+       Christian Herzog - JS logic
 */
 
 const XYMONURL     = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh';
@@ -250,7 +250,7 @@ function processData() {    //callback when JSON data is ready
         }
     });
 
-    availableColors.forEach(function(color) {        //clean out DOM    TODO change when fading
+    availableColors.forEach(function(color) {        //clean out DOM
         availablePrios.forEach(function(prio) {
             let sel = color + '_' + prio;
             $('#' + sel).html('<div class="ptag">'+prio+'</div>');
@@ -335,9 +335,9 @@ function processData() {    //callback when JSON data is ready
                             showFlash('Your settings yield too many tests! Please choose fewer colors or prios.');
                             throw new Error("too many results");
                         }
-                        if (!config['testState'][cookie] == 'seen') {
+                        /*if (!config['testState'][cookie] == 'seen') {
                             config['testState'][cookie] = 'known';
-                        }
+                        }*/
                     }
                     if (allSeen) {
                         $('[data-host='+host+']').addClass("seen");
@@ -560,7 +560,7 @@ function showFlash(msg) {
     });
 }
 
-$.urlParam = function(){
+$.urlParam = function() {
     let result = '';
     if (result = window.location.href.match(/\?(.*)$/)) {
         return result[1];

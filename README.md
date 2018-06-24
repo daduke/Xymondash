@@ -28,6 +28,8 @@ TODO
   * ack until ok? blue?
   * graphen + Lupe in msg
   * fade tests
+  * bg scroll
+  * delete seen
 
 Ideen:
   * host search+filter inkl. grün
