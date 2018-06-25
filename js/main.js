@@ -179,7 +179,6 @@ $(document).ready(function() {
     }, 30000);
 
     populateSettings();
-    backgroundColor = 'green';
     triggerUpdate();
 });
 
@@ -202,6 +201,7 @@ function triggerUpdate() {              //fetch data and fill matrix
         });
     }
 
+    backgroundColor = 'green';
     getJSON(XYMONJSONURL + params, processData);
 }
 
