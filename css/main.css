@@ -147,6 +147,11 @@ i.ack {
     margin-left: 2px;
 }
 
+i.ackall {
+    margin-left: 7px;
+    opacity: 0.2;
+}
+
 i.ack:hover {
     opacity: 1;
 }

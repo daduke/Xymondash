@@ -75,10 +75,6 @@ $(document).ready(function() {
             let options = $( "#dialog-form" ).dialog( "option" );
             let cookie = options.cookie;
             $("#number").val(cookie);
-            let hostname = options.hostname;
-            $("#hostname").val(hostname);
-            let testname = options.testname;
-            $("#testname").val(testname);
             paused = true;      //no refresh while ack dialog is open
         },
         close: function() {
@@ -209,7 +205,6 @@ function triggerUpdate() {              //fetch data and fill matrix
 function processData() {    //callback when JSON data is ready
     let entries = {};
     let lowestPos = {};
-    let hostExists = {};
 
     let xymonData = this.response;
     xymonData.forEach(function(entry) {     //loop thru data and process all tests into entries object
@@ -266,6 +261,8 @@ function processData() {    //callback when JSON data is ready
     let x = 0;
     let y = 0;
     let numEntries = 0;
+    let allSeen = {};
+    let numTests = {};
     config['activeColors'].forEach(function(color) {        //build up matrix and display entries data
         config['activePrios'].forEach(function(prio) {
             let pos = x + 10*y;             //this test's 'severity position' in the prio/color matrix
@@ -273,9 +270,10 @@ function processData() {    //callback when JSON data is ready
                 let hosts = entries[color][prio];
                 let keys = Object.keys(hosts);
                 keys.sort();    //sort by hostname
-                for (i = 0; i < keys.length; i++) {
+                for (i = 0; i < keys.length; i++) {         //host loop
                     host = keys[i];
-                    let allSeen = true;
+                    if (!allSeen[host]) { allSeen[host] = true; }
+                    if (!numTests[host]) { numTests[host] = 0; }
                     for (let test in entries[color][prio][host]) {
                         let ackmsg = entries[color][prio][host][test]['ackmsg'];
                         let acktime = entries[color][prio][host][test]['acktime'];
@@ -286,7 +284,7 @@ function processData() {    //callback when JSON data is ready
                         let lowestPosHost = lowestX + 10*lowestY;
                         let selector;
                         if (config['testState'][cookie] != 'seen') {
-                            allSeen = false;
+                            allSeen[host] = false;
                         }
                         if (lowestPosHost < pos) {    //if we have a higher prio/color entry already
                             selector = config['activeColors'][lowestY] + '_' + config['activePrios'][lowestX];
@@ -300,7 +298,7 @@ function processData() {    //callback when JSON data is ready
                         let d = new Date(acktime*1000);
                         acktime = "acked until " + dateFormat(d, "HH:MM, mmmm d (dddd)");
                         ackmsg = '<b>'+ackmsg+'</b><br /><br />'+acktime;
-                        if (!hostExists[host]) {   //new host -> we need a host entry first
+                        if (numTests[host] == 0) {   //new host -> we need a host entry first
                             $("#" + selector).append(
                                 "<div class='msg' data-host='"+host+"'>"+       //TODO rewrite with div()?
                                     "<span class='info'>"+host+": </span>"+
@@ -316,8 +314,6 @@ function processData() {    //callback when JSON data is ready
                             if (ackmsg != 'empty') {
                                 $('i#'+cookie).attr('tooltip', ackmsg);
                             }
-
-                            hostExists[host] = 1;
                         } else {                  //host already exists -> just add another test
                             $('[data-host='+host+']').append(
                                 "<div class='tests'>"+
@@ -335,19 +331,32 @@ function processData() {    //callback when JSON data is ready
                             showFlash('Your settings yield too many tests! Please choose fewer colors or prios.');
                             throw new Error("too many results");
                         }
-                    }
-                    if (allSeen) {
-                        $('[data-host='+host+']').addClass("seen");
-                    }
-                }
+                        numTests[host]++;
+                    }                   //test loop
+                }                       //host loop
                 background(color, prio);
-            }
+            }                           //valid entry
             x++;
-        });
+        });                             //prio loop
         x = 0;
         y++;
-    });
+    });                                 //color loop
     setBackgroundColor();
+
+    //loop over hosts and determine allSeen and ackAll state
+    $('[data-host]').each(function(index) {
+        let host = $(this).data('host');
+
+        if (allSeen[host]) {
+            $('[data-host='+host+']').addClass("seen");
+        }
+        if (numTests[host] > 1) {
+            $('[data-host='+host+']').append(
+                "<div class='tests'>"+
+                    "<i class='ack ackall fas fa-check-double' id='all-"+host+"'></i>"+
+                "</div>");
+        }
+    });
 
     //delete gone tests from testState
     $.each(config['testState'], function(cookie, value) {
@@ -397,9 +406,17 @@ function processData() {    //callback when JSON data is ready
         window.open(link,"_self")
     });
     $("i.ack").click(function(){
-        dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
         dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
-        dialogForm.dialog("option", "testname", $(this).parent().children("span.test").data("test"));
+        if ($(this).hasClass('ackall')) {   //ack all tests of this host
+            let cookies = [];
+            $(this).parent().parent().find("span.test").each(function(e) {
+                let cookie = $(this).data("cookie");
+                cookies.push(cookie);
+            });
+            dialogForm.dialog("option", "cookie", cookies.join(','));
+        } else {                            //single test
+            dialogForm.dialog("option", "cookie", $(this).parent().children("span.test").data("cookie"));
+        }
         dialogForm.dialog("open");
     });
 }
@@ -439,14 +456,20 @@ function ackTest() {
         vals['delay'] *= 60*24;
     }
 
-    $.ajax({
-        type: "POST",
-        url: XYMONACKURL,
-        data: { number: vals['number'], min: vals['delay'], msg: vals['message'] },
-        success: function( data ) {
-            dialogForm.dialog( "close" );
-            triggerUpdate();
-        },
+    let i = 0;
+    let numbers = vals['number'].split(',');
+    numbers.forEach(function(number) {
+        $.ajax({
+            type: "POST",
+            url: XYMONACKURL,
+            data: { number: number, min: vals['delay'], msg: vals['message'] },
+            success: function(data) {
+                if (++i == numbers.length) {
+                    dialogForm.dialog( "close" );
+                    triggerUpdate();
+                }
+            },
+        });
     });
 }
 
