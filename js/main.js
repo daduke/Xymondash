@@ -93,7 +93,6 @@ $(document).ready(function() {
     //open settings panel
     $("#open-settings").click(function (e) {
         populateSettings();           //fill settings panel dynamically
-        e.preventDefault(); //TODO?
         $("#settings-panel").toggleClass("active");
         $('#container-buttons').hide();
         $("#close-settings").show();
@@ -102,7 +101,6 @@ $(document).ready(function() {
 
     //close settings panel
     $("#close-settings").click(function (e) {
-        e.preventDefault(); //TODO?
         $("#settings-panel").toggleClass("active");
         $(this).hide();
         $("#container-buttons").show();
@@ -203,7 +201,6 @@ function triggerUpdate() {              //fetch data and fill matrix
         });
     }
 
-    backgroundColor = "green";  //TODO needed?
     getJSON(XYMONJSONURL + params, processData);
 }
 
@@ -305,7 +302,7 @@ function processData() {    //callback when JSON data is ready
                         ackmsg = '<b>'+ackmsg+'</b><br /><br />'+acktime;
                         if (numTests[host] == 0) {   //new host -> we need a host entry first
                             $("#" + selector).append(
-                                "<div class='msg' data-host='"+host+"'>"+       //TODO rewrite with div()?
+                                "<div class='msg' data-host='"+host+"'>"+
                                     "<span class='info'>"+host+": </span>"+
                                     "<div class='tests'>"+
                                         "<span class='test"+ackClass+"' data-test='"+test+
