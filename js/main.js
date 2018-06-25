@@ -179,6 +179,7 @@ $(document).ready(function() {
     }, 30000);
 
     populateSettings();
+    backgroundColor = 'green';
     triggerUpdate();
 });
 
