@@ -8,6 +8,7 @@
 const XYMONURL     = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh';
 const XYMONACKURL  = 'https://xymon.phys.ethz.ch/xymonjs/cgi/xymon-ack';
 const XYMONJSONURL = 'https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json';
+//const XYMONJSONURL = 'http://127.0.0.1:8080/test.json';
 
 let availableColors = ['red', 'yellow', 'purple', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
@@ -23,6 +24,7 @@ if (Cookies.get('xymondashsettings')) {
     config['activeBgPrios'] = ['prio1', 'prio2'];
     config['hideCols'] = false;
     config['notifications'] = false;
+    config['3D'] = false;
 }
 
 let dialogForm, backgroundColor;
@@ -111,6 +113,7 @@ $(document).ready(function() {
         config['activeBgPrios'] = [];
         config['hideCols'] = false;
         config['notifications'] = false;
+        config['3D'] = false;
 
         //update config settings
         $('input[name="colors"]:checked').each(function(index) {
@@ -127,6 +130,9 @@ $(document).ready(function() {
         });
         $('input[name="notifications"]:checked').each(function(index) {
             config['notifications'] = true;
+        });
+        $('input[name="3D"]:checked').each(function(index) {
+            config['3D'] = true;
         });
         let font = $('select#font').val();
         config['font'] = font;
@@ -396,6 +402,10 @@ function processData() {    //callback when JSON data is ready
         $('.col-sm').css('max-width', '31%');
     }
 
+    if (config['3D']) {
+        $(".msg").css('box-shadow', '2px 2px 4px rgba(0,0,0,0.9), inset -2px -2px 4px rgba(50,50,50,0.8), inset 2px 2px 4px rgba(250,250,250,0.4)');
+    }
+
     $("span.info").click(function(){
         $(this).innerHTML = $(this).parent().parent().data("host")+' / ';
         let link = createLink($(this).parent().data("host"), 'info');
@@ -552,7 +562,7 @@ function populateSettings() {
     $('#settings-container-pick').append('</div');
     $("#font").selectmenu();
 
-    ['hideCols', 'notifications'].forEach(function(checkbox) {
+    ['hideCols', 'notifications', '3D'].forEach(function(checkbox) {
         if (config[checkbox]) {
             $("input#"+checkbox).prop("checked", true);
         }

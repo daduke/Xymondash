@@ -25,7 +25,9 @@ TODO
   * ack greift nicht auf critical
   * weiss? dialup?
   * ack until ok? blue?
-  * host ack button?
+  * max-width
+  * hide legend for non-selected prios
+
 
 Ideen:
   * host search+filter inkl. grün
