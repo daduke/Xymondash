@@ -1,13 +1,13 @@
-/* xymondash - get a concise view of a crowded xymon instance
+/* Xymondash - get a concise view of a crowded xymon instance
    (c) 2018 ISG D-PHYS, ETH Zurich
        Claude Becker    - backend code
        Sven Mäder       - Visual FX and JS logic
        Christian Herzog - JS logic
 */
 
-const XYMONURL     = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh';
-const XYMONACKURL  = 'https://xymon.phys.ethz.ch/xymondash/cgi/xymon-ack';
-const XYMONJSONURL = 'https://xymon.phys.ethz.ch/xymondash/cgi/xymon2json';
+const XYMONURL     = '/xymon-cgi/svcstatus.sh';
+const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
+const XYMONJSONURL = '/xymondash/cgi/xymon2json';
 
 let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
