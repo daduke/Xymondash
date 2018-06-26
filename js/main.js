@@ -371,15 +371,15 @@ function processData() {    //callback when JSON data is ready
 
     //let's find all empty columns and hide them
     let numCols = availablePrios.length;
-    if (config['hideCols']) {
-        availablePrios.forEach(function(prio) {
-            let allEmpty = true;
-            availableColors.forEach(function(color) {
-                let selector = color + '_' + prio;
-                if (!$("#" + selector).hasClass("inv")) {
-                    allEmpty = false;
-                }
-            });
+    availablePrios.forEach(function(prio) {
+        let allEmpty = true;
+        availableColors.forEach(function(color) {
+            let selector = color + '_' + prio;
+            if (!$("#" + selector).hasClass("inv")) {
+                allEmpty = false;
+            }
+        });
+        if ($.inArray(prio, config['activePrios']) == -1 || config['hideCols']) {
             if (allEmpty) {
                 config['activeColors'].concat('l').forEach(function(color) {
                     let selector = color + '_' + prio;
@@ -387,8 +387,10 @@ function processData() {    //callback when JSON data is ready
                 });
                 numCols--;
             }
-        });
-    }
+        }
+    });
+
+
     let width = (100/numCols) - 2;
     const mq = window.matchMedia("(max-width: 720px)");
     if (mq.matches) {   //mobile view
