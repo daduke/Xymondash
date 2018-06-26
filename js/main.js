@@ -18,8 +18,8 @@ if (Cookies.get('xymondashsettings')) {
     config = Cookies.getJSON('xymondashsettings');
     if (!config['testState']) config['testState'] = {};
 } else {
-    config['activeColors'] = ['red', 'yellow'];
-    config['activePrios'] = ['prio1', 'prio2'];
+    config['activeColors'] = ['red', 'purple', 'yellow'];
+    config['activePrios'] = ['prio1', 'prio2', 'prio3'];
     config['activeBgPrios'] = ['prio1', 'prio2'];
     config['hideCols'] = false;
     config['notifications'] = false;
