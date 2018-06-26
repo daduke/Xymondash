@@ -17,7 +17,7 @@ import os
 import re
 import subprocess
 
-allowed_chars = re.compile(r'^[a-zA-Z0-9\-,\[\]\^\|]+$')
+allowed_chars = re.compile(r'^[a-zA-Z0-9\-,\[\]\^\|\' ]+$')
 
 
 def get_form_dict():
