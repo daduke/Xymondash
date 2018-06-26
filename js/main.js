@@ -19,8 +19,8 @@ if (Cookies.get('xymondashsettings')) {
     if (!config['testState']) config['testState'] = {};
 } else {
     config['activeColors'] = ['red', 'purple', 'yellow'];
-    config['activePrios'] = ['prio1', 'prio2', 'prio3'];
-    config['activeBgPrios'] = ['prio1', 'prio2'];
+    config['activePrios'] = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
+    config['activeBgPrios'] = ['prio1', 'prio2', 'prio3', 'other'];
     config['hideCols'] = false;
     config['notifications'] = false;
     config['3D'] = false;
