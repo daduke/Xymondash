@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 '''
 CGI that fetches xymon data and returns it as json.
+
+The query string can be used to pass parameters to the xymon cli
+
+  * `?color=red,yellow,purple&test=[^libs]`: show alerts of given colors and ignore the libs test
+  * `?page=san|bkpcluster`: show hosts of the given pages, as defined in `/etc/xymon/hosts.cfg`
+
+Please refer to the xymondboard section in `man xymon` for further details.
 '''
 import cgi
 import csv
