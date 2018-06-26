@@ -17,6 +17,8 @@ import os
 import re
 import subprocess
 
+XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
+
 allowed_chars = re.compile(r'^[a-zA-Z0-9\-,\[\]\^\|\' ]+$')
 
 
@@ -42,7 +44,7 @@ def form_is_valid(form_dict):
 
 
 def save_acknowledgment(ack_data):
-    ack_cmd = '/usr/lib/xymon/server/bin/xymon 0 "xymondack {} {} {}: {}"'.format(
+    ack_cmd = XYMONCLI + ' 0 "xymondack {} {} {}: {}"'.format(
         ack_data['number'], ack_data['min'], ack_data['user'], ack_data['msg']
     )
     try:

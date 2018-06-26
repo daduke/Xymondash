@@ -18,4 +18,9 @@ For monitoring large scale computing environments, we love <a href="https://www.
 Installation
 ------------
 
-In order to get Xymondash running on top of your Xymon monitoring, you'll have to check out the Xymondash folder on your monitoring server. Then you'll have to make sure the CGI scripts are working - they need Python3. Open the URL of `xymon2json` in your browser and make sure it generates JSON. Depending on your relative paths, you might have to change the 3 `XYMON*URLs` in `js/main.js`. Then just point your web browser to the Xymondash URL and you should be good to go!
+In order to get Xymondash running on top of your Xymon monitoring, you'll have to do the following:
+
+  * check out the Xymondash folder on your monitoring server
+  * make sure the CGI scripts are working - they need Python3. In each of `xymon-ack` and `xymon2json` you'll have to change the `XYMONCLI` constant to the location of your Xymon cli, and in `xymon2json` the path to your `critical.cfg`. Open the URL of `xymon2json` in your browser and make sure it generates JSON. Don't bother to proceed until this works!
+  * depending on your relative URLs, you might have to change the 3 `XYMON*URLs` in `js/main.js`
+  * point your web browser to the Xymondash URL and you should be good to go!
