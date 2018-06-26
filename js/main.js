@@ -9,7 +9,7 @@ const XYMONURL     = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus.sh';
 const XYMONACKURL  = 'https://xymon.phys.ethz.ch/xymonjs/cgi/xymon-ack';
 const XYMONJSONURL = 'https://xymon.phys.ethz.ch/xymonjs/cgi/xymon2json';
 
-let availableColors = ['red', 'yellow', 'purple', 'blue', 'green'];
+let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
 let config = {};
 if (!config['testState']) config['testState'] = {};
