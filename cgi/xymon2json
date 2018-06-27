@@ -12,6 +12,7 @@ Please refer to the xymondboard section in `man xymon` for further details.
 import cgi
 import csv
 import json
+import os
 import re
 import subprocess
 import sys
@@ -81,17 +82,18 @@ def xymondboard_cmd():
 
 
 def merge_critical_scores():
-    critical_score = defaultdict(dict)
-    with open(CRITICAL, 'r') as f:
-        for line in f:
-            (host, test, _, _, _, score) = line.split('|')[:6]
-            critical_score[host][test] = score
+    if os.path.exists(CRITICAL):
+        critical_score = defaultdict(dict)
+        with open(CRITICAL, 'r') as f:
+            for line in f:
+                (host, test, _, _, _, score) = line.split('|')[:6]
+                critical_score[host][test] = score
 
-    for i in range(len(xymon_data)):
-        host = xymon_data[i]['hostname']
-        test = xymon_data[i]['testname']
-        if host in critical_score and test in critical_score[host]:
-            xymon_data[i]['critscore'] = critical_score[host][test]
+        for i in range(len(xymon_data)):
+            host = xymon_data[i]['hostname']
+            test = xymon_data[i]['testname']
+            if host in critical_score and test in critical_score[host]:
+                xymon_data[i]['critscore'] = critical_score[host][test]
 
     return True
 
