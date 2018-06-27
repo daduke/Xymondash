@@ -40,12 +40,11 @@ td.green .msg {
 .ptag {
     float: right;
     display: none;
-    margin-top: 0.41em;
+    margin-top: -0.3em;
     margin-right: 0.45em;
-    vertical-align: center;
-    padding: 2px;
-    border-radius: 3px;
-    background: rgba(100, 100, 100, 0.4);
+    color: white;
+    font-weight: bold;
+    text-shadow: 2px 2px 2px #000;
 }
 
 #bg {
@@ -128,6 +127,7 @@ div.tests {
 
 .seen {
     filter: brightness(60%);
+    z-index: -1;
 }
 
 .msg > div > .ack {
