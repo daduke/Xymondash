@@ -8,7 +8,7 @@
 const XYMONURL     = '/xymon-cgi/svcstatus.sh';
 const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
 //const XYMONJSONURL = '/xymondash/cgi/xymon2json';
-const XYMONJSONURL = '/xymondashdev/xymon-galen.json';
+const XYMONJSONURL = '/xymondashdev/xymon-jonathan.json';
 
 let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
@@ -318,7 +318,7 @@ function processData() {    //callback when JSON data is ready
                                 "</div>");
                             $("#" + selector).removeClass("inv");
                         } else {                  //host already exists -> just add another test
-                            $('[data-host='+host+']').append(
+                            $('[data-host="'+host+'"]').append(
                                 "<div class='tests'>"+
                                     "<span class='test"+ackClass+"' data-test='"+test+"' data-color='" +color+
                                         "' data-ackmsg='"+escape(ackmsg)+"' data-cookie='"+cookie+"' >"+test+
@@ -352,10 +352,10 @@ function processData() {    //callback when JSON data is ready
         let host = $(this).data('host');
 
         if (allSeen[host]) {
-            $('[data-host='+host+']').addClass("seen");
+            $('[data-host="'+host+'"]').addClass("seen");
         }
         if (numTests[host] > 1) {   //TODO check for ack!
-            $('[data-host='+host+']').append(
+            $('[data-host="'+host+'"]').append(
                 "<div class='tests'>"+
                     "<i class='ack ackall fas fa-check-double' id='all-"+host+"'></i>"+
                 "</div>");
