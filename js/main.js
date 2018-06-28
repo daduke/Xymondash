@@ -265,6 +265,7 @@ function processData() {    //callback when JSON data is ready
     let numEntries = 0;
     let allSeen = {};
     let numTests = {};
+    let ackTests = {};
     config['activeColors'].forEach(function(color) {        //build up matrix and display entries data
         config['activePrios'].forEach(function(prio) {
             let pos = x + 10*y;             //this test's 'severity position' in the prio/color matrix
@@ -276,6 +277,7 @@ function processData() {    //callback when JSON data is ready
                     host = keys[i];
                     if (!allSeen[host]) { allSeen[host] = true; }
                     if (!numTests[host]) { numTests[host] = 0; }
+                    if (!ackTests[host]) { ackTests[host] = 0; }
                     for (let test in entries[color][prio][host]) {
                         let ackmsg = entries[color][prio][host][test]['ackmsg'];
                         let acktime = entries[color][prio][host][test]['acktime'];
@@ -299,7 +301,13 @@ function processData() {    //callback when JSON data is ready
                         let ackClass = (ackmsg != 'empty')?' acked':'';
                         ackmsg = ackmsg.replace(/\\n/ig, "<br />");
                         let d = new Date(acktime*1000);
-                        let ackIcon = (cookie == 'empty')?'&nbsp;&nbsp;':"<i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>";
+                        let ackIcon;
+                        if (cookie == 'empty') {
+                            ackIcon = '&nbsp;&nbsp;';
+                        } else {
+                            ackIcon = "<i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>";
+                            ackTests[host]++;
+                        }
                         acktime = "acked until " + dateFormat(d, "HH:MM, mmmm d (dddd)");
                         ackmsg = '<b>'+ackmsg+'</b><br /><br />'+acktime;
                         if (numTests[host] == 0) {   //new host -> we need a host entry first
@@ -351,7 +359,7 @@ function processData() {    //callback when JSON data is ready
         if (allSeen[host]) {
             $('[data-host="'+host+'"]').addClass("seen");
         }
-        if (numTests[host] > 1) {   //TODO check for ack!
+        if (ackTests[host] > 1) {
             $('[data-host="'+host+'"]').append(
                 "<div class='tests'>"+
                     "<i class='ack ackall fas fa-check-double' id='all-"+host+"'></i>"+
@@ -418,7 +426,7 @@ function processData() {    //callback when JSON data is ready
         dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
         if ($(this).hasClass('ackall')) {   //ack all tests of this host
             let cookies = [];
-            $(this).parent().parent().find("span.test").each(function(e) {  //TODO check for ack!
+            $(this).parent().parent().find("span.test").each(function(e) {
                 let cookie = $(this).data("cookie");
                 cookies.push(cookie);
             });
@@ -468,17 +476,19 @@ function ackTest() {
     let i = 0;
     let numbers = vals['number'].split(',');
     numbers.forEach(function(number) {
-        $.ajax({
-            type: "POST",
-            url: XYMONACKURL,
-            data: { number: number, min: vals['delay'], msg: vals['message'] },
-            success: function(data) {
-                if (++i == numbers.length) {
-                    dialogForm.dialog( "close" );
-                    triggerUpdate();
-                }
-            },
-        });
+        if (number != 'empty') {
+            $.ajax({
+                type: "POST",
+                url: XYMONACKURL,
+                data: { number: number, min: vals['delay'], msg: vals['message'] },
+                success: function(data) {
+                    if (++i == numbers.length) {
+                        dialogForm.dialog( "close" );
+                        triggerUpdate();
+                    }
+                },
+            });
+        }
     });
 }
 
