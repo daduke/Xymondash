@@ -38,13 +38,16 @@ td.green .msg {
 }
 
 .ptag {
-    float: right;
     display: none;
-    margin-top: -0.3em;
-    margin-right: 0.45em;
+    position: relative;
+    top: 0.3em;
+    line-height: 0;
+    z-index: 100;
+    padding-right: 0.5em;
+    text-align: right;
     color: white;
     font-weight: bold;
-    text-shadow: 2px 2px 2px #000;
+    text-shadow: 0px 0px 0.04rem rgba(255, 255, 255, 0.6), 2px 2px 2px #000;
 }
 
 #bg {
