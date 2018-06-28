@@ -7,15 +7,16 @@
 
 const XYMONURL     = '/xymon-cgi/svcstatus.sh';
 const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
-const XYMONJSONURL = '/xymondash/cgi/xymon2json';
+//const XYMONJSONURL = '/xymondash/cgi/xymon2json';
+const XYMONJSONURL = '/xymondashdev/xymon-galen.json';
 
 let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
 let config = {};
 if (!config['testState']) config['testState'] = {};
 
-if (Cookies.get('xymondashsettings')) {
-    config = Cookies.getJSON('xymondashsettings');
+if (Cookies.get('xymondashsettingsTODO')) {
+    config = Cookies.getJSON('xymondashsettingsTODO');
     if (!config['testState']) config['testState'] = {};
 } else {
     config['activeColors'] = ['red', 'purple', 'yellow'];
@@ -135,7 +136,7 @@ $(document).ready(function() {
         config['font'] = font;
         $("#page").css("font-family", font);
 
-        Cookies.set('xymondashsettings', config, { expires: 365 });
+        Cookies.set('xymondashsettingsTODO', config, { expires: 365 });
         paused = false;
         triggerUpdate();
     });
@@ -143,7 +144,8 @@ $(document).ready(function() {
     //mark all currently visible tests as 'seen'
     $("#markSeen").click(function (e) {
         $('span.test').each(function(index) {
-            config['testState'][$(this).data('cookie')] = 'seen';
+            let sel = $(this).parent().parent().data('host') + '_' + $(this).data('test') + '_' + $(this).data('color');
+            config['testState'][sel] = 'seen';
         });
         triggerUpdate();
     });
@@ -173,11 +175,11 @@ $(document).ready(function() {
     $("input#message").click(function (e) {
         $(this).val('');
     });
-
+/*TODO
     setInterval(function() {    //reload every 30s
         if (!paused) { triggerUpdate() };
     }, 30000);
-
+*/
     populateSettings();
     triggerUpdate();
 });
@@ -286,7 +288,8 @@ function processData() {    //callback when JSON data is ready
                         let lowestY = lowestPos[host]['y'];
                         let lowestPosHost = lowestX + 10*lowestY;
                         let selector;
-                        if (config['testState'][cookie] != 'seen') {
+                        let seenSel = host + '_' + test + '_' + color;
+                        if (config['testState'][seenSel] != 'seen') {
                             allSeen[host] = false;
                         }
                         if (lowestPosHost < pos) {    //if we have a higher prio/color entry already
@@ -299,6 +302,7 @@ function processData() {    //callback when JSON data is ready
                         let ackClass = (ackmsg != 'empty')?' acked':'';
                         ackmsg = ackmsg.replace(/\\n/ig, "<br />");
                         let d = new Date(acktime*1000);
+                        let ackIcon = (cookie == 'empty')?'&nbsp;&nbsp;':"<i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>";
                         acktime = "acked until " + dateFormat(d, "HH:MM, mmmm d (dddd)");
                         ackmsg = '<b>'+ackmsg+'</b><br /><br />'+acktime;
                         if (numTests[host] == 0) {   //new host -> we need a host entry first
@@ -306,29 +310,26 @@ function processData() {    //callback when JSON data is ready
                                 "<div class='msg' data-host='"+host+"'>"+
                                     "<span class='info'>"+host+": </span>"+
                                     "<div class='tests'>"+
-                                        "<span class='test"+ackClass+"' data-test='"+test+
+                                        "<span class='test"+ackClass+"' data-test='"+test+"' data-color='" +color+
                                             "' data-ackmsg='" +escape(ackmsg)+"' data-cookie='"+cookie+"'>"+test+
                                         "</span>"+
-                                        "<i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>"+
+                                        ackIcon+
                                     "</div>"+
                                 "</div>");
                             $("#" + selector).removeClass("inv");
-                            $('[data-cookie='+cookie+']').attr('tooltip', msg);
-                            if (ackmsg != 'empty') {
-                                $('i#'+cookie).attr('tooltip', ackmsg);
-                            }
                         } else {                  //host already exists -> just add another test
                             $('[data-host='+host+']').append(
                                 "<div class='tests'>"+
-                                    "<span class='test"+ackClass+"' data-test='"+test+
+                                    "<span class='test"+ackClass+"' data-test='"+test+"' data-color='" +color+
                                         "' data-ackmsg='"+escape(ackmsg)+"' data-cookie='"+cookie+"' >"+test+
                                     "</span>"+
-                                    "<i class='ack"+ackClass+" fas fa-check' id='"+cookie+"'></i>"+
+                                    ackIcon+
                                 "</div>");
-                            $('[data-cookie='+cookie+']').attr('tooltip', msg);
-                            if (ackmsg != 'empty') {
-                                $('i#'+cookie).attr('tooltip', ackmsg);
-                            }
+                        }
+                        let entry = $('[data-host="'+host+'"]').find('div.tests').children('span.test[data-test="' + test + '"][data-color="'+color+'"]');
+                        $(entry).attr('tooltip', msg);
+                        if (ackmsg != 'empty') {
+                            $('i#'+cookie).attr('tooltip', ackmsg);
                         }
                         if (numEntries++ > 200) {
                             showFlash('Your settings yield too many tests! Please choose fewer colors or prios.');
@@ -353,7 +354,7 @@ function processData() {    //callback when JSON data is ready
         if (allSeen[host]) {
             $('[data-host='+host+']').addClass("seen");
         }
-        if (numTests[host] > 1) {
+        if (numTests[host] > 1) {   //TODO check for ack!
             $('[data-host='+host+']').append(
                 "<div class='tests'>"+
                     "<i class='ack ackall fas fa-check-double' id='all-"+host+"'></i>"+
@@ -362,12 +363,14 @@ function processData() {    //callback when JSON data is ready
     });
 
     //delete gone tests from testState
-    $.each(config['testState'], function(cookie, value) {
-        if ($('[data-cookie="'+cookie+'"]').length == 0) {
-            delete config['testState'][cookie];
+    $.each(config['testState'], function(sel, value) {
+        let [host, test, color] = sel.split('_');
+        let entry = $('[data-host="'+host+'"]').find('div.tests').children('span.test[data-test="' + test + '"][data-color="'+color+'"]');
+        if (entry.length == 0) {
+            delete config['testState'][sel];
         }
     });
-    Cookies.set('xymondashsettings', config, { expires: 365 }); //write config so that test states are persistent
+    Cookies.set('xymondashsettingsTODO', config, { expires: 365 }); //write config so that test states are persistent
 
     //let's find all empty columns and hide them
     let numCols = availablePrios.length;
@@ -418,7 +421,7 @@ function processData() {    //callback when JSON data is ready
         dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
         if ($(this).hasClass('ackall')) {   //ack all tests of this host
             let cookies = [];
-            $(this).parent().parent().find("span.test").each(function(e) {
+            $(this).parent().parent().find("span.test").each(function(e) {  //TODO check for ack!
                 let cookie = $(this).data("cookie");
                 cookies.push(cookie);
             });
