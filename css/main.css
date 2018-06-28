@@ -127,7 +127,6 @@ div.tests {
 
 .seen {
     filter: brightness(60%);
-    z-index: -1;
 }
 
 .msg > div > .ack {

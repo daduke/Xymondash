@@ -7,16 +7,15 @@
 
 const XYMONURL     = '/xymon-cgi/svcstatus.sh';
 const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
-//const XYMONJSONURL = '/xymondash/cgi/xymon2json';
-const XYMONJSONURL = '/xymondashdev/xymon-jonathan.json';
+const XYMONJSONURL = '/xymondash/cgi/xymon2json';
 
 let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
 let config = {};
 if (!config['testState']) config['testState'] = {};
 
-if (Cookies.get('xymondashsettingsTODO')) {
-    config = Cookies.getJSON('xymondashsettingsTODO');
+if (Cookies.get('xymondashsettings')) {
+    config = Cookies.getJSON('xymondashsettings');
     if (!config['testState']) config['testState'] = {};
 } else {
     config['activeColors'] = ['red', 'purple', 'yellow'];
@@ -136,7 +135,7 @@ $(document).ready(function() {
         config['font'] = font;
         $("#page").css("font-family", font);
 
-        Cookies.set('xymondashsettingsTODO', config, { expires: 365 });
+        Cookies.set('xymondashsettings', config, { expires: 365 });
         paused = false;
         triggerUpdate();
     });
@@ -175,11 +174,9 @@ $(document).ready(function() {
     $("input#message").click(function (e) {
         $(this).val('');
     });
-/*TODO
     setInterval(function() {    //reload every 30s
         if (!paused) { triggerUpdate() };
     }, 30000);
-*/
     populateSettings();
     triggerUpdate();
 });
@@ -370,7 +367,7 @@ function processData() {    //callback when JSON data is ready
             delete config['testState'][sel];
         }
     });
-    Cookies.set('xymondashsettingsTODO', config, { expires: 365 }); //write config so that test states are persistent
+    Cookies.set('xymondashsettings', config, { expires: 365 }); //write config so that test states are persistent
 
     //let's find all empty columns and hide them
     let numCols = availablePrios.length;
