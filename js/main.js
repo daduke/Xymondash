@@ -568,7 +568,7 @@ function populateSettings() {
     fontSel += '</select>';
     $('#settings-container-pick').append('<div class="setting-group"><h2 class="text-white">Font</h2>');
     $('#settings-container-pick').append(fontSel);
-    $('#settings-container-pick').append('</div');
+    $('#settings-container-pick').append('</div>');
     $("#font").selectmenu();
 
     ['hideCols', 'notifications', '3D'].forEach(function(checkbox) {
