@@ -42,7 +42,7 @@ td.green .msg {
     position: relative;
     top: 0.3em;
     line-height: 0;
-    z-index: 100;
+    z-index: 5;
     padding-right: 0.5em;
     text-align: right;
     color: #d2d2d2;

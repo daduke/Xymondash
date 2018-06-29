@@ -182,26 +182,38 @@ $(document).ready(function() {
 });
 
 function triggerUpdate() {              //fetch data and fill matrix
-    let params = '';
+    let params = '?';
 
     if ($.urlParam()) {                 //manual URL color params override color checkboxes
+        let needColor = true;
+        params += $.urlParam();
         $.urlParam().split('&').forEach(function(param) {
             let [key, val] = param.split('=');
             if (key == 'color') {
                 config['activeColors'] = val.split(',');
+                needColor = false;
             }
         });
-        params = '?'+$.urlParam();
+        if (needColor) {
+            params += '&'+colorParams();
+        }
     } else {
-        let i = 0;
-        config['activeColors'].forEach(function(color) {
-            params += (i++ == 0)?'?color=':',';
-            params += color;
-        });
+        params += colorParams();
     }
 
     backgroundColor = 'green';
     getJSON(XYMONJSONURL + params, processData);
+}
+
+function colorParams() {
+    let i = 0;
+    let params = '';
+    config['activeColors'].forEach(function(color) {
+        params += (i++ == 0)?'color=':',';
+        params += color;
+    });
+
+    return params;
 }
 
 function processData() {    //callback when JSON data is ready
