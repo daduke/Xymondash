@@ -21,8 +21,13 @@ Installation
 In order to get Xymondash running on top of your Xymon monitoring, you'll have to do the following:
 
   * check out the Xymondash folder on your monitoring server
-  * make sure the CGI scripts are working. They require Python >= 3.5 (if you need to support 3.4 you have to switch to the [old subprocess API](https://docs.python.org/3/library/subprocess.html#call-function-trio) instead of the now recommended run method). In each of `xymon-ack` and `xymon2json` you'll have to change the `XYMONCLI` constant to the location of your Xymon cli, and in `xymon2json` the path to your `critical.cfg`. You can also copy the two CGIs to `<path-to>/xymon/cgi-bin/` and adapt the `js/main.js` URLs accordingly. Open the URL of `xymon2json` in your browser and make sure it generates JSON. Don't bother to proceed until this works!
-  * depending on your relative URLs, you might have to change the 3 `XYMON*URLs` in `js/main.js`
+  * copy `config.ini.example` to `config.ini`
+  * change `XYMONCLI` and `CRITICAL` in `config.ini` to the correct location in your file system
+  * run `./config.sh` to configure the CGI scripts
+  * make sure the CGI scripts are working. They require Python >= 3.5 (if you need to support 3.4 you have to switch to the [old subprocess API](https://docs.python.org/3/library/subprocess.html#call-function-trio) instead of the now recommended run method). If your web server is picky about CGI locations, you can copy the two CGIs to `<path-to>/xymon/cgi-bin/` and run them from there. Open the URL of `xymon2json` in your browser and make sure it generates JSON. Don't bother to proceed until this works!
+  * with the CGIs in place, edit `config.ini` to the correct URLs of `XYMONURL`, `XYMONACKURL` and `XYMONJSONURL`
+  * run `./config.sh` again to configure the JS
+  * finally pick a `TITLE` in `config.ini` and rerun `./config.sh`
   * point your web browser to the Xymondash URL and you should be good to go!
 
 Known issues

@@ -1,0 +1,17 @@
+# location of xymon executable in your file system
+XYMONCLI="/usr/lib/xymon/server/bin/xymon"
+
+# location of Xymon's critical.cfg in your file system (if you have one)
+CRITICAL="/etc/xymon/critical.cfg"
+
+# relative URL of svcstatus.sh on your monitoring server
+XYMONURL="/xymon-cgi/svcstatus.sh"
+
+# relative URL of xymon-ack on your monitoring server
+XYMONACKURL="/xymondash/cgi/xymon-ack"
+
+# relative URL of xymon2json on your monitoring server
+XYMONJSONURL="/xymondash/cgi/xymon2json"
+
+# website title
+TITLE="ISG D-PHYS xymon dashboard"
