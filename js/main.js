@@ -517,12 +517,15 @@ function ackTest() {
             $.ajax({
                 type: "POST",
                 url: XYMONACKURL,
-                data: { number: number, min: vals['delay'], msg: encodeURIComponent(vals['message']) },
+                data: { number: number, min: vals['delay'], msg: vals['message'] },
                 success: function(data) {
                     if (++i == numbers.length) {
                         dialogForm.dialog( "close" );
                         triggerUpdate();
                     }
+                },
+                error: function(data) {
+                    console.log(data);
                 },
             });
         }
