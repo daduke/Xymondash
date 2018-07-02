@@ -15,6 +15,7 @@ For monitoring large scale computing environments, we love <a href="https://www.
   * the interface should be usable on mobile devices ("responsive")
   * everything is configurable: which colors and prios to see, display acknowledged tests or not, conditions for the overall background color etc
   * you can search for hosts and display all their tests
+  * keyboard shortcuts: `r` for reload, `m` for mark as seen, `s` for search
 
 Installation
 ------------

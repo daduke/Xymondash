@@ -52,6 +52,20 @@ $(document).ready(function() {
         }
     });
 
+    $(document).keypress(function(e) {
+        if (!$("input#hostname").is(":focus")) {
+            if (e.charCode == 114) {            //reload
+                doReload();
+            } else if (e.charCode == 109) {     //mark as seen
+                doMarkSeen();
+            } else if (e.charCode == 115) {     //search
+                $("form#searchform").css("display", "inline");
+                $("input#hostname").focus();
+                $("input#hostname").val('');
+            }
+        }
+    });
+
     dialogForm = $("#dialog-form").dialog({       //acknowledge form template
         autoOpen: false,
         height: 300,
@@ -78,9 +92,7 @@ $(document).ready(function() {
     $("#page").css("font-family", config['font']);
 
     $("#reload").click(function(){
-        paused = false;
-        showSearch = false;
-        triggerUpdate();
+        doReload();
     });
 
     //open settings panel
@@ -141,6 +153,8 @@ $(document).ready(function() {
         e.preventDefault();
         paused = true;
         showSearch = true;
+        $("form#searchform").blur();
+        $(document).focus();
         backgroundColor = 'green';
         let hostname = $(this).children("input#hostname").val();
         let params = "?host="+hostname+"&color="+availableColors.join(',');
@@ -152,11 +166,7 @@ $(document).ready(function() {
 
     //mark all currently visible tests as 'seen'
     $("#markSeen").click(function (e) {
-        $('span.test').each(function(index) {
-            let sel = $(this).parent().parent().data('host') + '_' + $(this).data('test') + '_' + $(this).data('color');
-            config['testState'][sel] = 'seen';
-        });
-        triggerUpdate();
+        doMarkSeen();
     });
 
     $('button#markSeen').attr('tooltip', 'mark all as seen');
@@ -188,6 +198,7 @@ $(document).ready(function() {
         if (!paused) { triggerUpdate() };
     }, 30000);
     populateSettings();
+    $(document).focus();
     triggerUpdate();
 });
 
@@ -506,7 +517,7 @@ function ackTest() {
             $.ajax({
                 type: "POST",
                 url: XYMONACKURL,
-                data: { number: number, min: vals['delay'], msg: vals['message'] },
+                data: { number: number, min: vals['delay'], msg: encodeURIComponent(vals['message']) },
                 success: function(data) {
                     if (++i == numbers.length) {
                         dialogForm.dialog( "close" );
@@ -644,6 +655,20 @@ function readConfig() {
         config['notifications'] = false;
         config['3D'] = false;
     }
+}
+
+function doReload() {
+    paused = false;
+    showSearch = false;
+    triggerUpdate();
+}
+
+function doMarkSeen() {
+    $('span.test').each(function(index) {
+        let sel = $(this).parent().parent().data('host') + '_' + $(this).data('test') + '_' + $(this).data('color');
+        config['testState'][sel] = 'seen';
+    });
+    triggerUpdate();
 }
 
 $.urlParam = function() {
