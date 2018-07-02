@@ -14,6 +14,7 @@ For monitoring large scale computing environments, we love <a href="https://www.
   * you can override the URL parameters used to fetch the JSON data in order to modify which tests to fetch (see `xymon2json` for details)
   * the interface should be usable on mobile devices ("responsive")
   * everything is configurable: which colors and prios to see, display acknowledged tests or not, conditions for the overall background color etc
+  * you can search for hosts and display all their tests
 
 Installation
 ------------
@@ -29,6 +30,7 @@ In order to get Xymondash running on top of your Xymon monitoring, you'll have t
   * run `./config.sh` again to configure the JS
   * finally pick a `TITLE` in `config.ini` and rerun `./config.sh`
   * point your web browser to the Xymondash URL and you should be good to go!
+  * after a `git pull` update, you'll just have to run `./config.sh` again to recover your settings
 
 Known issues
 ------------
