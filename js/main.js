@@ -53,7 +53,7 @@ $(document).ready(function() {
     });
 
     $(document).keypress(function(e) {
-        if (!$("input#hostname").is(":focus")) {
+        if (!$("input#hostname").is(":focus") && !paused) {
             if (e.charCode == 114) {            //reload
                 doReload();
             } else if (e.charCode == 109) {     //mark as seen
