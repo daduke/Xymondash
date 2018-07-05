@@ -455,7 +455,7 @@ function processData() {    //callback when JSON data is ready
     });
     $("span.test").click(function(){
         let link = createLink($(this).parent().parent().data("host"), $(this).data("test"));
-        window.open(link,"_self")
+        window.open(link, linkTarget)
     });
     $("i.ack").click(function(){
         dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
