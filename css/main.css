@@ -274,6 +274,12 @@ h1.text-white {
     display: inline-block;
 }
 
+#date {
+    margin-top: 10px;
+    margin-right: 3px;
+    text-align: right;
+}
+
 #settings-container-header {
     margin-top: 8px;
     margin-right: 8px;
