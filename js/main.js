@@ -92,6 +92,10 @@ $(document).ready(function() {
             if (!showSearch) { paused = false; }
         }
     });
+    $("#dialog-form").on( "submit", function( event ) {
+        event.preventDefault();
+        ackTest();
+    });
 
     $("#period").selectmenu();
     $("#page").css("font-family", config['font']);
