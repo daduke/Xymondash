@@ -508,6 +508,7 @@ function ackTest() {
     fields.forEach(function(field) {
         vals[field] = $("#"+field).val().trim();
     });
+    if (!vals['message']) vals['message'] = '-';
     if (vals['period'] == 'hours') {
         vals['delay'] *= 60;
     } else if (vals['period'] == 'days') {
