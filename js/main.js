@@ -451,6 +451,8 @@ function processData() {    //callback when JSON data is ready
     if (config['3D']) {
         $(".msg").css('box-shadow', '2px 2px 4px rgba(0,0,0,0.9), inset -2px -2px 4px rgba(50,50,50,0.8), inset 2px 2px 4px rgba(250,250,250,0.4)');
     }
+    let d = Date();
+    $("#date").html( dateFormat(d, "HH:MM, mmmm d"));
 
     let linkTarget = (config['newTab'])?'_blank':'_self';
     $("span.info").click(function(){
@@ -460,7 +462,7 @@ function processData() {    //callback when JSON data is ready
     });
     $("span.test").click(function(){
         let link = createLink($(this).parent().parent().data("host"), $(this).data("test"));
-        window.open(link,"_self")
+        window.open(link, linkTarget)
     });
     $("i.ack").click(function(){
         dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
