@@ -106,4 +106,4 @@ xymon_data = [row for row in csv.DictReader(xymon_lines, delimiter='|',
 merge_critical_scores()
 
 print("Content-Type: application/json\nAccess-Control-Allow-Origin: *\n")
-print(json.dumps(xymon_data, indent=4))
+print(json.dumps(xymon_data, sort_keys=True, indent=4))
