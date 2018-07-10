@@ -7,6 +7,7 @@
 
 const XYMONURL     = '/xymon-cgi/svcstatus.sh';
 const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
+const XYMONACKINFOURL  = '/xymon-seccgi/ackinfo.sh';
 const XYMONJSONURL = '/xymondash/cgi/xymon2json';
 
 let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
@@ -74,13 +75,17 @@ $(document).ready(function() {
         buttons: {
             "Acknowledge test": ackTest,
             Cancel: function() {
-                dialogForm.dialog( "close" );
+                dialogForm.dialog("close");
             }
         },
         open: function() {
-            let options = $( "#dialog-form" ).dialog( "option" );
+            let options = $("#dialog-form").dialog("option");
             let cookie = options.cookie;
             $("#number").val(cookie);
+            let host = options.hostname;
+            $("#host").val(host);
+            let service = options.service;
+            $("#service").val(service);
             paused = true;      //no refresh while ack dialog is open
         },
         close: function() {
@@ -459,7 +464,8 @@ function processData() {    //callback when JSON data is ready
     });
     $("i.ack").click(function(){
         dialogForm.dialog("option", "hostname", $(this).parent().parent().data("host"));
-        if ($(this).hasClass('ackall')) {   //ack all tests of this host
+        dialogForm.dialog("option", "service", $(this).parent().children("span.test").data("test"));
+        if ($(this).hasClass('ackall')) {   //ack all tests of this host        TODO same for service
             let cookies = [];
             $(this).parent().parent().find("span.test").each(function(e) {
                 let cookie = $(this).data("cookie");
@@ -497,7 +503,7 @@ function getJSON(url, callback) {
 }
 
 function ackTest() {
-    let fields = ['number', 'delay', 'period', 'message'];
+    let fields = ['number', 'delay', 'period', 'message', 'host', 'service'];
     let vals = {};
     fields.forEach(function(field) {
         vals[field] = $("#"+field).val().trim();
@@ -506,6 +512,22 @@ function ackTest() {
         vals['delay'] *= 60;
     } else if (vals['period'] == 'days') {
         vals['delay'] *= 60*24;
+    }
+
+    if (vals['service'] != '') {
+        $.ajax({
+            type: "POST",
+            url: XYMONACKINFOURL,
+            data: { HOST: vals['host'], SERVICE: vals['service'], VALIDITY: vals['delay'], NOTE: vals['message'], LEVEL: '1', ACK: 'Acknowledge' },
+            success: function(data) {
+                console.log(data);
+                console.log('critical ack success');
+            },
+            error: function(data) {
+                console.log(data);
+                console.log('critical ack error');
+            },
+        });
     }
 
     let i = 0;
@@ -524,6 +546,7 @@ function ackTest() {
                 },
                 error: function(data) {
                     console.log(data);
+                    alert('could not acknowledge test!');
                 },
             });
         }
