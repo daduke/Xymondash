@@ -7,7 +7,6 @@
 
 const XYMONURL     = '/xymon-cgi/svcstatus.sh';
 const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
-const XYMONACKINFOURL  = '/xymon-seccgi/ackinfo.sh';
 const XYMONJSONURL = '/xymondash/cgi/xymon2json';
 
 let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
@@ -521,22 +520,6 @@ function ackTest() {
         vals['delay'] *= 60*24;
     }
 
-    if (vals['service'] != '') {
-        $.ajax({
-            type: "POST",
-            url: XYMONACKINFOURL,
-            data: { HOST: vals['host'], SERVICE: vals['service'], VALIDITY: vals['delay'], NOTE: vals['message'], LEVEL: '1', ACK: 'Acknowledge' },
-            success: function(data) {
-                console.log(data);
-                console.log('critical ack success');
-            },
-            error: function(data) {
-                console.log(data);
-                console.log('critical ack error');
-            },
-        });
-    }
-
     let i = 0;
     let numbers = vals['number'].split(',');
     numbers.forEach(function(number) {
@@ -544,7 +527,7 @@ function ackTest() {
             $.ajax({
                 type: "POST",
                 url: XYMONACKURL,
-                data: { number: number, min: vals['delay'], msg: vals['message'] },
+                data: { number: number, min: vals['delay'], msg: vals['message'], host: vals['host'], test: vals['service'] },
                 success: function(data) {
                     if (++i == numbers.length) {
                         dialogForm.dialog( "close" );
