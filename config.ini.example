@@ -1,6 +1,12 @@
 # location of xymon executable in your file system
 XYMONCLI="/usr/lib/xymon/server/bin/xymon"
 
+# location of ackinfo.sh executable in your file system
+XYMONACKINFOSH="/usr/lib/xymon/cgi-secure/ackinfo.sh"
+
+# absolute URL of Xymon's svcstatus
+XYMONSVCSTATUSURL="https://xymon.phys.ethz.ch/xymon-cgi/svcstatus"
+
 # location of Xymon's critical.cfg in your file system (if you have one)
 CRITICAL="/etc/xymon/critical.cfg"
 
