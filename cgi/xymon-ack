@@ -2,14 +2,18 @@
 '''
 CGI to acknowledge a xymon test.
 
+The acknowledgement is set with xymon's acknowledge and ackinfo
+to make the ack visible on both, the normal and critical views.
+
 Example command to POST a new acknowledgment
 
 ```sh
 http -f POST 'https://baseurl.example.com/cgi/xymon-ack' \
-    number=123456 msg='working on it' min=10
+    number=123456 msg='working on it' min=10 host=hal test=cpu
 ```
 
 If the ack duration in minutes is not given it defaults to 60.
+Similarly, the level for ackinfo defaults to 1.
 
 '''
 import cgi
@@ -18,6 +22,8 @@ import re
 import subprocess
 
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
+XYMONACKINFOSH = '/usr/lib/xymon/cgi-secure/ackinfo.sh'
+XYMONSVCSTATUSURL = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus'
 
 allowed_chars = re.compile(r'^[a-zA-Z0-9\-,\[\]\^\|\'? ]+$')
 
@@ -36,14 +42,14 @@ def get_form_dict():
 
 def form_is_valid(form_dict):
     is_valid = True
-    for required_field in ['number', 'msg']:
+    for required_field in ['number', 'msg', 'host', 'test']:
         if form_dict.get(required_field, '') == '':
             is_valid = False
 
     return is_valid
 
 
-def save_acknowledgment(ack_data):
+def set_xymon_acknowledge(ack_data):
     ack_cmd = XYMONCLI + ' 0 "xymondack {} {} {}: {}"'.format(
         ack_data['number'], ack_data['min'], ack_data['user'], ack_data['msg']
     )
@@ -56,7 +62,30 @@ def save_acknowledgment(ack_data):
             stderr = cmd.stderr.decode('utf-8', errors='replace')
             raise Exception('command returned output to stderr: ' + stderr)
         else:
-            return 'Success'
+            return True
+    except subprocess.TimeoutExpired:
+        raise Exception('command timeout')
+
+
+def set_xymon_ackinfo(ack_data):
+    ackinfo_env = {
+        'HTTP_REFERER': XYMONSVCSTATUSURL,
+        'REQUEST_METHOD': 'GET',
+        'REMOTE_USER': ack_data['user'],
+        'QUERY_STRING': 'host={}&service={}&level={}&validity={}&note={}'.format(
+            ack_data['host'], ack_data['test'], ack_data['level'], ack_data['min'], ack_data['msg']
+        )
+    }
+    try:
+        cmd = subprocess.run([XYMONACKINFOSH], shell=False, timeout=1,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=ackinfo_env)
+        if cmd.returncode != 0:
+            raise Exception('command returned non-zero exit code: ' + str(cmd.returncode))
+        if cmd.stderr:
+            stderr = cmd.stderr.decode('utf-8', errors='replace')
+            raise Exception('command returned output to stderr: ' + stderr)
+        else:
+            return True
     except subprocess.TimeoutExpired:
         raise Exception('command timeout')
 
@@ -71,6 +100,9 @@ if os.environ['REQUEST_METHOD'] == 'POST':
         print("Status: 400 Bad Request\n")
     else:
         print("Content-Type: text/plain\nAccess-Control-Allow-Origin: *\n")
-        acknowledgment['user'] = os.environ['REMOTE_USER']
+        acknowledgment['user'] = os.environ.get('REMOTE_USER', 'unknown')
         acknowledgment['min'] = acknowledgment.get('min', 60)
-        print(save_acknowledgment(acknowledgment))
+        acknowledgment['level'] = acknowledgment.get('level', 1)
+        set_xymon_acknowledge(acknowledgment)
+        set_xymon_ackinfo(acknowledgment)
+        print('Success')
