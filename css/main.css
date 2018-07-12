@@ -203,6 +203,13 @@ div#flash {
     white-space: pre-line;
 }
 
+span#disableOK {
+    padding-left: 5px;
+    line-height: 3.5em;
+    font-size: 80%;
+    color: #ccc;
+}
+
 /* popup form CSS */
 label, input {
     display:block;
