@@ -47,6 +47,10 @@ $(document).ready(function() {
         close: function(event, ui) {
             if (!showSearch) { paused = false; }
         },
+        show: {
+            effect: "none",
+            delay: "250"
+        },
         position: { my: "center top", at: "left bottom", collision: "flipfit" },
         classes: {
             "ui-tooltip": "ui-widget-shadow"
