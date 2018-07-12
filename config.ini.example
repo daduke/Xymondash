@@ -24,3 +24,6 @@ XYMONJSONURL="/xymondash/cgi/xymon2json"
 
 # website title
 TITLE="ISG D-PHYS xymon dashboard"
+
+# path to python3 interpreter
+PYTHON3="/usr/bin/env python3"

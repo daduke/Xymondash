@@ -9,6 +9,9 @@ sed -E -i "s#(XYMONACKINFOSH += ')(.+?)(')#\1$XYMONACKINFOSH\3#" cgi/xymon-ack
 sed -E -i "s#(XYMONSVCSTATUSURL += ')(.+?)(')#\1$XYMONSVCSTATUSURL\3#" cgi/xymon-ack
 sed -E -i "s#(XYMONCLI += ')(.+?)(')#\1$XYMONCLI\3#" cgi/xymon2json
 sed -E -i "s#(CRITICAL += ')(.+?)(')#\1$CRITICAL\3#" cgi/xymon2json
+sed -E -i "s*(#!)(.+?)\b*\1$PYTHON3*" cgi/xymon-ack
+sed -E -i "s*(#!)(.+?)\b*\1$PYTHON3*" cgi/xymon-disable
+sed -E -i "s*(#!)(.+?)\b*\1$PYTHON3*" cgi/xymon2json
 
 #configure JS
 sed -E -i "s#(XYMONURL += ')(.+?)(')#\1$XYMONURL\3#" js/main.js
