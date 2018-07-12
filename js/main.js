@@ -642,7 +642,7 @@ function background(color, prio) {
            if ((color == 'red') || (color == 'purple') || (color == 'yellow')) {
                backgroundColor = color;
            }
-       } else {
+       } else if (color != 'blue' ) {
                backgroundColor = color;
        }
     }
