@@ -70,14 +70,14 @@ $(document).ready(function() {
                     pos.top = mouseY - endHeight - 2*fH;
                 }
                 if (mouseX + width > maxWidth) {
-                    pos.left = maxWidth - width - 4*fW;
+                    pos.left = maxWidth - width - 5*fW;
                     if (pos.left < 0) {
                         pos.left = 0;
                         width = maxWidth - fW;
                     }
                 }
                 tt.css("height", endHeight+'px');
-                let endWidth = Math.min(width + fW/2, maxWidth - 2*fW)+'px';
+                let endWidth = Math.min(width + fW/2, maxWidth - 3*fW)+'px';
                 tt.css("width", endWidth);
                 tt.css("max-width", endWidth);
                 tt.css(pos);
