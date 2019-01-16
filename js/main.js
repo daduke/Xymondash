@@ -215,6 +215,7 @@ $(document).ready(function() {
     });
 
     $('button#markSeen').attr('tooltip', 'mark all as seen');
+    $('button#search').attr('tooltip', 'search for host(s)');
     $('button#reload').attr('tooltip', 'reload data');
     $('button#open-settings').attr('tooltip', 'open settings');
 
@@ -435,10 +436,6 @@ function processData() {    //callback when JSON data is ready
                         }
                         let entry = $('[data-host="'+host+'"]').find('div.tests').children('span.test[data-test="' + test + '"][data-color="'+color+'"]');
                         $(entry).attr('tooltip', msg);
-                        $(entry).mouseover(function(event) {
-                            mouseX = (event.clientX);
-                            mouseY = (event.clientY);
-                        });
                         if (popupmsg != 'empty') {
                             $('i#'+modifySel).attr('tooltip', popupmsg);
                         }
@@ -555,6 +552,11 @@ function processData() {    //callback when JSON data is ready
             dialogForm.dialog("option", "actions", $(this).parent().children("span.test").data("actions"));
         }
         dialogForm.dialog("open");
+    });
+
+    $("*[tooltip]").mouseover(function(event) {
+        mouseX = (event.clientX);
+        mouseY = (event.clientY);
     });
 }       //end processData
 
