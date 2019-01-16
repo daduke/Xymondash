@@ -55,22 +55,31 @@ $(document).ready(function() {
                 let maxHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);   //viewport height
                 let maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);   //viewport width
                 let tt = $(this);   //our tooltip
-                let height = parseInt(tt.css("height").replace('px',''));  //original height of tooltip
-                let width = parseInt(tt.css("width").replace('px',''));  //original width of tooltip
+                let height = parseInt(tt.css("height").replace('px',''), 10);  //original height of tooltip
+                let width = parseInt(tt.css("width").replace('px',''), 10);  //original width of tooltip
+                let fontSize = parseInt(tt.css("font-size"), 10);
+                let browserZoomLevel = window.devicePixelRatio;
+                let fH = fontSize * browserZoomLevel;
+                let fW = fontSize * browserZoomLevel * 0.8;
                 let endHeight = 0;
-                let endWidth = 0;
                 if (mouseY < maxHeight/2) { //top half of screen
-                    endHeight = Math.min(height, maxHeight - mouseY - 40);
-                    pos.top = mouseY + 15;
+                    endHeight = Math.min(height, maxHeight - mouseY - 3*fH);
+                    pos.top = mouseY + fH;
                 } else {
-                    endHeight = Math.min(height, mouseY - 35);
-                    pos.top = mouseY - endHeight - 30;
+                    endHeight = Math.min(height, mouseY - 3*fH);
+                    pos.top = mouseY - endHeight - 2*fH;
                 }
                 if (mouseX + width > maxWidth) {
-                    pos.left = maxWidth - width;
+                    pos.left = maxWidth - width - 4*fW;
+                    if (pos.left < 0) {
+                        pos.left = 0;
+                        width = maxWidth - fW;
+                    }
                 }
                 tt.css("height", endHeight+'px');
-                tt.css("max-width", Math.min(width + 5, maxWidth - 40)+'px');
+                let endWidth = Math.min(width + fW/2, maxWidth - 2*fW)+'px';
+                tt.css("width", endWidth);
+                tt.css("max-width", endWidth);
                 tt.css(pos);
             }
         },
