@@ -20,6 +20,8 @@ readConfig();
 let dialogForm, backgroundColor;
 let paused = false;         //true prevents background reloads
 let showSearch = false;     //true when host search is displayed
+let mouseX = 0;
+let mouseY = 0;
 
 $(document).ready(function() {
     $(document).tooltip({                         //initialize tooltips
@@ -32,17 +34,14 @@ $(document).ready(function() {
                     .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
                     .replace(/[-=]{10,}/g, '----------').replace(/<table summary.+?<\/table>/g, '');
                 let lines = msg.split(/LBRK/);
-                let res = lines.slice(0, 18).join('<br />');
-                if (lines.length > 18) {
-                    res += '<br />...';
-                }
+                let res = lines.join('<br />');
                 return res;
             } else if ($(this).is('button')) {
                 return $(this).attr('tooltip');
             }
         },
-        open: function(event, ui) {     //no refresh while tooltip is open
-            paused = true;
+        open: function(event, ui) {
+            paused = true;     //no refresh while tooltip is open
         },
         close: function(event, ui) {
             if (!showSearch) { paused = false; }
@@ -51,7 +50,30 @@ $(document).ready(function() {
             effect: "none",
             delay: "250"
         },
-        position: { my: "center top", at: "left bottom", collision: "flipfit" },
+        position: {
+            using: function(pos, feedback) {
+                let maxHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);   //viewport height
+                let maxWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);   //viewport width
+                let tt = $(this);   //our tooltip
+                let height = parseInt(tt.css("height").replace('px',''));  //original height of tooltip
+                let width = parseInt(tt.css("width").replace('px',''));  //original width of tooltip
+                let endHeight = 0;
+                let endWidth = 0;
+                if (mouseY < maxHeight/2) { //top half of screen
+                    endHeight = Math.min(height, maxHeight - mouseY - 40);
+                    pos.top = mouseY + 15;
+                } else {
+                    endHeight = Math.min(height, mouseY - 35);
+                    pos.top = mouseY - endHeight - 30;
+                }
+                if (mouseX + width > maxWidth) {
+                    pos.left = maxWidth - width;
+                }
+                tt.css("height", endHeight+'px');
+                tt.css("max-width", Math.min(width + 5, maxWidth - 40)+'px');
+                tt.css(pos);
+            }
+        },
         classes: {
             "ui-tooltip": "ui-widget-shadow"
         }
@@ -404,6 +426,10 @@ function processData() {    //callback when JSON data is ready
                         }
                         let entry = $('[data-host="'+host+'"]').find('div.tests').children('span.test[data-test="' + test + '"][data-color="'+color+'"]');
                         $(entry).attr('tooltip', msg);
+                        $(entry).mouseover(function(event) {
+                            mouseX = (event.clientX);
+                            mouseY = (event.clientY);
+                        });
                         if (popupmsg != 'empty') {
                             $('i#'+modifySel).attr('tooltip', popupmsg);
                         }

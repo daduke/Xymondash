@@ -36,6 +36,5 @@ In order to get Xymondash running on top of your Xymon monitoring, you'll have t
 Known issues
 ------------
 
-  * the 'test detail tooltip' doesn't display if screen space is too tight. The only option I see is showing fewer lines at the expense of readability
   * hover tooltips on mobile devices: iOS seems to work around by doing 'first click -> hover, 2nd click -> real click', but on Android hover doesn't work. There seems to be no real way of doing this
   * Safari and Edge don't render a nice color gradient on the background as they don't support `background-blend-mode: soft-light`. Oh well, 2018 and some browsers still suck...

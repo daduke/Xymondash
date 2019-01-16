@@ -190,9 +190,10 @@ div#flash {
 .ui-tooltip {
     color: white;
     background: rgba(30, 30, 30, 0.9);
-    max-width: 500px;
     margin-right: 8px;
     margin-left: 8px;
+    max-width: 2000px;
+    overflow: hidden;
     border-radius: 8px;
     box-shadow: 0px 5px 2px -5px rgba(255, 255, 255, 0.5) inset, 0px 10px 20px -5px rgba(255, 255, 255, 0.1) inset, 0 0px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 1px rgba(0, 0, 0, 0.12), 0 1px 10px 0 rgba(0, 0, 0, 0.3);
 }
