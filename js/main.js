@@ -555,8 +555,8 @@ function processData() {    //callback when JSON data is ready
     });
 
     $("*[tooltip]").mouseover(function(event) {
-        mouseX = (event.clientX);
-        mouseY = (event.clientY);
+        mouseX = (event.pageX);
+        mouseY = (event.pageY);
     });
 }       //end processData
 
