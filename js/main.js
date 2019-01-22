@@ -30,7 +30,7 @@ $(document).ready(function() {
             if ($(this).is('span') ||
                 ($(this).is('i') && $(this).parent().children("span.test").prop("class").match(/\backed\b/))) {
                 //this cleans up the message text in order to make it readable in the tooltip
-                let msg = $(this).attr('tooltip').replace(/\\n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
+                let msg = $(this).attr('tooltip').replace(/\\n+/g, '\n').replace(/\\n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
                     .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
                     .replace(/[-=]{10,}/g, '----------').replace(/<table summary.+?<\/table>/g, '');
                 let lines = msg.split(/LBRK/);
