@@ -9,6 +9,7 @@ const XYMONURL     = '/xymon-cgi/svcstatus.sh';
 const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
 const XYMONDISURL  = '/xymondash/cgi/xymon-disable';
 const XYMONJSONURL = '/xymondash/cgi/xymon2json';
+const XYMONSERVER  = 'silberspitz';
 
 let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
@@ -30,12 +31,7 @@ $(document).ready(function() {
             if ($(this).is('span') ||
                 ($(this).is('i') && $(this).parent().children("span.test").prop("class").match(/\backed\b/))) {
                 //this cleans up the message text in order to make it readable in the tooltip
-                let msg = $(this).attr('tooltip').replace(/\\n/g, 'LBRK').replace(/\\[p|t]/g, '  ')
-                    .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
-                    .replace(/[-=]{10,}/g, '----------').replace(/<table summary.+?<\/table>/g, '');
-                let lines = msg.split(/LBRK/);
-                let res = lines.join('<br />');
-                return res;
+                return cleanTooltip($(this).attr('tooltip'));
             } else if ($(this).is('button')) {
                 return $(this).attr('tooltip');
             }
@@ -269,6 +265,7 @@ function triggerUpdate() {              //fetch data and fill matrix
     }
 
     backgroundColor = 'green';
+    getJSON(XYMONJSONURL + '?color=green&host='+XYMONSERVER+'&test=xymongen', processData);
     getJSON(XYMONJSONURL + params, processData);
 }
 
@@ -286,6 +283,7 @@ function colorParams() {
 function processData() {    //callback when JSON data is ready
     let entries = {};
     let lowestPos = {};
+    let leave = false;
 
     let xymonData = this.response;
     xymonData.forEach(function(entry) {     //loop thru data and process all tests into entries object
@@ -332,8 +330,18 @@ function processData() {    //callback when JSON data is ready
             lowestPos[host] = {};
             lowestPos[host]['x'] = 10;
             lowestPos[host]['y'] = 10;
+
+            if (host == XYMONSERVER && test == 'xymongen') {
+                $('button#stats').attr('tooltip', cleanTooltip(msg));
+                $("button#stats").click(function() {
+                    window.location.href = createLink(host, test);
+                    return false;
+                });
+                leave = true;
+            }
         }
     });
+    if (leave) return false;
 
     availableColors.forEach(function(color) {        //clean out DOM
         availablePrios.forEach(function(prio) {
@@ -444,6 +452,11 @@ function processData() {    //callback when JSON data is ready
                             throw new Error("too many results");
                         }
                         numTests[host]++;
+
+                        if (test == 'xymongen') {
+                            alert('nu!');
+                            $('button#stats').attr('tooltip', 'xymon statistics');
+                        }
                     }                   //test loop
                 }                       //host loop
                 background(color, prio);
@@ -808,4 +821,15 @@ $.urlParam = function() {
     } else {
         return null;
     }
+}
+
+function cleanTooltip(msg) {
+    msg = msg.replace(/\\[p|t]/g, '  ')
+        .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
+        .replace(/[-=]{10,}/g, '----------')
+        .replace(/<table summary.+?<\/table>/g, '')
+        .replace(/TIME SPENT\\n.+/, '')
+        .replace(/\\n/g, '<br />');
+
+    return msg;
 }
