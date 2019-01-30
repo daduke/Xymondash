@@ -283,9 +283,12 @@ h1.text-white {
 }
 
 #date {
-    margin-top: 10px;
     margin-right: 3px;
     text-align: right;
+}
+
+#content {
+    padding-top: 1em;
 }
 
 #settings-container-header {
