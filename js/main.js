@@ -332,8 +332,12 @@ function processData() {    //callback when JSON data is ready
             lowestPos[host]['y'] = 10;
 
             if (host == XYMONSERVER && test == 'xymongen') {
-                msg = cleanTooltip(msg).replace(/- (Red|Yellow|Clear|Green|Purple|Blue)/g,
-                    '<span style="color: $1;">&#x25cf; </span>');
+                msg = msg.replace(/TIME SPENT\\n.+/, '')
+                    .replace(/\\n/g, '\n')
+                    .replace(/ - [^\n]+ \( 0\.00 %\)\n/g, '')
+                    .replace(/TIME SPENT\\n.+/, '')
+                    .replace(/- (Red|Yellow|Clear|Green|Purple|Blue)/g,
+                        '<span style="color: $1;">&#x25cf; </span>');
                 $('button#stats').attr('tooltip', cleanTooltip(msg));
                 $("button#stats").click(function() {
                     window.location.href = createLink(host, test);
@@ -830,9 +834,7 @@ function cleanTooltip(msg) {
         .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
         .replace(/[-=]{10,}/g, '----------')
         .replace(/<table summary.+?<\/table>/g, '')
-        .replace(/TIME SPENT\\n.+/, '')
-        .replace(/\\n+/g, '\n')
-        .replace(/\\n/g, '<br />');
+        .replace(/\\n+/g, '\n');
 
     return msg;
 }
