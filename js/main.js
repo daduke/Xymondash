@@ -332,6 +332,8 @@ function processData() {    //callback when JSON data is ready
             lowestPos[host]['y'] = 10;
 
             if (host == XYMONSERVER && test == 'xymongen') {
+                msg = cleanTooltip(msg).replace(/- (Red|Yellow|Clear|Green|Purple|Blue)/g,
+                    '<span style="color: $1;">&#x25cf; </span>');
                 $('button#stats').attr('tooltip', cleanTooltip(msg));
                 $("button#stats").click(function() {
                     window.location.href = createLink(host, test);
