@@ -831,7 +831,8 @@ function cleanTooltip(msg) {
         .replace(/[-=]{10,}/g, '----------')
         .replace(/<table summary.+?<\/table>/g, '')
         .replace(/TIME SPENT\\n.+/, '')
-        .replace(/\\n+/g, '<br />');
+        .replace(/\\n+/g, '\n')
+        .replace(/\\n/g, '<br />');
 
     return msg;
 }
