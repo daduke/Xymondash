@@ -23,7 +23,7 @@ XYMONDISURL="/xymondash/cgi/xymon-disable"
 XYMONJSONURL="/xymondash/cgi/xymon2json"
 
 # host name of xymon server
-XYMONJSONURL="xymonserver"
+XYMONSERVER="xymonserver"
 
 # website title
 TITLE="ISG D-PHYS xymon dashboard"
