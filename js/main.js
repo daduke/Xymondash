@@ -121,6 +121,8 @@ $(document).ready(function() {
                 $.extend(buttons, { "Disable": disableTest });
             }
             dialogForm.dialog('option', 'buttons', buttons);
+            dialogForm.dialog('option', 'title', 'Modify test'
+                + (service.match(/#/)?'s ':' ') + service.split('#').join(', '));
 
             paused = true;      //no refresh while ack dialog is open
         },
