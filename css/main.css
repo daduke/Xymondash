@@ -221,27 +221,74 @@ input.text {
     padding: .4em;
 }
 
-input#delay {
+input#delay, input#ackalldelay {
     width: 2em;
 }
 
-span#period-button {
-    width: 4em;
+span#period-button, span#ackallperiod-button, button#ackall-submit {
+    width: 5em;
     height: 1em;
     margin-left: 8px;
 }
 
-input#message {
-    width:95%;
+form#ackall {
+    position: fixed;
+    bottom: 8px;
+    background: rgba(210, 210, 210, 0.5);
+    border-radius: 6px;
+    margin-right: 8px;
 }
 
-div#duration {
+form#ackall>fieldset {
+    padding: 5px;
+    border: 0;
+    margin: 0;
+}
+
+form#ackall>fieldset>div.inline>div.inline {
+    align-items: flex-end;
+}
+
+button#ackall-submit {
+    height: 2em;
+    width: 3em;
+}
+
+span#ackalltest-button {
+    margin-left: 8px;
+    margin-right: 8px;
+    width: 6em;
+}
+
+input#ackallmessage {
+    margin-bottom: 0px;
+    margin-left: 8px;
+}
+
+input#ackalldelay {
+    margin-bottom: 0px;
+    margin-left: 8px;
+}
+
+span#period-button, span#ackallperiod-button {
+    width: 3em;
+    margin-right: 8px;
+}
+
+form#ackall>i {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+div.inline {
     display: flex; /* 2. display flex to the rescue */
     flex-direction: row;
 }
 
-fieldset {
-    padding:0; border:0; margin-top:25px;
+fieldset#df {
+    padding: 0;
+    border: 0;
+    margin-top:25px;
 }
 
 h1 {
@@ -370,5 +417,12 @@ input#hostname {
 
     .ptag {
         display: block;
+    }
+
+    form#ackall>fieldset>div.inline {
+        display: block;
+    }
+    form#ackall>fieldset>div.inline>div.inline {
+        padding-bottom: 4px;
     }
 }

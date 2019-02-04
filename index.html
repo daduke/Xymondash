@@ -164,9 +164,9 @@
 
         <div id="dialog-form">
             <form>
-                <fieldset>
+                <fieldset id="df">
                     <label for="duration">Duration</label>
-                    <div id="duration">
+                    <div class="inline">
                         <input type="text" name="DELAY" id="delay" value="10" class="text ui-widget-content ui-corner-all">
                         <select name="PERIOD" id="period">
                             <option value="min">min</option>
@@ -188,6 +188,34 @@
         </div>
 
         <div id="bg" class=""></div>
+        <div>
+            <form id="ackall" action=''>
+                <i class="fas fa-caret-up"></i>
+                <fieldset>
+                    <div class="inline">
+                        <div class="inline">
+                            acknowledge
+                            <select name="ACKALLTEST" id="ackalltest">
+                            </select>
+                            on all shown hosts for
+                        </div>
+                        <div class="inline">
+                            <input type="text" name="ACKALLDELAY" id="ackalldelay" value="10" class="text ui-widget-content ui-corner-all">
+                            <select name="ACKALLPERIOD" id="ackallperiod">
+                                <option value="min">min</option>
+                                <option value="hours">hours</option>
+                                <option value="days">days</option>
+                            </select>
+                            with message
+                        </div>
+                        <div class="inline">
+                            <input type="text" name="ACKALLMESSAGE" id="ackallmessage" value="working on it" class="text ui-widget-content ui-corner-all">
+                            <button id="ackall-submit" class="ui-button ui-widget ui-corner-all">go</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
       </div> <!-- page -->
   </body>
 </html>

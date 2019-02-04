@@ -141,6 +141,18 @@ $(document).ready(function() {
         doReload();
     });
 
+    $('form#ackall>fieldset').css("display", "none");
+    $('form#ackall>i').click(function(event) {
+        if ($('form#ackall>fieldset').css("display") == 'none') {
+            $('form#ackall>fieldset').css("display", "block");
+            $('form#ackall>i').css("position", "absolute");
+        } else {
+            $('form#ackall>fieldset').css("display", "none");
+            $('form#ackall>i').css("position", "initial");
+        }
+
+    });
+
     //open settings panel
     $("#open-settings").click(function (e) {
         populateSettings();           //fill settings panel dynamically
@@ -286,6 +298,7 @@ function processData() {    //callback when JSON data is ready
     let entries = {};
     let lowestPos = {};
     let leave = false;
+    let nongreenTests = {};
 
     let xymonData = this.response;
     xymonData.forEach(function(entry) {     //loop thru data and process all tests into entries object
@@ -465,6 +478,9 @@ function processData() {    //callback when JSON data is ready
                             alert('nu!');
                             $('button#stats').attr('tooltip', 'xymon statistics');
                         }
+                        if (color != 'green') {
+                            ++nongreenTests[test] || (nongreenTests[test] = 0);
+                        }
                     }                   //test loop
                 }                       //host loop
                 background(color, prio);
@@ -579,6 +595,51 @@ function processData() {    //callback when JSON data is ready
         mouseX = (event.pageX);
         mouseY = (event.pageY);
     });
+
+    //ack one test across all hosts
+    //first, determine those tests
+    let keys = Object.keys(nongreenTests);
+    keys.sort();    //sort by test name
+    let ngOpts = '';
+    for (i = 0; i < keys.length; i++) {
+        test = keys[i];
+        if (nongreenTests[test]) {
+            ngOpts += '<option value="' + test + '">' + test + '</option>\n';
+        }
+    }
+    //turn off refresh while mouse over form
+    $("form#ackall").hover(
+        function(event) {
+            paused = true;
+        },
+        function(event) {
+            paused = false;
+        }
+    );
+    $('#ackalltest').html(ngOpts);
+    $("#ackalltest").selectmenu({
+        position: {
+            collision: 'flip'
+        }
+    });
+    $("#ackallperiod").selectmenu({
+        position: {
+            collision: 'flip'
+        }
+    });
+    $("form#ackall").submit(function(event) {
+        let min = $("#ackalldelay").val();
+        let msg = $("#ackallmessage").val();
+        let test = $("#ackalltest").val();
+        $('span.test[data-test="' + test + '"]').each(function(index) {
+            let number = $(this).data("cookie");
+            let host = $(this).parent().parent().data("host");
+            sendAck(number, min, msg, host, test, false);
+        });
+        showFlash(test + ' has been acknowledged on all hosts');
+        triggerUpdate();
+        return false;
+    });
 }       //end processData
 
 function createLink(host, test) {
@@ -618,22 +679,26 @@ function ackTest() {
     let services = vals['service'].split('#');
     numbers.forEach(function(number) {
         if (number != 'empty') {
-            $.ajax({
-                type: "POST",
-                url: XYMONACKURL,
-                data: { number: number, min: min, msg: vals['message'], host: vals['host'], test: services[i] },
-                success: function(data) {
-                    if (++i == numbers.length) {
-                        dialogForm.dialog( "close" );
-                        triggerUpdate();
-                    }
-                },
-                error: function(data) {
-                    console.log(data);
-                    alert('could not acknowledge test!');
-                },
-            });
+            sendAck(number, min, vals['message'], vals['host'], services[i], (++i == numbers.length));
         }
+    });
+}
+
+function sendAck(number, min, msg, host, test, done) {
+    $.ajax({
+        type: "POST",
+        url: XYMONACKURL,
+        data: { number: number, min: min, msg: msg, host: host, test: test },
+        success: function(data) {
+            if (done) {
+                dialogForm.dialog( "close" );
+                triggerUpdate();
+            }
+        },
+        error: function(data) {
+            console.log(data);
+            alert('could not acknowledge test!');
+        },
     });
 }
 
