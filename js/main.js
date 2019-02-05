@@ -1,5 +1,5 @@
 /* Xymondash - get a concise view of a crowded xymon instance
-   (c) 2018 ISG D-PHYS, ETH Zurich
+   (c) 2019 ISG D-PHYS, ETH Zurich
        Claude Becker    - backend code
        Sven Mäder       - Visual FX and JS logic
        Christian Herzog - JS logic
@@ -631,13 +631,17 @@ function processData() {    //callback when JSON data is ready
         let min = $("#ackalldelay").val();
         let msg = $("#ackallmessage").val();
         let test = $("#ackalltest").val();
-        $('span.test[data-test="' + test + '"]').each(function(index) {
+        let i = 0;
+        let tests = $('span.test[data-test="' + test + '"]');
+        tests.each(function(index) {
             let number = $(this).data("cookie");
             let host = $(this).parent().parent().data("host");
-            sendAck(number, min, msg, host, test, false);
+            sendAck(number, min, msg, host, test, (++i == tests.length), function() {
+                triggerUpdate();
+                $('form#ackall>fieldset').css("display", "none");
+                $('form#ackall>i').css("position", "initial");
+            });
         });
-        showFlash(test + ' has been acknowledged on all hosts');
-        triggerUpdate();
         return false;
     });
 }       //end processData
@@ -679,20 +683,22 @@ function ackTest() {
     let services = vals['service'].split('#');
     numbers.forEach(function(number) {
         if (number != 'empty') {
-            sendAck(number, min, vals['message'], vals['host'], services[i], (++i == numbers.length));
+            sendAck(number, min, vals['message'], vals['host'], services[i], (++i == numbers.length), function() {
+                dialogForm.dialog("close");
+                triggerUpdate();
+            });
         }
     });
 }
 
-function sendAck(number, min, msg, host, test, done) {
+function sendAck(number, min, msg, host, test, done, callback) {
     $.ajax({
         type: "POST",
         url: XYMONACKURL,
         data: { number: number, min: min, msg: msg, host: host, test: test },
         success: function(data) {
             if (done) {
-                dialogForm.dialog( "close" );
-                triggerUpdate();
+                callback();
             }
         },
         error: function(data) {
