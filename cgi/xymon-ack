@@ -25,7 +25,7 @@ XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 XYMONACKINFOSH = '/usr/lib/xymon/cgi-secure/ackinfo.sh'
 XYMONSVCSTATUSURL = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus'
 
-allowed_chars = re.compile(r'^[a-zA-Z0-9\-,\[\]\^\|\'? ]+$')
+allowed_chars = re.compile(r'^[a-zA-Z0-9\.\-,\[\]\^\|\'? ]+$')
 
 
 def get_form_dict():
