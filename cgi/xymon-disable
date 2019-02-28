@@ -19,7 +19,7 @@ import subprocess
 
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 
-allowed_chars = re.compile(r'^[a-zA-Z0-9\-,\[\]\^\|\'? ]+$')
+allowed_chars = re.compile(r'^[a-zA-Z0-9\.\-,\[\]\^\|\'? ]+$')
 
 
 def get_form_dict():
