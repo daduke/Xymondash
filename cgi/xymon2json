@@ -33,7 +33,7 @@ default['fields'] = ','.join([
     'hostname', 'testname', 'color', 'flags', 'lastchange',
     'logtime', 'validtime', 'acktime', 'disabletime', 'sender', 'cookie',
     'line1', 'clntstamp', 'XMH_CLASS', 'acklist', 'ackmsg', 'dismsg', 'msg'])
-allowed_chars = re.compile(r'^[a-zA-Z0-9\-,\[\]\^\|]+$')
+allowed_chars = re.compile(r'^[a-zA-Z0-9\.\-,\[\]\^\|]+$')
 
 
 def get_params_dict():
