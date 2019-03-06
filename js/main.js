@@ -782,7 +782,7 @@ function background(color, prio) {
 }
 
 function setBackgroundColor() {
-    $('#bg').css('height', $(document).height() + 'px');
+    $('#bg').css('height', '0px');
     if (!$('#bg').hasClass('bg-' + backgroundColor)) {  //only update if color changed
         $('#bg').fadeOut(250, function() {
             $('#bg').removeClass();
@@ -795,6 +795,7 @@ function setBackgroundColor() {
             showNotification('Xymon overall status changed to ' + backgroundColor, icon);
         }
     }
+    $('#bg').css('height', $(document).height() + 'px');
 }
 
 function createSettings(availableElements, activeElements, name) {
