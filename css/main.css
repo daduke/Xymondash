@@ -271,7 +271,7 @@ input#ackalldelay {
 }
 
 span#period-button, span#ackallperiod-button {
-    width: 3em;
+    width: 3.5em;
     margin-right: 8px;
 }
 
