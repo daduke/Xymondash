@@ -86,8 +86,15 @@ def merge_critical_scores():
         critical_score = defaultdict(dict)
         with open(CRITICAL, 'r') as f:
             for line in f:
-                (host, test, _, _, _, score) = line.split('|')[:6]
-                critical_score[host][test] = score
+                if "|" in line:
+                    try:
+                        (host, test, _, _, _, score) = line.split('|')[:6]
+                        critical_score[host][test] = score
+                    except:
+                        (host, template) = line.split('|=')[:2]
+                        template = template.rstrip("\n\r")
+                        for test in critical_score[template]:
+                            critical_score[host][test] = critical_score[template][test]
 
         for i in range(len(xymon_data)):
             host = xymon_data[i]['hostname']
