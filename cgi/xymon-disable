@@ -17,6 +17,7 @@ import os
 import re
 import subprocess
 
+XYMONSERVER = 'xymonserver'
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 
 allowed_chars = re.compile(r'^[a-zA-Z0-9\.\-,\[\]\^\|\'? ]+$')
@@ -44,7 +45,7 @@ def form_is_valid(form_dict):
 
 
 def set_xymon_disable(ack_data):
-    disable_cmd = XYMONCLI + ' 0 "disable {}.{} {} {}: {}"'.format(
+    disable_cmd = XYMONCLI + ' ' + XYMONSERVER + ' "disable {}.{} {} {}: {}"'.format(
         ack_data['host'], ack_data['test'], ack_data['min'], ack_data['user'], ack_data['msg']
     )
     try:
