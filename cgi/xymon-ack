@@ -21,7 +21,6 @@ import os
 import re
 import subprocess
 
-XYMONSERVER = 'xymonserver'
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 XYMONACKINFOSH = '/usr/lib/xymon/cgi-secure/ackinfo.sh'
 XYMONSVCSTATUSURL = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus'
@@ -51,7 +50,7 @@ def form_is_valid(form_dict):
 
 
 def set_xymon_acknowledge(ack_data):
-    ack_cmd = XYMONCLI + ' ' + XYMONSERVER + ' "xymondack {} {} {}: {}"'.format(
+    ack_cmd = XYMONCLI + ' 0 "xymondack {} {} {}: {}"'.format(
         ack_data['number'], ack_data['min'], ack_data['user'], ack_data['msg']
     )
     try:
