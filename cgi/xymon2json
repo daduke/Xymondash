@@ -18,6 +18,7 @@ import subprocess
 import sys
 from collections import defaultdict
 
+XYMONSERVER = 'xymonserver'
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 CRITICAL = '/etc/xymon/critical.cfg'
 
@@ -78,7 +79,7 @@ def xymondboard_cmd():
         p=params['page'],
     )
 
-    return [XYMONCLI + ' 0 ' + cmd]
+    return [XYMONCLI + ' ' + XYMONSERVER + ' ' + cmd]
 
 
 def merge_critical_scores():
