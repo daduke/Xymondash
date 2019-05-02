@@ -17,7 +17,7 @@ import os
 import re
 import subprocess
 
-XYMONSERVER = 'xymonserver'
+XYMONSERVER = 'silberspitz'
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 
 allowed_chars = re.compile(r'^[a-zA-Z0-9\.\-,\[\]\^\|\'? ]+$')

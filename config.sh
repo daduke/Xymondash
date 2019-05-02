@@ -25,4 +25,4 @@ sed -E -i "s#(XYMONSERVER += ')(.+?)(')#\1$XYMONSERVER\3#" js/main.js
 
 #configure HTML
 sed -E -i "s#(<title>)(.+?)(</title>)#\1$TITLE\3#" index.html
-sed -E -i "s#(<h1 class=\"text-white\" id=\"t\">)(.+?)(</h1>)#\1<A href=\"$TITLELINK\">$TITLE</A>\3#" index.html
+sed -E -i "s#(<h1 class=\"text-white\" id=\"t\">)(.+?)(</h1>)#\1<a href=\"$TITLELINK\">$TITLE</a>\3#" index.html

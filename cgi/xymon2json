@@ -18,7 +18,7 @@ import subprocess
 import sys
 from collections import defaultdict
 
-XYMONSERVER = 'xymonserver'
+XYMONSERVER = 'silberspitz'
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 CRITICAL = '/etc/xymon/critical.cfg'
 

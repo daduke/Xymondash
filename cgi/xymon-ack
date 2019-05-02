@@ -21,7 +21,7 @@ import os
 import re
 import subprocess
 
-XYMONSERVER = 'xymonserver'
+XYMONSERVER = 'silberspitz'
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 XYMONACKINFOSH = '/usr/lib/xymon/cgi-secure/ackinfo.sh'
 XYMONSVCSTATUSURL = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus'
