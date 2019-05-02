@@ -5,6 +5,7 @@ source config.ini
 #configure Python
 sed -E -i "s#(XYMONSERVER += ')(.+?)(')#\1$XYMONSERVER\3#" cgi/xymon-ack
 sed -E -i "s#(XYMONSERVER += ')(.+?)(')#\1$XYMONSERVER\3#" cgi/xymon-disable
+sed -E -i "s#(XYMONSERVER += ')(.+?)(')#\1$XYMONSERVER\3#" cgi/xymon2json
 sed -E -i "s#(XYMONCLI += ')(.+?)(')#\1$XYMONCLI\3#" cgi/xymon-ack
 sed -E -i "s#(XYMONCLI += ')(.+?)(')#\1$XYMONCLI\3#" cgi/xymon-disable
 sed -E -i "s#(XYMONACKINFOSH += ')(.+?)(')#\1$XYMONACKINFOSH\3#" cgi/xymon-ack
