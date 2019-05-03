@@ -33,3 +33,6 @@ TITLELINK="/xymon/xymon.html"
 
 # path to python3 interpreter
 PYTHON3="/usr/bin/env python3"
+
+# exclude tests for example when you have combo tests and want to exclude the underlying tests
+EXCLUDE_TESTS=""

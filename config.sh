@@ -3,6 +3,7 @@
 source config.ini
 
 #configure Python
+sed -E -i "s#(EXCLUDE_TESTS += ')(.+?)(')#\1$EXCLUDE_TESTS\3#" cgi/xymon2json
 sed -E -i "s#(XYMONSERVER += ')(.+?)(')#\1$XYMONSERVER\3#" cgi/xymon-ack
 sed -E -i "s#(XYMONSERVER += ')(.+?)(')#\1$XYMONSERVER\3#" cgi/xymon-disable
 sed -E -i "s#(XYMONSERVER += ')(.+?)(')#\1$XYMONSERVER\3#" cgi/xymon2json

@@ -21,6 +21,7 @@ from collections import defaultdict
 XYMONSERVER = 'silberspitz'
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 CRITICAL = '/etc/xymon/critical.cfg'
+EXCLUDE_TESTS = ''
 
 # Increase maximal field size to avoid "_csv.Error: field larger than field limit"
 csv.field_size_limit(sys.maxsize)
@@ -35,7 +36,7 @@ default['fields'] = ','.join([
     'logtime', 'validtime', 'acktime', 'disabletime', 'sender', 'cookie',
     'line1', 'clntstamp', 'XMH_CLASS', 'acklist', 'ackmsg', 'dismsg', 'msg'])
 allowed_chars = re.compile(r'^[a-zA-Z0-9\.\-,\[\]\^\|]+$')
-
+exclude_testnames= = EXCLUDE_TESTS.split(",")
 
 def get_params_dict():
     params_raw = cgi.FieldStorage(keep_blank_values=True)
@@ -110,7 +111,7 @@ params = get_params_dict()
 xymon_lines = run_command(xymondboard_cmd()).splitlines()
 xymon_data = [row for row in csv.DictReader(xymon_lines, delimiter='|',
                                             fieldnames=params['fields'].split(','))
-              if row['hostname'] != 'summary']
+              if row['hostname'] != 'summary' and row['testname'] not in exclude_testnames ]
 merge_critical_scores()
 
 print("Content-Type: application/json\nAccess-Control-Allow-Origin: *\n")
