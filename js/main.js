@@ -250,9 +250,12 @@ $(document).ready(function() {
     $("input#message").click(function (e) {
         $(this).val('');
     });
-    setInterval(function() {    //reload every 30s
+    setInterval(function() {    //get new data every 30s
         if (!paused) { triggerUpdate() };
     }, 30000);
+    setInterval(function() {    //hard reload every 2h to free up memory
+        if (!paused) { window.location.reload(true); };
+    }, 7200000);
     populateSettings();
     $(document).focus();
     triggerUpdate();

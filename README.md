@@ -36,5 +36,6 @@ In order to get Xymondash running on top of your Xymon monitoring, you'll have t
 Known issues
 ------------
 
+  * memory leak - there's a [well-documented](https://nullprogram.com/blog/2013/02/08/) issue with XMLHttpRequests not being properly garbage collected, leading to steadily increasing memory consumption while xymondash is operating. While we're still researching a possible fix, we force reload the page every 2 hours to reclaim memory.
   * hover tooltips on mobile devices: iOS seems to work around by doing 'first click -> hover, 2nd click -> real click', and on Android short press -> click, long press -> hover works most of the time.
   * Safari and Edge don't render a nice color gradient on the background as they don't support `background-blend-mode: soft-light`. Oh well, 2018 and some browsers still suck...
