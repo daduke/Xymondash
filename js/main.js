@@ -4,6 +4,7 @@
        Sven Mäder       - Visual FX and JS logic
        Christian Herzog - JS logic
 */
+
 'use strict';
 
 const XYMONURL     = '/xymon-cgi/svcstatus.sh';
@@ -254,9 +255,9 @@ $(document).ready(function() {
     setInterval(function() {    //get new data every 30s
         if (!paused) { triggerUpdate() };
     }, 30000);
-    setInterval(function() {    //hard reload every 2h to free up memory
+    setInterval(function() {    //hard reload every 8h to clean up things
         if (!paused) { window.location.reload(true); };
-    }, 7200000);
+    }, 8*60*60*1000);
     populateSettings();
     $(document).focus();
     triggerUpdate();
@@ -647,6 +648,7 @@ function processData(data) {    //callback when JSON data is ready
         });
         return false;
     });
+    entries = null;
 }       //end processData
 
 function createLink(host, test) {
@@ -654,11 +656,12 @@ function createLink(host, test) {
 }
 
 function getJSON(url, callback) {
-    $.getJSON({
-        url: url
-    }).done(function(data) {
+    fetch(url).then(function(response) {
+        return response.json();
+    }).then(function(data) {
         callback(data);
-    }).fail(function (xhr, status, error) {
+        data = null;
+    }).catch(function() {
         showFlash('could not load JSON data!');
     });
 }
