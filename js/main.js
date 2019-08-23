@@ -4,6 +4,7 @@
        Sven Mäder       - Visual FX and JS logic
        Christian Herzog - JS logic
 */
+'use strict';
 
 const XYMONURL     = '/xymon-cgi/svcstatus.sh';
 const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
@@ -392,8 +393,8 @@ function processData(data) {    //callback when JSON data is ready
                 let hosts = entries[color][prio];
                 let keys = Object.keys(hosts);
                 keys.sort();    //sort by hostname
-                for (i = 0; i < keys.length; i++) {         //host loop
-                    host = keys[i];
+                for (let i = 0; i < keys.length; i++) {         //host loop
+                    let host = keys[i];
                     if (!allSeen[host]) { allSeen[host] = true; }
                     if (!numTests[host]) { numTests[host] = 0; }
                     if (!ackTests[host]) { ackTests[host] = 0; }
@@ -603,8 +604,8 @@ function processData(data) {    //callback when JSON data is ready
     let keys = Object.keys(nongreenTests);
     keys.sort();    //sort by test name
     let ngOpts = '';
-    for (i = 0; i < keys.length; i++) {
-        test = keys[i];
+    for (let i = 0; i < keys.length; i++) {
+        let test = keys[i];
         if (nongreenTests[test]) {
             ngOpts += '<option value="' + test + '">' + test + '</option>\n';
         }
@@ -646,7 +647,6 @@ function processData(data) {    //callback when JSON data is ready
         });
         return false;
     });
-    delete data;
 }       //end processData
 
 function createLink(host, test) {
@@ -793,7 +793,7 @@ function setBackgroundColor() {
 }
 
 function createSettings(availableElements, activeElements, name) {
-    settings = '<div class="setting-group"><h2 class="text-white">' + name + '</h2><table>';
+    let settings = '<div class="setting-group"><h2 class="text-white">' + name + '</h2><table>';
     availableElements.forEach(function(element) {
         let checked = (activeElements.includes(element))?'checked="checked" ':'';
         settings += '<tr><td class="text-white">' + element + '</td>';
