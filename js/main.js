@@ -294,14 +294,13 @@ function colorParams() {
     return params;
 }
 
-function processData() {    //callback when JSON data is ready
+function processData(data) {    //callback when JSON data is ready
     let entries = {};
     let lowestPos = {};
     let leave = false;
     let nongreenTests = {};
 
-    let xymonData = this.response;
-    xymonData.forEach(function(entry) {     //loop thru data and process all tests into entries object
+    data.forEach(function(entry) {     //loop thru data and process all tests into entries object
         let ackmsg, acktime, dismsg, distime, cookie;
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
@@ -644,6 +643,7 @@ function processData() {    //callback when JSON data is ready
         });
         return false;
     });
+    delete data;
 }       //end processData
 
 function createLink(host, test) {
@@ -651,22 +651,13 @@ function createLink(host, test) {
 }
 
 function getJSON(url, callback) {
-    let xhr = new XMLHttpRequest();
-
-    xhr.callback = callback;
-    xhr.arguments = Array.prototype.slice.call(arguments, 2);
-    xhr.onload  = function() { this.callback.apply(this, this.arguments); };
-    xhr.onerror = function() { showFlash('could not load JSON data!'); };
-    xhr.open("GET", url, true);
-    xhr.responseType = "json";
-    xhr.withCredentials = true;
-    xhr.setRequestHeader('cache-control', 'no-cache, must-revalidate, post-check=0, pre-check=0');
-    xhr.setRequestHeader('cache-control', 'max-age=0');
-    xhr.setRequestHeader('expires', '0');
-    xhr.setRequestHeader('expires', 'Tue, 01 Jan 1980 1:00:00 GMT');
-    xhr.setRequestHeader('pragma', 'no-cache');
-
-    xhr.send(null);
+    $.getJSON({
+        url: url
+    }).done(function(data) {
+        callback(data);
+    }).fail(function (xhr, status, error) {
+        showFlash('could not load JSON data!');
+    });
 }
 
 function ackTest() {
