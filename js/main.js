@@ -240,7 +240,7 @@ $(document).ready(function() {
                     if (p === 'denied')
                         alert('You have denied Xymondash notifications.');
                     else {
-                        notify = new Notification('xymondash', {
+                        let notify = new Notification('xymondash', {
                             body: 'You have accepted Xymondash notifications.'
                         });
                     }
@@ -661,7 +661,8 @@ function getJSON(url, callback) {
     }).then(function(data) {
         callback(data);
         data = null;
-    }).catch(function() {
+    }).catch(function(e) {
+        console.log(e);
         showFlash('could not load JSON data!');
     });
 }
@@ -789,7 +790,10 @@ function setBackgroundColor() {
         let icon = "img/" + backgroundColor + ".ico";
         changeFavicon(icon);
         if (config['notifications']) {
-            showNotification('Xymon overall status changed to ' + backgroundColor, icon);
+            let notify = new Notification('Xymon status change', {
+                body: 'Xymon overall status changed to ' + backgroundColor,
+                icon: icon
+            });
         }
     }
     $('#bg').css('height', $(document).height() + 'px');
@@ -844,13 +848,6 @@ function changeFavicon(link) {
         $favicon.href = link
         document.head.appendChild($favicon)
     }
-}
-
-function showNotification(msg, icon) {
-    notify = new Notification('Xymon status change', {
-        body: msg,
-        icon: icon
-    });
 }
 
 function showFlash(msg) {
