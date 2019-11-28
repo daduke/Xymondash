@@ -176,6 +176,7 @@ $(document).ready(function() {
         config['hideCols'] = false;
         config['notifications'] = false;
         config['newTab'] = false;
+        config['realCol'] = false;
         config['3D'] = false;
 
         //update config settings
@@ -188,7 +189,7 @@ $(document).ready(function() {
         $('input[name="background"]:checked').each(function(index) {
             config['activeBgPrios'].push($(this).attr('id'));
         });
-        ['hideCols', 'notifications', 'newTab', '3D'].forEach(function(checkbox) {
+        ['hideCols', 'notifications', 'newTab', 'realCol', '3D'].forEach(function(checkbox) {
             $('input[name="'+checkbox+'"]:checked').each(function(index) {
                 config[checkbox] = true;
             });
@@ -459,9 +460,13 @@ function processData(data) {    //callback when JSON data is ready
                                 "</div>");
                             $("#" + selector).removeClass("inv");
                         } else {                  //host already exists -> just add another test
+                            let sp = '';
+                            if (color != config['activeColors'][lowestY] && config['realCol']) {
+                                sp = " bg "+color;
+                            }
                             $('[data-host="'+host+'"]').append(
                                 "<div class='tests'>"+
-                                    "<span class='test"+ackClass+"' data-test='"+test+"' data-color='" +color+"' data-cookie='"+cookie+"' data-actions='"+actions+"' >"+
+                                    "<span class='test"+sp+ackClass+"' data-test='"+test+"' data-color='" +color+"' data-cookie='"+cookie+"' data-actions='"+actions+"' >"+
                                         test+
                                     "</span>"+
                                     ackIcon+
@@ -829,7 +834,7 @@ function populateSettings() {
     $('#settings-container-pick').append('</div>');
     $("#font").selectmenu();
 
-    ['hideCols', 'notifications', 'newTab', '3D'].forEach(function(checkbox) {
+    ['hideCols', 'notifications', 'newTab', 'realCol', '3D'].forEach(function(checkbox) {
         if (config[checkbox]) {
             $("input#"+checkbox).prop("checked", true);
         } else {
@@ -870,6 +875,7 @@ function readConfig() {
         config['hideCols'] = false;
         config['notifications'] = false;
         config['newTab'] = false;
+        config['realCol'] = false;
         config['3D'] = false;
     }
 }
