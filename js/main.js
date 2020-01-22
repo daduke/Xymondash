@@ -1,5 +1,5 @@
 /* Xymondash - get a concise view of a crowded xymon instance
-   (c) 2019 ISG D-PHYS, ETH Zurich
+   (c) 2020 ISG D-PHYS, ETH Zurich
        Claude Becker    - backend code
        Sven Mäder       - Visual FX and JS logic
        Christian Herzog - JS logic
@@ -25,6 +25,7 @@ let paused = false;         //true prevents background reloads
 let showSearch = false;     //true when host search is displayed
 let mouseX = 0;
 let mouseY = 0;
+let mouseYr = 0;
 
 $(document).ready(function() {
     $(document).tooltip({                         //initialize tooltips
@@ -60,11 +61,11 @@ $(document).ready(function() {
                 let fH = fontSize * browserZoomLevel;
                 let fW = fontSize * browserZoomLevel * 0.8;
                 let endHeight = 0;
-                if (mouseY < maxHeight/2) { //top half of screen
-                    endHeight = Math.min(height, maxHeight - mouseY - 3*fH);
+                if (mouseYr < maxHeight/2) { //top half of screen
+                    endHeight = Math.min(height, maxHeight - mouseYr - 3*fH);
                     pos.top = mouseY + fH;
                 } else {
-                    endHeight = Math.min(height, mouseY - 3*fH);
+                    endHeight = Math.min(height, mouseYr - 3*fH);
                     pos.top = mouseY - endHeight - 2*fH;
                 }
                 if (mouseX + width > maxWidth) {
@@ -74,7 +75,8 @@ $(document).ready(function() {
                         width = maxWidth - fW;
                     }
                 }
-                tt.css("height", endHeight+'px');
+                endHeight += 'px';
+                tt.css("height", endHeight);
                 let endWidth = Math.min(width + fW/2, maxWidth - 3*fW)+'px';
                 tt.css("width", endWidth);
                 tt.css("max-width", endWidth);
@@ -603,6 +605,7 @@ function processData(data) {    //callback when JSON data is ready
     $("*[tooltip]").mouseover(function(event) {
         mouseX = (event.pageX);
         mouseY = (event.pageY);
+        mouseYr = (event.pageY - $(document).scrollTop() - $('#page').offset().top );    //take scroll position into account
     });
 
     //ack one test across all hosts
