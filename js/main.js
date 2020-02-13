@@ -640,7 +640,7 @@ function processData(data) {    //callback when JSON data is ready
         }
     });
     $("form#ackall").submit(function(event) {
-        let min = $("#ackalldelay").val();
+        let min = calcMins($("#ackalldelay").val(), $("#ackallperiod").val());
         let msg = $("#ackallmessage").val();
         let test = $("#ackalltest").val();
         let i = 0;
