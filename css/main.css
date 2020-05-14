@@ -17,6 +17,10 @@ body {
     background: #000;
 }
 
+.page {
+    scrollbar-color: dark;
+}
+
 td.red .msg {
     background-color: rgba(255,0,30,0.7);
 }
