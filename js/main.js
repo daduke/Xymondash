@@ -201,7 +201,7 @@ $(document).ready(function() {
         config['font'] = font;
         $("#page").css("font-family", font);
 
-        Cookies.set('xymondashsettings', config, { expires: 365 });
+        Cookies.set('xymondashsettings', config, { expires: 365, secure: true });
         paused = false;
         triggerUpdate();
     });
@@ -550,7 +550,7 @@ function processData(data) {    //callback when JSON data is ready
             }
         });
 
-        Cookies.set('xymondashsettings', config, { expires: 365 }); //write config so that test states are persistent
+        Cookies.set('xymondashsettings', config, { expires: 365, secure: true }); //write config so that test states are persistent
     } else {            //search result -> recover previous config
         readConfig();
     }
