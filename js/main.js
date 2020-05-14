@@ -177,6 +177,7 @@ $(document).ready(function() {
         config['activeBgPrios'] = [];
         config['hideCols'] = false;
         config['notifications'] = false;
+        config['sound'] = false;
         config['newTab'] = false;
         config['realCol'] = false;
         config['3D'] = false;
@@ -191,7 +192,7 @@ $(document).ready(function() {
         $('input[name="background"]:checked').each(function(index) {
             config['activeBgPrios'].push($(this).attr('id'));
         });
-        ['hideCols', 'notifications', 'newTab', 'realCol', '3D'].forEach(function(checkbox) {
+        ['hideCols', 'notifications', 'sound', 'newTab', 'realCol', '3D'].forEach(function(checkbox) {
             $('input[name="'+checkbox+'"]:checked').each(function(index) {
                 config[checkbox] = true;
             });
@@ -803,6 +804,9 @@ function setBackgroundColor() {
                 icon: icon
             });
         }
+        if (config['sound']) {
+            new Audio('sound/'+backgroundColor+'.mp3').play();  //TODO clean up?
+        }
     }
     $('#bg').css('height', $(document).height() + 'px');
 }
@@ -837,7 +841,7 @@ function populateSettings() {
     $('#settings-container-pick').append('</div>');
     $("#font").selectmenu();
 
-    ['hideCols', 'notifications', 'newTab', 'realCol', '3D'].forEach(function(checkbox) {
+    ['hideCols', 'notifications', 'sound', 'newTab', 'realCol', '3D'].forEach(function(checkbox) {
         if (config[checkbox]) {
             $("input#"+checkbox).prop("checked", true);
         } else {
@@ -877,6 +881,7 @@ function readConfig() {
         config['activeBgPrios'] = ['prio1', 'prio2', 'prio3', 'other'];
         config['hideCols'] = false;
         config['notifications'] = false;
+        config['sound'] = false;
         config['newTab'] = false;
         config['realCol'] = false;
         config['3D'] = false;
