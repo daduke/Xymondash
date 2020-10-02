@@ -17,7 +17,6 @@ let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
 let config = {};
 if (!config['testState']) config['testState'] = {};
-
 readConfig();
 
 let dialogForm, backgroundColor;
@@ -452,7 +451,7 @@ function processData(data) {    //callback when JSON data is ready
                         }
                         if (numTests[host] == 0 || showSearch) {   //new host or search result -> we need a host entry first
                             $("#" + selector).append(
-                                "<div class='msg' data-host='"+host+"'>"+
+                                "<div class='msg' data-host='"+host+"' style='--hue: var(--"+color+")' >"+
                                     "<span class='info'>"+host+": </span>"+
                                     "<div class='tests'>"+
                                         "<span class='test"+ackClass+"' data-test='"+test+"' data-color='" +color+"' data-cookie='"+cookie+"' data-actions='"+actions+"'>"+
@@ -566,7 +565,7 @@ function processData(data) {    //callback when JSON data is ready
     }
 
     if (config['3D']) {
-        $(".msg").css('box-shadow', '2px 2px 4px rgba(0,0,0,0.9), inset -2px -2px 4px rgba(50,50,50,0.8), inset 2px 2px 4px rgba(250,250,250,0.4)');
+        $('.msg').addClass('threeD');
     }
     let d = Date();
     $("#date").html( dateFormat(d, "HH:MM, mmmm d"));
