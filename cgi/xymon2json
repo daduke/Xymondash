@@ -29,7 +29,7 @@ default = {}
 default['host'] = ''
 default['page'] = ''
 default['color'] = 'red,yellow,purple'
-default['test'] = '[^libs,^vuln,^winupd]'
+default['test'] = '[^libs,^vuln]'
 default['fields'] = ','.join([
     'hostname', 'testname', 'color', 'flags', 'lastchange',
     'logtime', 'validtime', 'acktime', 'disabletime', 'sender', 'cookie',
