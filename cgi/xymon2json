@@ -7,6 +7,8 @@ The query string can be used to pass parameters to the xymon cli
   * `?color=red,yellow,purple&test=[^libs,^cpu]`: show alerts of given colors and ignore the libs and cpu tests
   * `?page=san|bkpcluster`: show hosts of the given pages, as defined in `/etc/xymon/hosts.cfg`
 
+Note that there's also the configurable TEST_EXCLUDES list that matches first.
+
 Please refer to the xymondboard section in `man xymon` for further details.
 '''
 import cgi
@@ -21,6 +23,7 @@ from collections import defaultdict
 XYMONSERVER = 'silberspitz'
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 CRITICAL = '/etc/xymon/critical.cfg'
+TEST_EXCLUDES = ['libs', 'vuln', 'winupd']
 
 # Increase maximal field size to avoid "_csv.Error: field larger than field limit"
 csv.field_size_limit(sys.maxsize)
@@ -29,7 +32,7 @@ default = {}
 default['host'] = ''
 default['page'] = ''
 default['color'] = 'red,yellow,purple'
-default['test'] = '[^libs,^vuln]'
+default['test'] = ''
 default['fields'] = ','.join([
     'hostname', 'testname', 'color', 'flags', 'lastchange',
     'logtime', 'validtime', 'acktime', 'disabletime', 'sender', 'cookie',
@@ -110,7 +113,7 @@ params = get_params_dict()
 xymon_lines = run_command(xymondboard_cmd()).splitlines()
 xymon_data = [row for row in csv.DictReader(xymon_lines, delimiter='|',
                                             fieldnames=params['fields'].split(','))
-              if row['hostname'] != 'summary']
+              if row['hostname'] != 'summary' and row['testname'] not in TEST_EXCLUDES ]
 merge_critical_scores()
 
 print("Content-Type: application/json\nAccess-Control-Allow-Origin: *\n")

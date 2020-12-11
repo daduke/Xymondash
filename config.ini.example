@@ -10,6 +10,9 @@ XYMONSVCSTATUSURL="https://xymon.phys.ethz.ch/xymon-cgi/svcstatus"
 # location of Xymon's critical.cfg in your file system (if you have one)
 CRITICAL="/etc/xymon/critical.cfg"
 
+# list of tests that should not be shown
+TEST_EXCLUDES="'foo', 'bar'"
+
 # relative URL of svcstatus.sh on your monitoring server
 XYMONURL="/xymon-cgi/svcstatus.sh"
 
