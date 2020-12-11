@@ -8,9 +8,9 @@
 'use strict';
 
 const XYMONURL     = '/xymon-cgi/svcstatus.sh';
-const XYMONACKURL  = '/xymondashdev/cgi/xymon-ack';
-const XYMONDISURL  = '/xymondashdev/cgi/xymon-disable';
-const XYMONJSONURL = '/xymondashdev/cgi/xymon2json';
+const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
+const XYMONDISURL  = '/xymondash/cgi/xymon-disable';
+const XYMONJSONURL = '/xymondash/cgi/xymon2json';
 const XYMONSERVER  = 'silberspitz';
 
 let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
