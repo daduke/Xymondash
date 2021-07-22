@@ -486,7 +486,6 @@ function processData(data) {    //callback when JSON data is ready
                         numTests[host]++;
 
                         if (test == 'xymongen') {
-                            alert('nu!');
                             $('button#stats').attr('tooltip', 'xymon statistics');
                         }
                         if (color != 'green') {
