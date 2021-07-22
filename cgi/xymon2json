@@ -20,7 +20,7 @@ import subprocess
 import sys
 from collections import defaultdict
 
-XYMONSERVER = 'silberspitz'
+XYMONSERVER = 'phd-mon'
 XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
 CRITICAL = '/etc/xymon/critical.cfg'
 TEST_EXCLUDES = ['libs', 'vuln', 'winupd']

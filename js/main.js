@@ -11,7 +11,7 @@ const XYMONURL     = '/xymon-cgi/svcstatus.sh';
 const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
 const XYMONDISURL  = '/xymondash/cgi/xymon-disable';
 const XYMONJSONURL = '/xymondash/cgi/xymon2json';
-const XYMONSERVER  = 'silberspitz';
+const XYMONSERVER  = 'phd-mon';
 
 let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
