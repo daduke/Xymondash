@@ -325,7 +325,7 @@ function processData(data) {    //callback when JSON data is ready
             prio = 'ack';
             if (ackmsg == '') {
                 if (acklist.length == 5) {
-                    ackmsg = acklist[3] + ': ' + acklist[4].split('\\')[0];
+                    ackmsg = acklist[3] + ': ' + acklist[4];
                 }
             }
             if (acktime == '0') {
