@@ -309,7 +309,7 @@ function processData(data) {    //callback when JSON data is ready
     let nongreenTests = {};
 
     data.forEach(function(entry) {     //loop thru data and process all tests into entries object
-        let ackmsg, acktime, dismsg, distime, cookie;
+        let ackmsg, acktime, acklist, dismsg, distime, cookie;
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
         let color = entry.color.trim();
@@ -318,10 +318,21 @@ function processData(data) {    //callback when JSON data is ready
         if (entry.critscore) {
             prio = 'prio' + entry.critscore;
         }
-        if (entry.ackmsg) {
+        if (entry.ackmsg || entry.acklist) {
             ackmsg = entry.ackmsg;
             acktime = entry.acktime;
+            acklist = entry.acklist.split(':', 5);
             prio = 'ack';
+            if (ackmsg == '') {
+                if (acklist.length == 5) {
+                    ackmsg = acklist[3] + ': ' + acklist[4].split('\\')[0];
+                }
+            }
+            if (acktime == '0') {
+                if (acklist.length == 5) {
+                    acktime = acklist[1];
+                }
+            }
         } else {
             ackmsg = 'empty';
             acktime = '';
@@ -438,6 +449,11 @@ function processData(data) {    //callback when JSON data is ready
                         if (cookie == 'empty' && dismsg == 'empty') {
                             ackIcon = '&nbsp;&nbsp;';
                         } else {
+                            ackIcon = "<i class='ack"+ackClass+" fas fa-check' id='"+modifySel+"'></i>";
+                            ackTests[host]++;
+                        }
+                        // bug: sometimes cookie is empty for acked test
+                        if (cookie == 'empty' && ackmsg != 'empty') {
                             ackIcon = "<i class='ack"+ackClass+" fas fa-check' id='"+modifySel+"'></i>";
                             ackTests[host]++;
                         }
