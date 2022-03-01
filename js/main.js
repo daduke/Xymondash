@@ -309,7 +309,7 @@ function processData(data) {    //callback when JSON data is ready
     let nongreenTests = {};
 
     data.forEach(function(entry) {     //loop thru data and process all tests into entries object
-        let ackmsg, acktime, acklist, dismsg, distime, cookie;
+        let ackmsg, acktime, acklists, acklist, dismsg, distime, cookie;
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
         let color = entry.color.trim();
@@ -321,7 +321,8 @@ function processData(data) {    //callback when JSON data is ready
         if (entry.ackmsg || entry.acklist) {
             ackmsg = entry.ackmsg;
             acktime = entry.acktime;
-            acklist = entry.acklist.split(':', 5);
+            acklists = entry.acklist.split('\\n', 2);
+            acklist = acklists[0].split(':', 5);
             prio = 'ack';
             if (ackmsg == '') {
                 if (acklist.length == 5) {
