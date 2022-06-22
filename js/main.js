@@ -458,6 +458,10 @@ function processData(data) {    //callback when JSON data is ready
                             ackIcon = "<i class='ack"+ackClass+" fas fa-check' id='"+modifySel+"'></i>";
                             ackTests[host]++;
                         }
+                        // bug: sometimes cookie is empty (after ack expired?)
+                        if (cookie == 'empty') {
+                            console.log('empty cookie: ', host, ' ', test);
+                        }
                         let popupmsg = 'empty';
                         let actions = 'd';
                         if (cookie != 'empty') actions += ',a';
