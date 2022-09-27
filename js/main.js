@@ -313,7 +313,8 @@ function processData(data) {    //callback when JSON data is ready
         let host = entry.hostname.trim();
         let test = entry.testname.trim();
         let color = entry.color.trim();
-        let msg = entry.msg.trim();
+        let msg = entry.msg || '';
+        msg = msg.trim();
         let prio = 'other';
         if (entry.critscore) {
             prio = 'prio' + entry.critscore;
