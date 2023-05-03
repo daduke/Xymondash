@@ -461,7 +461,7 @@ function processData(data) {    //callback when JSON data is ready
                         }
                         // bug: sometimes cookie is empty (after ack expired?)
                         if (cookie == 'empty') {
-                            console.log('empty cookie: ', host, ' ', test);
+                            //console.log('empty cookie: ', host, ' ', test);
                         }
                         let popupmsg = 'empty';
                         let actions = 'd';
@@ -501,10 +501,11 @@ function processData(data) {    //callback when JSON data is ready
                         if (popupmsg != 'empty') {
                             $('i#'+modifySel).attr('tooltip', popupmsg);
                         }
-                        if (numEntries++ > 500) {
+                        if (numEntries++ > 10000) {
                             showFlash('Your settings yield too many tests! Please choose fewer colors or prios.');
                             throw new Error("too many results");
                         }
+                        //console.log('numEntries ' + numEntries);
                         numTests[host]++;
 
                         if (test == 'xymongen') {
