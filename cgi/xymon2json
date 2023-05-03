@@ -4,10 +4,14 @@ CGI that fetches xymon data and returns it as json.
 
 The query string can be used to pass parameters to the xymon cli
 
-  * `?color=red,yellow,purple&test=[^libs,^cpu]`: show alerts of given colors and ignore the libs and cpu tests
+  * `?color=red,yellow,purple&host=somehost`: show alerts of given colors for given host
   * `?page=san|bkpcluster`: show hosts of the given pages, as defined in `/etc/xymon/hosts.cfg`
+  * `?include=libs,cpu`: only show listed tests even if in default TEST_EXCLUDES list
+  * `?exclude=libs,cpu`: ignore the libs and cpu tests
+  * `?test=[^libs,^cpu]`: limit/ignore tests (does not always work as expected, use `include` / `exclude` instead)
 
-Note that there's also the configurable TEST_EXCLUDES list that matches first.
+Note that there's also the configurable TEST_EXCLUDES list, which is used as default
+if the query string parameters `include` and `exclude` are empty.
 
 Please refer to the xymondboard section in `man xymon` for further details.
 '''
@@ -33,6 +37,9 @@ default['host'] = ''
 default['page'] = ''
 default['color'] = 'red,yellow,purple'
 default['test'] = ''
+default['include'] = []
+default['exclude'] = []
+default['test'] = ''
 default['fields'] = ','.join([
     'hostname', 'testname', 'color', 'flags', 'lastchange',
     'logtime', 'validtime', 'acktime', 'disabletime', 'sender', 'cookie',
@@ -51,6 +58,8 @@ def get_params_dict():
 
     # Fill default values for query parameters
     for key, default_value in default.items():
+        if key == 'exclude':
+            default_value = [] if params_dict.get('include', []) else TEST_EXCLUDES
         params_dict[key] = params_dict.get(key, default_value)
 
     return params_dict
@@ -111,9 +120,18 @@ def merge_critical_scores():
 
 params = get_params_dict()
 xymon_lines = run_command(xymondboard_cmd()).splitlines()
-xymon_data = [row for row in csv.DictReader(xymon_lines, delimiter='|',
-                                            fieldnames=params['fields'].split(','))
-              if row['hostname'] != 'summary' and row['testname'] not in TEST_EXCLUDES ]
+
+xymon_data = []
+for row in csv.DictReader(xymon_lines, delimiter='|', fieldnames=params['fields'].split(',')):
+    if row['hostname'] == 'summary':
+        continue
+    if row['testname'] in params['exclude']:
+        continue
+    if params['include'] and row['testname'] not in params['include']:
+        continue
+
+    xymon_data.append(row)
+
 merge_critical_scores()
 
 print("Content-Type: application/json\nAccess-Control-Allow-Origin: *\n")
