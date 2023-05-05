@@ -88,15 +88,15 @@ $(document).ready(function() {
     });
 
     $(document).keypress(function(e) {
-        if (!$("input#hostname").is(":focus") && !paused) {
+        if (!$("input#hostname").is(":focus") && !$("input#testname").is(":focus") && !paused) {
             if (e.charCode == 114) {            //reload
                 doReload();
             } else if (e.charCode == 109) {     //mark as seen
                 doMarkSeen();
             } else if (e.charCode == 115) {     //search
                 $("form#searchform").css("display", "inline");
-                $("input#hostname").focus();
                 $("input#hostname").val('');
+                $("input#testname").val('');
             }
         }
     });
@@ -207,6 +207,8 @@ $(document).ready(function() {
 
     $("button#search").click(function (e) {
         $("form#searchform").css("display", "inline");
+        $("input#hostname").val('');
+        $("input#testname").val('');
     });
 
     $("form#searchform").submit(function (e) {
@@ -217,7 +219,13 @@ $(document).ready(function() {
         $(document).focus();
         backgroundColor = 'green';
         let hostname = $(this).children("input#hostname").val();
-        let params = "?host="+hostname+"&color="+availableColors.join(',');
+        let testname = $(this).children("input#testname").val();
+        let params='';
+        if (hostname.length > 0) {
+            params = "?host="+hostname+"&color="+availableColors.join(',');
+        } else if (testname.length > 0) {
+            params = "?include="+testname+"&color="+availableColors.join(',');
+        }
         config["activeColors"] = availableColors;
         config["activePrios"] = availablePrios;
         $("form#searchform").css("display", "none");

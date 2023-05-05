@@ -478,10 +478,15 @@ h1.text-white {
 
 form#searchform {
     display: none;
+    color: white;
 }
 
-input#hostname {
+input#hostname, input#testname {
     display: inline;
+}
+
+input[type="submit"] {
+  display: none;
 }
 
 /* make it responsive */
