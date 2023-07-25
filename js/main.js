@@ -326,6 +326,9 @@ function processData(data) {    //callback when JSON data is ready
         let prio = 'other';
         if (entry.critscore) {
             prio = 'prio' + entry.critscore;
+            if (entry.critscore > 3) {
+                prio = 'other';
+            }
         }
         if (entry.ackmsg || entry.acklist) {
             ackmsg = entry.ackmsg;
