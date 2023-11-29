@@ -377,7 +377,7 @@ function processData(data) {    //callback when JSON data is ready
             lowestPos[host]['x'] = 10;
             lowestPos[host]['y'] = 10;
 
-            if (host == XYMONSERVER && test == 'xymongen') {
+            if (host == XYMONSERVER && test == 'xymongen' && color == 'green') {
                 msg = msg.replace(/TIME SPENT\\n.+/, '')
                     .replace(/\\n/g, '\n')
                     .replace(/ - [^\n]+ \( 0\.00 %\)\n/g, '')
