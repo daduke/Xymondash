@@ -122,7 +122,7 @@ params = get_params_dict()
 xymon_lines = run_command(xymondboard_cmd()).splitlines()
 
 xymon_data = []
-for row in csv.DictReader(xymon_lines, delimiter='|', fieldnames=params['fields'].split(',')):
+for row in csv.DictReader(xymon_lines, delimiter='|', fieldnames=params['fields'].split(','), restkey="rest"):
     if row['hostname'] == 'summary':
         continue
     if row['testname'] in params['exclude']:
