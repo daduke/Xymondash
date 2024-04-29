@@ -122,13 +122,17 @@ params = get_params_dict()
 xymon_lines = run_command(xymondboard_cmd()).splitlines()
 
 xymon_data = []
-for row in csv.DictReader(xymon_lines, delimiter='|', fieldnames=params['fields'].split(','), restkey="rest"):
+for row in csv.DictReader(xymon_lines, delimiter='|', fieldnames=params['fields'].split(','), restkey='rest'):
     if row['hostname'] == 'summary':
         continue
     if row['testname'] in params['exclude']:
         continue
     if params['include'] and row['testname'] not in params['include']:
         continue
+    if 'rest' in row:
+        # If we parsed unknown columns, it's probably a msg containing the unescaped pipe separator.
+        row['msg'] = ' '.join(row['rest'])
+        del row['rest']
 
     xymon_data.append(row)
 
