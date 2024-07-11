@@ -9,6 +9,7 @@ The query string can be used to pass parameters to the xymon cli
   * `?include=libs,cpu`: only show listed tests even if in default TEST_EXCLUDES list
   * `?exclude=libs,cpu`: ignore the libs and cpu tests
   * `?test=[^libs,^cpu]`: limit/ignore tests (does not always work as expected, use `include` / `exclude` instead)
+  * `?class=CLS1,CLS2,^CLS3`: only show hosts with class CLS1 and CLS2, but not CLS3
 
 Note that there's also the configurable TEST_EXCLUDES list, which is used as default
 if the query string parameters `include` and `exclude` are empty.
@@ -40,6 +41,7 @@ default['test'] = ''
 default['include'] = []
 default['exclude'] = []
 default['test'] = ''
+default['class'] = ''
 default['fields'] = ','.join([
     'hostname', 'testname', 'color', 'flags', 'lastchange',
     'logtime', 'validtime', 'acktime', 'disabletime', 'sender', 'cookie',
@@ -118,6 +120,32 @@ def merge_critical_scores():
     return True
 
 
+def class_matched(class_str, class_filter_str):
+    # Match everything on empty filter.
+    if class_filter_str == "":
+        return True
+
+    # Parse _CLS1_CLS2_ string to set of classes.
+    classes = set(class_str.strip("_").split("_"))
+
+    # Parse CLS1,CLS2,^CLS3 string to sets of in/excludes.
+    # eg CLS1 and CLS2 must be present, but not CLS3.
+    classes_incl = set()
+    classes_excl = set()
+    for class_filter in class_filter_str.split(","):
+        if class_filter.startswith("^"):
+            classes_excl.add(class_filter.strip("^"))
+        else:
+            classes_incl.add(class_filter)
+
+    class_is_matched = (
+        classes.issuperset(classes_incl)  # all includes are part of classes
+        and classes.isdisjoint(classes_excl)  # no excludes are found in classes
+    )
+
+    return class_is_matched
+
+
 params = get_params_dict()
 xymon_lines = run_command(xymondboard_cmd()).splitlines()
 
@@ -126,6 +154,8 @@ for row in csv.DictReader(xymon_lines, delimiter='|', fieldnames=params['fields'
     if row['hostname'] == 'summary':
         continue
     if row['testname'] in params['exclude']:
+        continue
+    if not class_matched(row['XMH_CLASS'], params['class']):
         continue
     if params['include'] and row['testname'] not in params['include']:
         continue
