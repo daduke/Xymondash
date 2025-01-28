@@ -438,7 +438,7 @@ function processData(data) {    //callback when JSON data is ready
                         let lowestPosHost = lowestX + 10*lowestY;
                         let selector;
                         let seenSel = host + '_' + test + '_' + color;
-                        let modifySel = host + '_' + test;
+                        let modifySel = host.replace(/\./ig, "_") + '_' + test;
                         if (config['testState'][seenSel] != 'seen') {
                             allSeen[host] = false;
                         }
