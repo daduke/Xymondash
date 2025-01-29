@@ -697,7 +697,7 @@ function createLink(host, test) {
 }
 
 function getJSON(url, callback) {
-    fetch(url).then(function(response) {
+    fetch(url, {cache: "no-store"}).then(function(response) {
         return response.json();
     }).then(function(data) {
         callback(data);
