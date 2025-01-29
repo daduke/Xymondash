@@ -200,7 +200,7 @@ $(document).ready(function() {
         config['font'] = font;
         $("#page").css("font-family", font);
 
-        Cookies.set('xymondashsettings', config, { expires: 365, secure: true });
+        Cookies.set('xymondashsettings', JSON.stringify(config), { expires: 365, secure: true, sameSite: 'strict' });
         paused = false;
         triggerUpdate();
     });
@@ -582,7 +582,7 @@ function processData(data) {    //callback when JSON data is ready
             }
         });
 
-        Cookies.set('xymondashsettings', config, { expires: 365, secure: true }); //write config so that test states are persistent
+        Cookies.set('xymondashsettings', JSON.stringify(config), { expires: 365, secure: true, sameSite: 'strict' }); //write config so that test states are persistent
     } else {            //search result -> recover previous config
         readConfig();
     }
@@ -905,7 +905,7 @@ function showFlash(msg) {
 
 function readConfig() {
     if (Cookies.get('xymondashsettings')) {
-        config = Cookies.getJSON('xymondashsettings');
+        config = JSON.parse(Cookies.get('xymondashsettings'))
         if (!config['testState']) config['testState'] = {};
     } else {
         config['activeColors'] = ['red', 'purple', 'yellow'];
