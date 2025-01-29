@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-'''
+"""
 CGI that fetches xymon data and returns it as json.
 
 The query string can be used to pass parameters to the xymon cli
@@ -15,7 +15,8 @@ Note that there's also the configurable TEST_EXCLUDES list, which is used as def
 if the query string parameters `include` and `exclude` are empty.
 
 Please refer to the xymondboard section in `man xymon` for further details.
-'''
+"""
+
 import csv
 import json
 import os
@@ -25,32 +26,49 @@ import sys
 from collections import defaultdict
 from urllib.parse import parse_qs
 
-XYMONSERVER = 'phd-mon'
-XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
-CRITICAL = '/etc/xymon/critical.cfg'
-TEST_EXCLUDES = ['libs', 'vuln', 'winupd']
+XYMONSERVER = "phd-mon"
+XYMONCLI = "/usr/lib/xymon/server/bin/xymon"
+CRITICAL = "/etc/xymon/critical.cfg"
+TEST_EXCLUDES = ["libs", "vuln", "winupd"]
 
 # Increase maximal field size to avoid "_csv.Error: field larger than field limit"
 csv.field_size_limit(sys.maxsize)
 
 default = {}
-default['host'] = ''
-default['page'] = ''
-default['color'] = 'red,yellow,purple'
-default['test'] = ''
-default['include'] = []
-default['exclude'] = []
-default['test'] = ''
-default['class'] = ''
-default['fields'] = ','.join([
-    'hostname', 'testname', 'color', 'flags', 'lastchange',
-    'logtime', 'validtime', 'acktime', 'disabletime', 'sender', 'cookie',
-    'clntstamp', 'XMH_CLASS', 'acklist', 'ackmsg', 'dismsg', 'msg'])
-allowed_chars = re.compile(r'^[a-zA-Z0-9\.\-,\[\]\^\|]+$')
+default["host"] = ""
+default["page"] = ""
+default["color"] = "red,yellow,purple"
+default["test"] = ""
+default["include"] = []
+default["exclude"] = []
+default["test"] = ""
+default["class"] = ""
+default["fields"] = ",".join(
+    [
+        "hostname",
+        "testname",
+        "color",
+        "flags",
+        "lastchange",
+        "logtime",
+        "validtime",
+        "acktime",
+        "disabletime",
+        "sender",
+        "cookie",
+        "clntstamp",
+        "XMH_CLASS",
+        "acklist",
+        "ackmsg",
+        "dismsg",
+        "msg",
+    ]
+)
+allowed_chars = re.compile(r"^[a-zA-Z0-9\.\-,\[\]\^\|]+$")
 
 
 def get_params_dict():
-    params_raw = parse_qs(os.environ['QUERY_STRING'], keep_blank_values=True)
+    params_raw = parse_qs(os.environ["QUERY_STRING"], keep_blank_values=True)
     params_dict = {}
     for key in params_raw.keys():
         value = params_raw[key][0]
@@ -60,8 +78,8 @@ def get_params_dict():
 
     # Fill default values for query parameters
     for key, default_value in default.items():
-        if key == 'exclude':
-            default_value = [] if params_dict.get('include', []) else TEST_EXCLUDES
+        if key == "exclude":
+            default_value = [] if params_dict.get("include", []) else TEST_EXCLUDES
         params_dict[key] = params_dict.get(key, default_value)
 
     return params_dict
@@ -69,53 +87,60 @@ def get_params_dict():
 
 def run_command(command):
     try:
-        cmd = subprocess.run(command, shell=True, timeout=1,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmd = subprocess.run(
+            command,
+            shell=True,
+            timeout=1,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
         if cmd.returncode != 0:
-            raise Exception('command returned non-zero exit code: ' + str(cmd.returncode))
+            raise Exception(
+                "command returned non-zero exit code: " + str(cmd.returncode)
+            )
         if cmd.stderr:
-            stderr = cmd.stderr.decode('utf-8', errors='replace')
-            raise Exception('command returned output to stderr: ' + stderr)
+            stderr = cmd.stderr.decode("utf-8", errors="replace")
+            raise Exception("command returned output to stderr: " + stderr)
         else:
-            command_output = cmd.stdout.decode('utf-8', errors='replace')
+            command_output = cmd.stdout.decode("utf-8", errors="replace")
     except subprocess.TimeoutExpired:
-        raise Exception('command timeout')
+        raise Exception("command timeout")
 
     return command_output
 
 
 def xymondboard_cmd():
     cmd = '"xymondboard color={c} host={h} test={t} fields={f} page={p}"'.format(
-        c=params['color'],
-        h=params['host'],
-        t=params['test'],
-        f=params['fields'],
-        p=params['page'],
+        c=params["color"],
+        h=params["host"],
+        t=params["test"],
+        f=params["fields"],
+        p=params["page"],
     )
 
-    return [XYMONCLI + ' ' + XYMONSERVER + ' ' + cmd]
+    return [XYMONCLI + " " + XYMONSERVER + " " + cmd]
 
 
 def merge_critical_scores():
     if os.path.exists(CRITICAL):
         critical_score = defaultdict(dict)
-        with open(CRITICAL, 'r') as f:
+        with open(CRITICAL, "r") as f:
             for line in f:
                 if "|" in line:
                     try:
-                        (host, test, _, _, _, score) = line.split('|')[:6]
+                        (host, test, _, _, _, score) = line.split("|")[:6]
                         critical_score[host][test] = score
-                    except:
-                        (host, template) = line.split('|=')[:2]
+                    except Exception:
+                        (host, template) = line.split("|=")[:2]
                         template = template.rstrip("\n\r")
                         for test in critical_score[template]:
                             critical_score[host][test] = critical_score[template][test]
 
         for i in range(len(xymon_data)):
-            host = xymon_data[i]['hostname']
-            test = xymon_data[i]['testname']
+            host = xymon_data[i]["hostname"]
+            test = xymon_data[i]["testname"]
             if host in critical_score and test in critical_score[host]:
-                xymon_data[i]['critscore'] = critical_score[host][test]
+                xymon_data[i]["critscore"] = critical_score[host][test]
 
     return True
 
@@ -150,19 +175,21 @@ params = get_params_dict()
 xymon_lines = run_command(xymondboard_cmd()).splitlines()
 
 xymon_data = []
-for row in csv.DictReader(xymon_lines, delimiter='|', fieldnames=params['fields'].split(','), restkey='rest'):
-    if row['hostname'] == 'summary':
+for row in csv.DictReader(
+    xymon_lines, delimiter="|", fieldnames=params["fields"].split(","), restkey="rest"
+):
+    if row["hostname"] == "summary":
         continue
-    if row['testname'] in params['exclude']:
+    if row["testname"] in params["exclude"]:
         continue
-    if not class_matched(row['XMH_CLASS'], params['class']):
+    if not class_matched(row["XMH_CLASS"], params["class"]):
         continue
-    if params['include'] and row['testname'] not in params['include']:
+    if params["include"] and row["testname"] not in params["include"]:
         continue
-    if 'rest' in row:
+    if "rest" in row:
         # If we parsed unknown columns, it's probably a msg containing the unescaped pipe separator.
-        row['msg'] = ' '.join(row['rest'])
-        del row['rest']
+        row["msg"] = " ".join(row["rest"])
+        del row["rest"]
 
     xymon_data.append(row)
 
