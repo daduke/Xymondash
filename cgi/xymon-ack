@@ -59,6 +59,7 @@ def set_xymon_acknowledge(data):
 
 def set_xymon_ackinfo(data):
     ackinfo_env = {
+        "HTTP_HOST": XYMONSVCSTATUSURL.split("/")[2],
         "HTTP_REFERER": XYMONSVCSTATUSURL,
         "REQUEST_METHOD": "GET",
         "REMOTE_USER": data["user"],
