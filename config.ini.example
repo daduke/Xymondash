@@ -11,7 +11,7 @@ XYMONSVCSTATUSURL="https://xymon.phys.ethz.ch/xymon-cgi/svcstatus"
 CRITICAL="/etc/xymon/critical.cfg"
 
 # list of tests that should not be shown
-TEST_EXCLUDES="'foo', 'bar'"
+TEST_EXCLUDES='"foo", "bar"'
 
 # relative URL of svcstatus.sh on your monitoring server
 XYMONURL="/xymon-cgi/svcstatus.sh"
