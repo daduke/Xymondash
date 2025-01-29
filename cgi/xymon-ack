@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-'''
+"""
 CGI to acknowledge a xymon test.
 
 The acknowledgement is set with xymon's acknowledge and ackinfo
@@ -14,96 +14,114 @@ http -f POST 'https://baseurl.example.com/cgi/xymon-ack' \
 
 If the ack duration in minutes is not given it defaults to 60.
 Similarly, the level for ackinfo defaults to 1.
+"""
 
-'''
-import cgi
 import os
 import re
 import subprocess
+from flask import Flask, request, make_response
+from wsgiref.handlers import CGIHandler
 
-XYMONSERVER = 'phd-mon'
-XYMONCLI = '/usr/lib/xymon/server/bin/xymon'
-XYMONACKINFOSH = '/usr/lib/xymon/cgi-secure/ackinfo.sh'
-XYMONSVCSTATUSURL = 'https://xymon.phys.ethz.ch/xymon-cgi/svcstatus'
+XYMONSERVER = "phd-mon"
+XYMONCLI = "/usr/lib/xymon/server/bin/xymon"
+XYMONACKINFOSH = "/usr/lib/xymon/cgi-secure/ackinfo.sh"
+XYMONSVCSTATUSURL = "https://xymon.phys.ethz.ch/xymon-cgi/svcstatus"
+ALLOWED_CHARS = re.compile(r"^[a-zA-Z0-9\.\-_,\[\]\^\|\'? ]+$")
 
-allowed_chars = re.compile(r'^[a-zA-Z0-9\.\-_,\[\]\^\|\'? ]+$')
-
-
-def get_form_dict():
-    form_raw = cgi.FieldStorage(keep_blank_values=True)
-    form_dict = {}
-    for key in form_raw.keys():
-        value = form_raw[key].value
-        # Sanitize input by ignoring everything that doesn't match the allowed characters
-        if allowed_chars.match(key) and allowed_chars.match(value):
-            form_dict[key] = value
-
-    return form_dict
+app = Flask(__name__)
 
 
-def form_is_valid(form_dict):
-    is_valid = True
-    for required_field in ['number', 'msg', 'host', 'test']:
-        if form_dict.get(required_field, '') == '':
-            is_valid = False
-
-    return is_valid
-
-
-def set_xymon_acknowledge(ack_data):
-    ack_cmd = XYMONCLI + ' ' + XYMONSERVER + ' "xymondack {} {} {}: {}"'.format(
-        ack_data['number'], ack_data['min'], ack_data['user'], ack_data['msg']
+def set_xymon_acknowledge(data):
+    ack_cmd = (
+        f"{XYMONCLI} {XYMONSERVER} 'xymondack "
+        f"{data['number']} {data['min']} {data['user']}: {data['msg']}'"
     )
     try:
-        cmd = subprocess.run([ack_cmd], shell=True, timeout=1,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmd = subprocess.run(
+            [ack_cmd],
+            shell=True,
+            timeout=1,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
         if cmd.returncode != 0:
-            raise Exception('command returned non-zero exit code: ' + str(cmd.returncode))
+            raise Exception(
+                "command returned non-zero exit code: " + str(cmd.returncode)
+            )
         if cmd.stderr:
-            stderr = cmd.stderr.decode('utf-8', errors='replace')
-            raise Exception('command returned output to stderr: ' + stderr)
+            stderr = cmd.stderr.decode("utf-8", errors="replace")
+            raise Exception("command returned output to stderr: " + stderr)
         else:
             return True
     except subprocess.TimeoutExpired:
-        raise Exception('command timeout')
+        raise Exception("command timeout")
 
 
-def set_xymon_ackinfo(ack_data):
+def set_xymon_ackinfo(data):
     ackinfo_env = {
-        'HTTP_REFERER': XYMONSVCSTATUSURL,
-        'REQUEST_METHOD': 'GET',
-        'REMOTE_USER': ack_data['user'],
-        'QUERY_STRING': 'host={}&service={}&level={}&validity={}&note={}'.format(
-            ack_data['host'], ack_data['test'], ack_data['level'], ack_data['min'], ack_data['msg']
-        )
+        "HTTP_REFERER": XYMONSVCSTATUSURL,
+        "REQUEST_METHOD": "GET",
+        "REMOTE_USER": data["user"],
+        "QUERY_STRING": "host={}&service={}&level={}&validity={}&note={}".format(
+            data["host"],
+            data["test"],
+            data["level"],
+            data["min"],
+            data["msg"],
+        ),
     }
     try:
-        cmd = subprocess.run([XYMONACKINFOSH], shell=False, timeout=1,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=ackinfo_env)
+        cmd = subprocess.run(
+            [XYMONACKINFOSH],
+            shell=False,
+            timeout=1,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=ackinfo_env,
+        )
         if cmd.returncode != 0:
-            raise Exception('command returned non-zero exit code: ' + str(cmd.returncode))
+            raise Exception(
+                "command returned non-zero exit code: " + str(cmd.returncode)
+            )
         if cmd.stderr:
-            stderr = cmd.stderr.decode('utf-8', errors='replace')
-            raise Exception('command returned output to stderr: ' + stderr)
+            stderr = cmd.stderr.decode("utf-8", errors="replace")
+            raise Exception("command returned output to stderr: " + stderr)
         else:
             return True
     except subprocess.TimeoutExpired:
-        raise Exception('command timeout')
+        raise Exception("command timeout")
 
 
-if os.environ['REQUEST_METHOD'] == 'GET':
-    print("Status: 400 Bad Request\n")
+@app.route("/", methods=["POST"])
+def index():
+    data = {}
 
-if os.environ['REQUEST_METHOD'] == 'POST':
-    acknowledgment = get_form_dict()
+    # Sanitize form input by ignoring everything that doesn't match the allowed characters.
+    for key, value in request.form.items():
+        if ALLOWED_CHARS.match(key) and ALLOWED_CHARS.match(value):
+            data[key] = value
 
-    if not form_is_valid(acknowledgment):
-        print("Status: 400 Bad Request\n")
-    else:
-        print("Content-Type: text/plain\nAccess-Control-Allow-Origin: *\n")
-        acknowledgment['user'] = os.environ.get('REMOTE_USER', 'unknown')
-        acknowledgment['min'] = acknowledgment.get('min', 60)
-        acknowledgment['level'] = acknowledgment.get('level', 1)
-        set_xymon_acknowledge(acknowledgment)
-        set_xymon_ackinfo(acknowledgment)
-        print('Success')
+    # Return bad request if required fields are missing.
+    for required_field in ["number", "msg", "host", "test"]:
+        if data.get(required_field, "") == "":
+            return "Bad request", 400
+
+    # Fill remaining info.
+    data["user"] = os.environ.get("REMOTE_USER", "unknown")
+    data["min"] = data.get("min", 60)
+    data["level"] = data.get("level", 1)
+
+    # Send ack to xymon.
+    set_xymon_acknowledge(data)
+    set_xymon_ackinfo(data)
+
+    # Return success when no exception occured.
+    resp = make_response("Success")
+    resp.headers["Content-Type"] = "text/plain; charset=utf-8"
+    resp.access_control_allow_origin = "*"
+
+    return resp
+
+
+if __name__ == "__main__":
+    CGIHandler().run(app)

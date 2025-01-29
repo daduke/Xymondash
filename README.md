@@ -26,7 +26,7 @@ In order to get Xymondash running on top of your Xymon monitoring, you'll have t
   * copy `config.ini.example` to `config.ini`
   * change `XYMONCLI`, `XYMONACKINFOSH`, `XYMONSVCSTATUSURL` and `CRITICAL` in `config.ini` to the correct location in your file system
   * run `./config.sh` to configure the CGI scripts
-  * make sure the CGI scripts are working. They require Python >= 3.5 (if you need to support 3.4 you have to switch to the [old subprocess API](https://docs.python.org/3/library/subprocess.html#call-function-trio) instead of the now recommended run method). If your web server is picky about CGI locations, you can copy the two CGIs to `<path-to>/xymon/cgi-bin/` and run them from there. Open the URL of `xymon2json` in your browser and make sure it generates JSON. Don't bother to proceed until this works!
+  * make sure the CGI scripts are working. They require `python3-flask`. If your web server is picky about CGI locations, you can copy the two CGIs to `<path-to>/xymon/cgi-bin/` and run them from there. Open the URL of `xymon2json` in your browser and make sure it generates JSON. Don't bother to proceed until this works!
   * with the CGIs in place, edit `config.ini` to the correct URLs of `XYMONURL`, `XYMONACKURL`, `XYMONJSONURL` and `XYMONSERVER`
   * run `./config.sh` again to configure the JS
   * finally pick a `TITLE` in `config.ini` and rerun `./config.sh`
