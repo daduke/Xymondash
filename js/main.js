@@ -128,6 +128,12 @@ $(document).ready(function() {
                 + (service.match(/#/)?'s ':' ') + service.split('#').join(', '));
 
             paused = true;      //no refresh while ack dialog is open
+
+            $("#dialog-form").keypress(function(e) {    //submit on enter
+                if (e.keyCode == $.ui.keyCode.ENTER) {
+                    $(this).parent().find("button:eq(1)").trigger("click");
+                }
+            });
         },
         close: function() {
             if (!showSearch) { paused = false; }
@@ -153,7 +159,6 @@ $(document).ready(function() {
             $('form#ackall>fieldset').css("display", "none");
             $('form#ackall>i').css("position", "initial");
         }
-
     });
 
     //open settings panel
