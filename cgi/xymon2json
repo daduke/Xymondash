@@ -68,7 +68,7 @@ allowed_chars = re.compile(r"^[a-zA-Z0-9\.\-,\[\]\^\|]+$")
 
 
 def get_params_dict():
-    params_raw = parse_qs(os.environ["QUERY_STRING"], keep_blank_values=True)
+    params_raw = parse_qs(os.environ.get("QUERY_STRING", ""), keep_blank_values=True)
     params_dict = {}
     for key in params_raw.keys():
         value = params_raw[key][0]
