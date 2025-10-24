@@ -950,7 +950,7 @@ $.urlParam = function() {
 
 function cleanTooltip(msg) {
     msg = msg.replace(/\\[p|t]/g, '  ')
-        .replace(/(&(red|green|yellow|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
+        .replace(/(&(red|green|yellow|blue|purple|clear) )/g, '<span style="color: $2;">&#x25cf; </span>')
         .replace(/[-=]{10,}/g, '----------')
         .replace(/<table summary.+?<\/table>/g, '')
         .replace(/\\n+/g, '\n');
