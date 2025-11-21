@@ -116,6 +116,21 @@ $(document).ready(function() {
             $("#host").val(host);
             let service = options.service;
             $("#service").val(service);
+
+            $("#dialog-form #presets").remove();
+            let presets = ["wip", "done", "ignore", "wait"];
+            let $presetDiv = $("<div id='presets'></div>");
+            presets.forEach(function(msg) {
+                $("<button type='button'>")
+                .addClass('ui-button ui-corner-all ui-widget')
+                .text(msg)
+                .on('click', function() {
+                    $("input#message").val(msg);
+                })
+                .appendTo($presetDiv);
+            });
+            $("#dialog-form").append($presetDiv);
+
             let buttons = dialogForm.dialog('option', 'buttons');
             if (options.actions.match(/a/)) {
                 $.extend(buttons, { "Acknowledge": ackTest });
@@ -131,7 +146,7 @@ $(document).ready(function() {
 
             $("#dialog-form").keypress(function(e) {    //submit on enter
                 if (e.keyCode == $.ui.keyCode.ENTER) {
-                    $(this).parent().find("button:eq(1)").trigger("click");
+                    $(this).parent().find("button:eq(5)").trigger("click");
                 }
             });
         },
@@ -265,9 +280,6 @@ $(document).ready(function() {
         }
     }
 
-    $("input#message").click(function (e) {
-        $(this).val('');
-    });
     setInterval(function() {    //get new data every 30s
         if (!paused) { triggerUpdate() };
     }, 30000);
@@ -719,7 +731,10 @@ function ackTest() {
     fields.forEach(function(field) {
         vals[field] = $("#"+field).val().trim();
     });
-    if (!vals['message']) vals['message'] = '-';
+    if (!vals['message']) {
+        $("input#message").val("cannot be empty");
+        return false;
+    }
     let min = calcMins(vals['delay'],  vals['period']);
 
     let i = 0;
