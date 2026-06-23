@@ -722,6 +722,7 @@ function getJSON(url, callback) {
     }).catch(function(e) {
         console.log(e);
         showFlash('could not load JSON data!');
+        window.location.reload(true);
     });
 }
 
