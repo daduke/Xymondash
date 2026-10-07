@@ -284,7 +284,7 @@ $(document).ready(function() {
         if (!paused) { triggerUpdate() };
     }, 30000);
     setInterval(function() {    //hard reload every 8h to clean up things
-        if (!paused) { window.location.reload(true); };
+        //if (!paused) { window.location.reload(true); };  // TODO: disabled to try workaround authentik redirects
     }, 8*60*60*1000);
     populateSettings();
     $(document).focus();
@@ -722,7 +722,7 @@ function getJSON(url, callback) {
     }).catch(function(e) {
         console.log(e);
         showFlash('could not load JSON data!');
-        window.location.reload(true);
+        //window.location.reload(true);  // TODO: disabled to try workaround authentik redirects
     });
 }
 
