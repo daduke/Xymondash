@@ -20,6 +20,7 @@ if (!config['testState']) config['testState'] = {};
 readConfig();
 
 let dialogForm, backgroundColor;
+let backgroundPriority = Infinity;
 let paused = false;         //true prevents background reloads
 let showSearch = false;     //true when host search is displayed
 let mouseX = 0;
@@ -238,6 +239,7 @@ $(document).ready(function() {
         $("form#searchform").blur();
         $(document).focus();
         backgroundColor = 'green';
+        backgroundPriority = Infinity;
         let hostname = $(this).children("input#hostname").val();
         let testname = $(this).children("input#testname").val();
         let params='';
@@ -292,6 +294,7 @@ $(document).ready(function() {
 });
 
 function triggerUpdate() {              //fetch data and fill matrix
+    backgroundPriority = Infinity;
     let params = '?';
 
     if ($.urlParam()) {                 //manual URL color params override color checkboxes
@@ -329,7 +332,6 @@ function colorParams() {
 
 function processData(data) {    //callback when JSON data is ready
     let entries = {};
-    let lowestPos = {};
     let leave = false;
     let nongreenTests = {};
 
@@ -390,9 +392,6 @@ function processData(data) {    //callback when JSON data is ready
             entries[color][prio][host][test]['distime'] = distime;
             entries[color][prio][host][test]['cookie'] = cookie;
             entries[color][prio][host][test]['msg'] = msg;
-            lowestPos[host] = {};
-            lowestPos[host]['x'] = 10;
-            lowestPos[host]['y'] = 10;
 
             if (host == XYMONSERVER && test == 'xymongen' && color == 'green') {
                 msg = msg.replace(/TIME SPENT\\n.+/, '')
@@ -411,6 +410,23 @@ function processData(data) {    //callback when JSON data is ready
         }
     });
     if (leave) return false;
+
+    // Pick one display column per host and alert group.
+    let hostTargets = {};
+    Object.keys(entries).forEach(function(color) {
+        Object.keys(entries[color]).forEach(function(prio) {
+            if (!config['activePrios'].includes(prio)) return;
+            Object.keys(entries[color][prio]).forEach(function(host) {
+                let acked = prio == 'ack';
+                let group = host + '|' + acked;
+                let rank = availablePrios.indexOf(prio) * availableColors.length
+                    + availableColors.indexOf(color);
+                if (!hostTargets[group] || rank < hostTargets[group].rank) {
+                    hostTargets[group] = { color: color, prio: prio, rank: rank };
+                }
+            });
+        });
+    });
 
     availableColors.forEach(function(color) {        //clean out DOM
         availablePrios.forEach(function(prio) {
@@ -431,6 +447,7 @@ function processData(data) {    //callback when JSON data is ready
     let allSeen = {};
     let numTests = {};
     let ackTests = {};
+    let displayedGroups = {};
     config['activeColors'].forEach(function(color) {        //build up matrix and display entries data
         config['activePrios'].forEach(function(prio) {
             let pos = x + 10*y;             //this test's 'severity position' in the prio/color matrix
@@ -450,21 +467,15 @@ function processData(data) {    //callback when JSON data is ready
                         let distime = entries[color][prio][host][test]['distime'];
                         let msg = entries[color][prio][host][test]['msg'];
                         let cookie = entries[color][prio][host][test]['cookie'];
-                        let lowestX = lowestPos[host]['x'];
-                        let lowestY = lowestPos[host]['y'];
-                        let lowestPosHost = lowestX + 10*lowestY;
-                        let selector;
+                        let acked = prio == 'ack';
+                        let group = host + '|' + acked;
+                        let target = hostTargets[group];
+                        let selector = target.color + '_' + target.prio;
+                        let groupSelector = '[data-host="'+host+'"][data-acked="'+acked+'"]';
                         let seenSel = host + '_' + test + '_' + color;
                         let modifySel = host.replace(/\./ig, "_") + '_' + test;
                         if (config['testState'][seenSel] != 'seen') {
                             allSeen[host] = false;
-                        }
-                        if (lowestPosHost < pos && !showSearch) {    //if we have a higher prio/color entry already and do not show a search result
-                            selector = config['activeColors'][lowestY] + '_' + config['activePrios'][lowestX];
-                        } else {
-                            selector = color + '_' + prio;
-                            lowestPos[host]['x'] = x;
-                            lowestPos[host]['y'] = y;
                         }
                         let ackClass = (ackmsg != 'empty' || dismsg != 'empty')?' acked':'';
                         ackmsg = ackmsg.replace(/\\n/ig, "<br />");
@@ -499,9 +510,10 @@ function processData(data) {    //callback when JSON data is ready
                         } else if (dismsg != 'empty') {
                             popupmsg = '<b>'+dismsg+'</b><br /><br />'+distime;
                         }
-                        if (numTests[host] == 0 || showSearch) {   //new host or search result -> we need a host entry first
+                        if (!displayedGroups[group] || showSearch) {   //new host or search result -> we need a host entry first
+                            displayedGroups[group] = true;
                             $("#" + selector).append(
-                                "<div class='msg' data-host='"+host+"' style='--hue: var(--"+color+")' >"+
+                                "<div class='msg' data-host='"+host+"' data-acked='"+acked+"' style='--hue: var(--"+target.color+")' >"+
                                     "<span class='info'>"+host+": </span>"+
                                     "<div class='tests'>"+
                                         "<span class='test"+ackClass+"' data-test='"+test+"' data-color='" +color+"' data-cookie='"+cookie+"' data-actions='"+actions+"'>"+
@@ -513,10 +525,10 @@ function processData(data) {    //callback when JSON data is ready
                             $("#" + selector).removeClass("inv");
                         } else {                  //host already exists -> just add another test
                             let sp = '';
-                            if (color != config['activeColors'][lowestY] && config['realCol']) {
+                            if (color != target.color && config['realCol']) {
                                 sp = " bg "+color;
                             }
-                            $('[data-host="'+host+'"]').append(
+                            $(groupSelector).append(
                                 "<div class='tests'>"+
                                     "<span class='test"+sp+ackClass+"' data-test='"+test+"' data-color='" +color+"' data-cookie='"+cookie+"' data-actions='"+actions+"' >"+
                                         test+
@@ -562,8 +574,8 @@ function processData(data) {    //callback when JSON data is ready
             if (allSeen[host]) {
                 $('[data-host="'+host+'"]').addClass("seen");
             }
-            if (ackTests[host] > 1) {
-                $('[data-host="'+host+'"]').append(
+            if (ackTests[host] > 1 && !$(this).find('i.ackall').length) {
+                $(this).append(
                     "<div class='tests'>"+
                         "<i class='ack ackall fas fa-check-double' id='all-"+host+"'></i>"+
                     "</div>");
@@ -636,7 +648,8 @@ function processData(data) {    //callback when JSON data is ready
             let cookies = [];
             let tests = [];
             let actions = [];
-            $(this).parent().parent().find("span.test").each(function(e) {
+            let host = $(this).parent().parent().data("host");
+            $('[data-host="'+host+'"]').find("span.test").each(function(e) {
                 cookies.push($(this).data("cookie"));
                 tests.push($(this).data("test"));
                 actions.push($(this).data("actions"));
@@ -820,24 +833,12 @@ function keys(obj) {
 }
 
 function background(color, prio) {
-    if (config['activeBgPrios'].includes(prio) || showSearch) {
-       if (backgroundColor == 'red') {
-           return;
-       } else if (backgroundColor == 'purple') {
-           if (color == 'red') {
-               backgroundColor = color;
-           }
-       } else if (backgroundColor == 'yellow') {
-           if ((color == 'red') || (color == 'purple')) {
-               backgroundColor = color;
-           }
-       } else if (backgroundColor == 'blue') {
-           if ((color == 'red') || (color == 'purple') || (color == 'yellow')) {
-               backgroundColor = color;
-           }
-       } else if (color != 'blue' ) {
-               backgroundColor = color;
-       }
+    if (prio == 'ack' || (!config['activeBgPrios'].includes(prio) && !showSearch)) return;
+    let rank = availablePrios.indexOf(prio) * availableColors.length
+        + availableColors.indexOf(color);
+    if (rank < backgroundPriority) {
+        backgroundPriority = rank;
+        backgroundColor = color;
     }
 }
 
