@@ -376,6 +376,9 @@ function processData(data) {    //callback when JSON data is ready
             dismsg = 'empty';
             distime = '';
         }
+        if (ackmsg != 'empty' || dismsg != 'empty') {
+            prio = 'ack';
+        }
         if (entry.cookie) {
             cookie = entry.cookie;
         } else {
