@@ -220,7 +220,7 @@ span.info, span.test {
 
 span.bg {
     border-radius: 3px;
-    padding: 2px 2px 0px 2px;
+    padding: 0px 2px 0px 2px;
 }
 
 span.bg.yellow {
