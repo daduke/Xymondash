@@ -20,6 +20,7 @@ if (!config['testState']) config['testState'] = {};
 readConfig();
 
 let dialogForm, backgroundColor;
+let flashTimer;
 let backgroundPriority = Infinity;
 let paused = false;         //true prevents background reloads
 let showSearch = false;     //true when host search is displayed
@@ -286,7 +287,7 @@ $(document).ready(function() {
         if (!paused) { triggerUpdate() };
     }, 30000);
     setInterval(function() {    //hard reload every 8h to clean up things
-        //if (!paused) { window.location.reload(true); };  // TODO: disabled to try workaround authentik redirects
+        //if (!paused) { window.location.reload(true); };  // TODO: disabled to try workaround oidc redirects
     }, 8*60*60*1000);
     populateSettings();
     $(document).focus();
@@ -731,14 +732,15 @@ function createLink(host, test) {
 
 function getJSON(url, callback) {
     fetch(url, {cache: "no-store"}).then(function(response) {
+        if (!response.ok) throw new Error(response.status);
         return response.json();
     }).then(function(data) {
+        clearFlash();
         callback(data);
-        data = null;
     }).catch(function(e) {
         console.log(e);
         showFlash('could not load JSON data!');
-        //window.location.reload(true);  // TODO: disabled to try workaround authentik redirects
+        //window.location.reload(true);  // TODO: disabled to try workaround oidc redirects
     });
 }
 
@@ -920,12 +922,26 @@ function changeFavicon(link) {
 }
 
 function showFlash(msg) {
-    $('#flash').html(msg);
-    $("table#container").fadeTo("slow", 0.3, function() {
-        $("#flash").show("blind", 500).delay(5000).hide("blind", 500, function() {
-            $("table#container").fadeTo("slow", 1.0);
-        });
-    });
+    let $flash = $("#flash");
+    let $table = $("table#container");
+
+    clearTimeout(flashTimer);
+
+    $flash.stop(true, true).html(msg).slideDown(200);
+    $table.stop(true, true).fadeTo(200, 0.3);
+
+    flashTimer = setTimeout(function() {
+        $flash.stop(true, true).slideUp(200);
+        $table.stop(true, true).fadeTo(200, 1);
+    }, 5000);
+}
+
+function clearFlash() {
+    clearTimeout(flashTimer);
+    flashTimer = null;
+
+    $("#flash").stop(true, true).hide().empty();
+    $("table#container").stop(true, true).fadeTo(200, 1);
 }
 
 function readConfig() {
