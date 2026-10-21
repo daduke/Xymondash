@@ -29,7 +29,7 @@ from urllib.parse import parse_qs
 XYMONSERVER = "phd-mon"
 XYMONCLI = "/usr/lib/xymon/server/bin/xymon"
 CRITICAL = "/etc/xymon/critical.cfg"
-TEST_EXCLUDES = ["libs", "vuln", "winupd"]
+TEST_EXCLUDES = ["libs", "winupd"]
 
 # Increase maximal field size to avoid "_csv.Error: field larger than field limit"
 csv.field_size_limit(sys.maxsize)
