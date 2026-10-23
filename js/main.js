@@ -27,6 +27,7 @@ let showSearch = false;     //true when host search is displayed
 let mouseX = 0;
 let mouseY = 0;
 let mouseYr = 0;
+let seen = {};
 
 $(document).ready(function() {
     $(document).tooltip({                         //initialize tooltips
@@ -478,7 +479,7 @@ function processData(data) {    //callback when JSON data is ready
                         let groupSelector = '[data-host="'+host+'"][data-acked="'+acked+'"]';
                         let seenSel = host + '_' + test + '_' + color;
                         let modifySel = host.replace(/\./ig, "_") + '_' + test;
-                        if (config['testState'][seenSel] != 'seen') {
+                        if (seen[seenSel] != 'seen') {
                             allSeen[host] = false;
                         }
                         let ackClass = (ackmsg != 'empty' || dismsg != 'empty')?' acked':'';
@@ -970,7 +971,7 @@ function doReload() {
 function doMarkSeen() {
     $('span.test').each(function(index) {
         let sel = $(this).parent().parent().data('host') + '_' + $(this).data('test') + '_' + $(this).data('color');
-        config['testState'][sel] = 'seen';
+        seen[sel] = 'seen';
     });
     triggerUpdate();
 }
