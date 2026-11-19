@@ -868,8 +868,8 @@ function keys(obj) {
 
 function background(color, prio) {
     if (prio == 'ack' || (!config['activeBgPrios'].includes(prio) && !showSearch)) return;
-    let rank = availablePrios.indexOf(prio) * availableColors.length
-        + availableColors.indexOf(color);
+    let rank = availableColors.indexOf(color) * availablePrios.length
+        + availablePrios.indexOf(prio);
     if (rank < backgroundPriority) {
         backgroundPriority = rank;
         backgroundColor = color;
