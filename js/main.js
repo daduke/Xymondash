@@ -7,11 +7,12 @@
 
 'use strict';
 
-const XYMONURL     = '/xymon-cgi/svcstatus.sh';
-const XYMONACKURL  = '/xymondash/cgi/xymon-ack';
-const XYMONDISURL  = '/xymondash/cgi/xymon-disable';
-const XYMONJSONURL = '/xymondash/cgi/xymon2json';
-const XYMONSERVER  = 'phd-mon';
+const XYMONURL       = '/xymon-cgi/svcstatus.sh';
+const XYMONACKURL    = '/xymondash/cgi/xymon-ack';
+const XYMONDISURL    = '/xymondash/cgi/xymon-disable';
+const XYMONJSONURL   = '/xymondash/cgi/xymon2json';
+const XYMONSERVER    = 'phd-mon';
+const OIDCSESSIONURL = '/oidc/callback?info=json';
 
 let availableColors = ['red', 'purple', 'yellow', 'blue', 'green'];
 let availablePrios = ['prio1', 'prio2', 'prio3', 'other', 'ack'];
@@ -28,6 +29,7 @@ let mouseX = 0;
 let mouseY = 0;
 let mouseYr = 0;
 let seen = {};
+let apacheDiesAt = 0;
 
 $(document).ready(function() {
     $(document).tooltip({                         //initialize tooltips
@@ -284,14 +286,26 @@ $(document).ready(function() {
         }
     }
 
+    // get session lifetime of the apache auth_openidc module
+    if (typeof OIDCSESSIONURL !== 'undefined') {
+        fetch(OIDCSESSIONURL).then(response => {
+            if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+            return response.json();
+        }).then(info => {
+            apacheDiesAt = info.exp;
+            console.log('apache session EOL:', apacheDiesAt);
+        }).catch(error => console.error("Fetch failed:", error));
+    }
+
     setInterval(function() {    //get new data every 30s
         if (!paused) { triggerUpdate() };
     }, 30000);
     setInterval(function() {    //hard reload every 8h to clean up things
-        //if (!paused) { window.location.reload(true); };  // TODO: disabled to try workaround oidc redirects
+        if (!paused && apacheDiesAt == 0) { window.location.reload(true); };  // only if no OIDC
     }, 8*60*60*1000);
     populateSettings();
     $(document).focus();
+
     triggerUpdate();
 });
 
@@ -738,10 +752,24 @@ function getJSON(url, callback) {
     }).then(function(data) {
         clearFlash();
         callback(data);
-    }).catch(function(e) {
-        console.log(e);
-        showFlash('could not load JSON data!');
-        //window.location.reload(true);  // TODO: disabled to try workaround oidc redirects
+    }).catch(function(e) {                                  // if JSON fetch fails
+        if (e.message === "401") {                          // .. and it's b/c of 'permission denied'
+            if (apacheDiesAt > 0) {                         // .. and we have OIDC session information
+                if (Date.now()/1000 >= apacheDiesAt - 60) { // .. and we're close to apache session expiration
+                  console.log('apache session expired, SSO probably still active -> reload page to renew apache session from SSO');
+                  window.location.reload();
+                } else {
+                  // 401 well before the deadline → session killed early → SSO is dead
+                  console.log('apache session expired, SSO expired -> pause');
+                  paused = true;
+                  showFlash('Your authentik session has ended. Log back in to authentik and reload this tab.', true);
+                }
+            } else {
+                showFlash('permission denied on JSON data!');
+            }
+        } else {    // different reason for failure
+            showFlash('could not load JSON data!');
+        }
     });
 }
 
@@ -922,19 +950,21 @@ function changeFavicon(link) {
     }
 }
 
-function showFlash(msg) {
+function showFlash(msg, keep) {
     let $flash = $("#flash");
     let $table = $("table#container");
 
     clearTimeout(flashTimer);
 
     $flash.stop(true, true).html(msg).slideDown(200);
-    $table.stop(true, true).fadeTo(200, 0.3);
+    $table.stop(true, true).fadeTo(200, 0.0);
 
-    flashTimer = setTimeout(function() {
-        $flash.stop(true, true).slideUp(200);
-        $table.stop(true, true).fadeTo(200, 1);
-    }, 5000);
+    if (!keep) {
+        flashTimer = setTimeout(function() {
+            $flash.stop(true, true).slideUp(200);
+            $table.stop(true, true).fadeTo(200, 1);
+        }, 5000);
+    }
 }
 
 function clearFlash() {
